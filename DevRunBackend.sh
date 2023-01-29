@@ -1,0 +1,1 @@
+dotnet run --project api/webAPI/webAPI.csproj
