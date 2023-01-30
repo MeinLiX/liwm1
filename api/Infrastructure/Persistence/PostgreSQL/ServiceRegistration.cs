@@ -4,7 +4,7 @@ namespace PostgreSQL;
 
 public static class ServiceRegistration
 {
-    public static IServiceCollection AddPersistencePostgreSQLInfrastructureLoyaut(this IServiceCollection services)
+    public static IServiceCollection AddPersistencePostgreSQLInfrastructureLayer(this IServiceCollection services)
     => services; // TODO
 }
 

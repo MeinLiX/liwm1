@@ -11,7 +11,7 @@ public static class ServiceRegistration
 {
 	private static Assembly GetAssembly => typeof(ServiceRegistration).GetTypeInfo().Assembly;
 
-    public static IServiceCollection AddAplicationLoyaut(this IServiceCollection services)
+    public static IServiceCollection AddAplicationLayer(this IServiceCollection services)
 	=> services.AddMediatR(GetAssembly)
                .AddFluentValidation(new[] { GetAssembly });
 }

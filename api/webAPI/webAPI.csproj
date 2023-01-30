@@ -37,5 +37,8 @@
     <ProjectReference Include="..\Infrastructure\Persistence\PostgreSQL\PostgreSQL.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
+        <ProjectReference Include="..\Infrastructure\Persistence\SqlLite\SqlLite.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 </Project>

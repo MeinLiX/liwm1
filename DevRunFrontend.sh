@@ -1,2 +1,1 @@
-cd client
-ng serve
+cd client; ng s;

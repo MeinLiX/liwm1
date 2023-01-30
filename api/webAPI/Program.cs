@@ -3,16 +3,17 @@ using webAPI.Routes;
 using Application;
 using PostgreSQL;
 using Shared;
+using SqlLite;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAplicationLoyaut();
-builder.Services.AddPersistencePostgreSQLInfrastructureLoyaut();
-builder.Services.AddSharedInfrastructureLoyaut();
-
+builder.Services.AddAplicationLayer();
+// builder.Services.AddPersistencePostgreSQLInfrastructureLayer();
+builder.Services.AddPersistenceSqlLiteInfrastructureLayer(builder.Configuration);
+builder.Services.AddSharedInfrastructureLayer();
 
 var app = builder.Build();
 
