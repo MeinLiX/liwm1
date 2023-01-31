@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Text;
 using Application.Interfaces;
 using Domain.Entities;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,12 +11,12 @@ namespace Shared.Services.TokenService;
 public class TokenService : ITokenService
 {
     private readonly SymmetricSecurityKey key;
-    private readonly UserManager<AppUser> userManager;
+    private readonly IUserRepository userRepository;
 
-    public TokenService(IConfiguration config, UserManager<AppUser> userManager)
+    public TokenService(IConfiguration config, IUserRepository userRepository)
     {
         key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
-        this.userManager = userManager;
+        this.userRepository = userRepository;
     }
 
     public async Task<string> CreateTokenAsync(AppUser user)
@@ -27,8 +26,8 @@ public class TokenService : ITokenService
             new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
         };
-
-        var roles = await this.userManager.GetRolesAsync(user);
+        
+        var roles = await this.userRepository.GetRolesForUserAsync(user);
 
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 

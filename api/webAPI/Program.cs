@@ -13,8 +13,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAplicationLayer();
 // builder.Services.AddPersistencePostgreSQLInfrastructureLayer();
 builder.Services.AddPersistenceSqlLiteInfrastructureLayer(builder.Configuration);
-builder.Services.AddSharedInfrastructureLayer();
-
+builder.Services.AddSharedInfrastructureLayer(builder.Configuration);
+    
 var app = builder.Build();
 
 

@@ -19,18 +19,30 @@ public class UserRepository : IUserRepository
 
     public async Task AddUserAsync(string username, string password, int photoId)
     {
-        if (await this.GetUserByUsernameAsync(username) is null)
+        var user = new AppUser
         {
-            var user = new AppUser
-            {
-                UserName = username,
-                PhotoId = photoId
-            };
+            UserName = username,
+            PhotoId = photoId
+        };
 
-            await this.userManager.CreateAsync(user, password);
-            await this.userManager.AddToRoleAsync(user, "Gamer");
-        }
+        await this.userManager.CreateAsync(user, password);
+        await this.userManager.AddToRoleAsync(user, "Gamer");
     }
+
+    public async Task<bool> CheckPasswordForUserAsync(string username, string password)
+    {
+        var isPasswordValid = false;
+
+        var user = await this.GetUserByUsernameAsync(username);
+        if (user != null)
+        {
+            isPasswordValid = await this.userManager.CheckPasswordAsync(user, password);
+        }
+
+        return isPasswordValid;
+    }
+
+    public async Task<IEnumerable<string>> GetRolesForUserAsync(AppUser user) => await this.userManager.GetRolesAsync(user);
 
     public async Task<AppUser?> GetUserByIdAsync(int id) => await this.dataContext.Users.FirstOrDefaultAsync(u => u.Id == id);
 

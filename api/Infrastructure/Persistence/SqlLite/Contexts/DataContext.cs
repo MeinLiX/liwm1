@@ -14,7 +14,9 @@ public class DataContext : IdentityDbContext<AppUser, AppRole, int,
                                             IdentityUserToken<int>>,
                            IDataContext
 {
-    public async Task<int> SaveChangesAsync() => await this.SaveChangesAsync();
+    public DataContext(DbContextOptions options) : base(options)
+    {
+    }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -26,4 +28,6 @@ public class DataContext : IdentityDbContext<AppUser, AppRole, int,
                .HasForeignKey(ur => ur.UserId)
                .IsRequired();
     }
+
+    public async Task<int> SaveChangesAsync() => await this.SaveChangesAsync();
 }

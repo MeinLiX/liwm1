@@ -1,5 +1,4 @@
-﻿using System;
-namespace Domain.Requests;
+﻿namespace Domain.Responses;
 
 public interface IRestResponseResult
 {

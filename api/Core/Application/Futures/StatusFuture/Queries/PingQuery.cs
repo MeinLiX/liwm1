@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
-using Domain.Requests;
+using Domain.Responses;
 
 namespace Application.Futures.StatusFuture.Queries;
 
