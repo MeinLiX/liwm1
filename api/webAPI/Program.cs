@@ -7,6 +7,7 @@ using SqlLite;
 using Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using webAPI.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,8 @@ builder.Services.AddAplicationLayer();
 builder.Services.AddPersistenceSqlLiteInfrastructureLayer(builder.Configuration);
 builder.Services.AddSharedInfrastructureLayer(builder.Configuration);
 
+builder.Services.AddTransient<ExceptionMiddleware>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -52,10 +55,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
+
 app.UseHttpsRedirection();
 
 app.InitStatusRoutes();
 app.InitAccountRoutes();
+
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;

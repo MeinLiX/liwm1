@@ -13,6 +13,7 @@ public static class ServiceRegistration
 
     public static IServiceCollection AddAplicationLayer(this IServiceCollection services)
 	=> services.AddMediatR(GetAssembly)
-               .AddFluentValidation(new[] { GetAssembly });
+               .AddFluentValidation(new[] { GetAssembly })
+               .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 }
 

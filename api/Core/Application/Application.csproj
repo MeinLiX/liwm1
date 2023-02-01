@@ -18,6 +18,7 @@
     <None Remove="MediatR.Extensions.FluentValidation.AspNetCore" />
     <None Remove="MediatR.Extensions.Microsoft.DependencyInjection" />
     <None Remove="MediatR" />
+    <None Remove="Behavior\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Exceptions\" />
@@ -26,6 +27,7 @@
     <Folder Include="Futures\StatusFuture\" />
     <Folder Include="Futures\StatusFuture\Queries\" />
     <Folder Include="Futures\StatusFuture\Commands\" />
+    <Folder Include="Behavior\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
