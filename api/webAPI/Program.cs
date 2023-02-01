@@ -6,11 +6,38 @@ using Shared;
 using SqlLite;
 using Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "JWT token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "bearerAuth"
+                }
+            },
+            new string[]{ }
+        }
+    });
+});
 
 builder.Services.AddAplicationLayer();
 // builder.Services.AddPersistencePostgreSQLInfrastructureLayer();

@@ -24,6 +24,7 @@
     <None Remove="MediatR.Extensions.FluentValidation.AspNetCore" />
     <None Remove="FluentValidation" />
     <None Remove="FluentValidation.AspNetCore" />
+    <None Remove="Microsoft.EntityFrameworkCore, Version=7.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Routes\" />
@@ -44,5 +45,8 @@
         <ProjectReference Include="..\Infrastructure\Persistence\SqlLite\SqlLite.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.EntityFrameworkCore, Version=7.0.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" />
   </ItemGroup>
 </Project>
