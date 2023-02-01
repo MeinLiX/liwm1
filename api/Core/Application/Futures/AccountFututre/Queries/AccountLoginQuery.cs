@@ -1,4 +1,6 @@
+using Application.Interfaces;
 using Domain.Responses;
+using Domain.Responses.DTOs;
 using FluentValidation;
 using MediatR;
 
@@ -13,17 +15,43 @@ public class AccountLoginValidator : AbstractValidator<AccountLoginRequest>
     }
 }
 
-public class AccountLoginRequest : IRequest<IRestResponseResult>
+public class AccountLoginRequest : IRequest<IRestResponseResult<UserDetailWithTokenDTO>>
 {
     public string username { get; set; }
     public string password { get; set; }
 }
 
-public class LoginRequestHandler : IRequestHandler<AccountLoginRequest, IRestResponseResult>
+public class AccountLoginRequestHandler : IRequestHandler<AccountLoginRequest, IRestResponseResult<UserDetailWithTokenDTO>>
 {
-    public Task<IRestResponseResult> Handle(AccountLoginRequest request, CancellationToken cancellationToken)
+    private readonly IUserRepository userRepository;
+    private readonly ITokenService tokenService;
+
+    public AccountLoginRequestHandler(IUserRepository userRepository, ITokenService tokenService)
     {
-        return Task.FromResult(RestResponseResult.Success("Pong!"));
+        this.userRepository = userRepository;
+        this.tokenService = tokenService;
+    }
+
+    public async Task<IRestResponseResult<UserDetailWithTokenDTO>> Handle(AccountLoginRequest request, CancellationToken cancellationToken)
+    {
+        request.username = request.username.ToLower();
+        
+        var user = await this.userRepository.GetUserByUsernameAsync(request.username);
+
+        if (user is null)
+        {
+            return RestResponseResult<UserDetailWithTokenDTO>.Fail("User with provided username not found");
+        }
+
+        if (!await this.userRepository.CheckPasswordForUserAsync(user, request.password))
+        {
+            return RestResponseResult<UserDetailWithTokenDTO>.Fail("Password is not correct");
+        }
+
+        return RestResponseResult<UserDetailWithTokenDTO>.Success(new UserDetailWithTokenDTO(user)
+        {
+            Token = await this.tokenService.CreateTokenAsync(user)
+        });
     }
 }
 

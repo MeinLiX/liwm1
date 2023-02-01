@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.SqlLite.Contexts;
+namespace SqlLite.Contexts;
 
 public class DataContext : IdentityDbContext<AppUser, AppRole, int,
                                             IdentityUserClaim<int>,

@@ -1,9 +1,9 @@
 ﻿using Application.Interfaces;
-using Application.SqlLite.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared;
+using SqlLite.Contexts;
 using SqlLite.Repositories;
 
 namespace SqlLite;
@@ -15,7 +15,7 @@ public static class ServiceRegistration
                    .AddScoped<IDataContext>(provider => provider.GetRequiredService<DataContext>())
                    .AddIdentityServices<DataContext>()
                    .AddRepositories();
+
     private static IServiceCollection AddRepositories(this IServiceCollection services)
         => services.AddTransient<IUserRepository, UserRepository>();
 }
-

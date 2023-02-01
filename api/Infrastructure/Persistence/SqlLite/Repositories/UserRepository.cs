@@ -17,7 +17,7 @@ public class UserRepository : IUserRepository
         this.userManager = userManager;
     }
 
-    public async Task AddUserAsync(string username, string password, int photoId)
+    public async Task<AppUser> AddUserAsync(string username, string password, int photoId)
     {
         var user = new AppUser
         {
@@ -26,21 +26,12 @@ public class UserRepository : IUserRepository
         };
 
         await this.userManager.CreateAsync(user, password);
-        await this.userManager.AddToRoleAsync(user, "Gamer");
+        //await this.userManager.AddToRoleAsync(user, "Gamer"); TODO: Fix roles
+
+        return user;
     }
 
-    public async Task<bool> CheckPasswordForUserAsync(string username, string password)
-    {
-        var isPasswordValid = false;
-
-        var user = await this.GetUserByUsernameAsync(username);
-        if (user != null)
-        {
-            isPasswordValid = await this.userManager.CheckPasswordAsync(user, password);
-        }
-
-        return isPasswordValid;
-    }
+    public async Task<bool> CheckPasswordForUserAsync(AppUser user, string password) => await this.userManager.CheckPasswordAsync(user, password);
 
     public async Task<IEnumerable<string>> GetRolesForUserAsync(AppUser user) => await this.userManager.GetRolesAsync(user);
 

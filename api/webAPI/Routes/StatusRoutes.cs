@@ -1,7 +1,5 @@
-﻿using System;
-using Application.Futures.StatusFuture.Queries;
+﻿using Application.Futures.StatusFuture.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
 namespace webAPI.Routes;
 
@@ -11,7 +9,7 @@ public static class StatusRoutes
         => web.InitPingRoute();
 
 
-    public static WebApplication InitPingRoute(this WebApplication web)
+    private static WebApplication InitPingRoute(this WebApplication web)
     {
         web.MapGet("/ping", async (IMediator mediator) =>
         {
