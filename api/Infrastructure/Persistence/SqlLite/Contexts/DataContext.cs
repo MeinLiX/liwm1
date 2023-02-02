@@ -23,9 +23,15 @@ public class DataContext : IdentityDbContext<AppUser, AppRole, int,
         base.OnModelCreating(builder);
 
         builder.Entity<AppUser>()
-               .HasMany(ur => ur.UserRoles)
-               .WithOne(u => u.User)
+               .HasMany(user => user.UserRoles)
+               .WithOne(ur => ur.User)
                .HasForeignKey(ur => ur.UserId)
+               .IsRequired();
+
+        builder.Entity<AppRole>()
+               .HasMany(r => r.UserRoles)
+               .WithOne(ur => ur.Role)
+               .HasForeignKey(ur => ur.RoleId)
                .IsRequired();
     }
 
