@@ -12,7 +12,10 @@ public class AccountRegisterValidator : AbstractValidator<AccountRegisterRequest
     {
         RuleFor(r => r.username).NotEmpty().WithMessage("Username must be filled")
                                 .GreaterThanOrEqualTo("4").WithMessage("Username must be at least 4 symbols");
-        RuleFor(r => r.password).NotEmpty().WithMessage("Password must be filled") // TODO: Add regex validation
+        RuleFor(r => r.password).NotEmpty().WithMessage("Password must be filled")
+                                .Matches("(.*[a-z].*)").WithMessage("Password must have at least 1 lower case letter")
+                                .Matches("(.*[A-Z].*)").WithMessage("Password must have at least 1 upper case letter")
+                                .Matches(@"(.*\d.*)").WithMessage("Password must have at least 1 digit")
                                 .GreaterThanOrEqualTo("6").WithMessage("Password must be at least 6 symbols");
     }
 }

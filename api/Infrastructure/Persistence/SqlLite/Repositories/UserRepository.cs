@@ -26,7 +26,7 @@ public class UserRepository : IUserRepository
         };
 
         await this.userManager.CreateAsync(user, password);
-        //await this.userManager.AddToRoleAsync(user, "Gamer"); TODO: Fix roles
+        await this.userManager.AddToRoleAsync(user, "Gamer"); //TODO: Fix roles
 
         return user;
     }

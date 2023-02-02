@@ -1,13 +1,11 @@
-﻿using System.Reflection;
-using webAPI.Routes;
+﻿using webAPI.Routes;
 using Application;
 using PostgreSQL;
 using Shared;
 using SqlLite;
-using Application.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using webAPI.Middleware;
+using webAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,10 +60,6 @@ app.UseHttpsRedirection();
 app.InitStatusRoutes();
 app.InitAccountRoutes();
 
-
-using var scope = app.Services.CreateScope();
-var services = scope.ServiceProvider;
-var context = services.GetRequiredService<IDataContext>();
-await context.Database.MigrateAsync();
+await app.Services.MigrateDataBaseAsync();
 
 app.Run();
