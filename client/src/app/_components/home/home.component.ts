@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { Photo } from 'src/app/_models/photo';
 import { UserLogin, UserRegister } from 'src/app/_models/user';
 import { AccountService } from 'src/app/_services/account.service';
@@ -17,7 +18,7 @@ export class HomeComponent implements OnInit {
   userLogin?: UserLogin;
   userRegister?: UserRegister;
 
-  constructor(private accountService: AccountService, private fb: FormBuilder, private router: Router) {
+  constructor(private accountService: AccountService, private fb: FormBuilder, private router: Router, private toastr: ToastrService) {
   }
 
   ngOnInit(): void {
@@ -49,7 +50,8 @@ export class HomeComponent implements OnInit {
     this.userRegister = { ...this.registerForm.value, photoId: 1 };
     if (this.userRegister) {
       this.accountService.register(this.userRegister).subscribe({
-        next: () => this.navigateToGamesHome()
+        next: () => this.navigateToGamesHome(),
+        error: error => this.toastr.error(error.message)
       });
     }
   }
@@ -58,7 +60,8 @@ export class HomeComponent implements OnInit {
     this.userLogin = { ...this.loginForm.value };
     if (this.userLogin) {
       this.accountService.login(this.userLogin).subscribe({
-        next: () => this.navigateToGamesHome()
+        next: () => this.navigateToGamesHome(),
+        error: error => this.toastr.error(error.message)
       });
     }
   }

@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map } from 'rxjs';
 import { environment } from 'src/enviroments/environment';
+import { DataRestResponseResult } from '../_models/restResponseResult';
 import { User, UserLogin, UserRegister } from '../_models/user';
 
 @Injectable({
@@ -15,9 +16,9 @@ export class AccountService {
   constructor(private http: HttpClient) { }
 
   login(model: UserLogin) {
-    return this.http.post<User>(this.baseUrl + 'account/login', model).pipe(
+    return this.http.post<DataRestResponseResult<User>>(this.baseUrl + 'account/login', model).pipe(
       map(response => {
-        const user = response;
+        const user = response.data;
         if (user) {
           this.setCurrentUser(user);
         }

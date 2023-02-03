@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [],
@@ -10,11 +11,15 @@ import { NgxSpinnerModule } from 'ngx-spinner';
     TabsModule.forRoot(),
     NgxSpinnerModule.forRoot({
       type: 'ball-climbing-dot'
+    }),
+    ToastrModule.forRoot({
+      positionClass: 'toast-bottom-right'
     })
   ],
   exports: [
     NgxSpinnerModule,
-    TabsModule
+    TabsModule,
+    ToastrModule
   ]
 })
 export class SharedModule { }

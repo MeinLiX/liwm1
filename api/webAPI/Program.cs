@@ -44,6 +44,7 @@ builder.Services.AddPersistenceSqlLiteInfrastructureLayer(builder.Configuration)
 builder.Services.AddSharedInfrastructureLayer(builder.Configuration);
 
 builder.Services.AddTransient<ExceptionMiddleware>();
+builder.Services.AddCors();
 
 var app = builder.Build();
 
@@ -56,6 +57,12 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
+
+app.UseCors(x => x
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true)
+                .AllowCredentials());
 
 app.InitStatusRoutes();
 app.InitAccountRoutes();
