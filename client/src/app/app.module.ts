@@ -7,8 +7,8 @@ import { SharedModule } from './_modules/shared.module';
 import { HomeComponent } from './_components/home/home.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoadingInterceptor } from './_interceptors/loading.interceptor';
-import { TextInputComponent } from './_components/_forms/text-input/text-input.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TextInputComponent } from './_components/forms/text-input/text-input.component';
 
 @NgModule({
   declarations: [

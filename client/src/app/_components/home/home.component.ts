@@ -8,9 +8,8 @@ import { AccountService } from 'src/app/_services/account.service';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  registerForm: FormGroup = new FormGroup({});
   loginForm: FormGroup = new FormGroup({});
-  validationErrors: string[] | undefined;
+  registerForm: FormGroup = new FormGroup({});
 
   constructor(private accountService: AccountService, private fb: FormBuilder) {
   }
@@ -21,12 +20,12 @@ export class HomeComponent implements OnInit {
 
   initializeForms() {
     this.loginForm = this.fb.group({
-      username: ['', Validators.required, Validators.minLength(4)],
-      password: ['', [Validators.required, Validators.minLength(6), Validators.pattern('(.*[a-z].*)'), Validators.pattern('(.*[A-Z].*)'), Validators.pattern('(.*\d.*)'),]],
+      username: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(6), Validators.pattern('(.*[a-z].*)'), Validators.pattern('(.*[A-Z].*)'), Validators.pattern('(.*\\d.*)'),]],
     });
     this.registerForm = this.fb.group({
-      username: ['', Validators.required, Validators.minLength(4)],
-      password: ['', [Validators.required, Validators.minLength(6), Validators.pattern('(.*[a-z].*)'), Validators.pattern('(.*[A-Z].*)'), Validators.pattern('(.*\d.*)'),]],
+      username: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(6), Validators.pattern('(.*[a-z].*)'), Validators.pattern('(.*[A-Z].*)'), Validators.pattern('(.*\\d.*)'),]],
       confirmPassword: ['', [Validators.required, this.matchValues('password')]]
     });
     this.registerForm.controls['password'].valueChanges.subscribe({
@@ -41,11 +40,11 @@ export class HomeComponent implements OnInit {
   }
 
   register() {
-
+    console.log('register');
   }
 
   login() {
-
+    console.log('login');
   }
 
 }

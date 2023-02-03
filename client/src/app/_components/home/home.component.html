@@ -4,23 +4,29 @@
             <div style="margin-left: 15px; margin-top: 30px; margin-right: 15px; margin-bottom: 20px;">
                 <tabset [justified]="true">
                     <tab heading="Sign In">
-                        <form [formGroup]="loginForm" (ngSubmit)="login()" autocomplete="off" class="mt-2">
-                            <div style="margin-left: 100px">
+                        <form [formGroup]="loginForm" (ngSubmit)="loginForm.valid && login()" autocomplete="off" class="mt-2">
+                            <div style="margin-left: 120px">
                                 <app-text-input [formControl]="$any(loginForm.controls['username'])"
                                     [placeholder]="'Enter your name...'" [label]="'Username'"></app-text-input>
                                 <app-text-input [formControl]="$any(loginForm.controls['password'])"
                                     [placeholder]="'Enter your password...'" [label]="'Password'"
                                     [type]="'password'"></app-text-input>
-                                <button class="btn btn-success mt-3" style="margin-left: 120px;" type="submit">Sign In</button>
+                                <button [disabled]="!loginForm.valid" class="btn btn-success mt-3"
+                                    style="margin-left: 120px;" type="submit">Sign
+                                    In</button>
                             </div>
                         </form>
                     </tab>
                     <tab heading="Sign Up">
-                        <form [formGroup]="registerForm" (ngSubmit)="register()" autocomplete="off" class="mt-2">
+                        <form [formGroup]="registerForm" (ngSubmit)="registerForm.valid && register()" autocomplete="off" class="mt-2">
                             <div style="float: left;">
-                                <img class="avatar"
-                                    src="https://i.pinimg.com/564x/8f/9c/8a/8f9c8a8865253336f5aa13b5ef203b55.jpg"
-                                    alt="user photo">
+                                <div class="avatar-container">
+                                    <img class="avatar" src="https://i.imgur.com/qRs0eyR.png" alt="user photo">
+                                    <button class="btn btn-secondary avatar-btn"><i
+                                            class="fa fa-ellipsis-h"></i></button>
+                                    <button class="btn btn-secondary avatar-btn" style="margin-left: 80px;"><i
+                                            class="fa fa-refresh"></i></button>
+                                </div>
                             </div>
                             <div style="overflow: hidden; margin-left: 15px;">
                                 <app-text-input [formControl]="$any(registerForm.controls['username'])"
@@ -32,7 +38,8 @@
                                 <app-text-input [formControl]="$any(registerForm.controls['confirmPassword'])"
                                     [placeholder]="'Confirm your password...'" [label]="'Confirmation password'"
                                     [type]="'password'"></app-text-input>
-                                <button class="btn btn-success mt-3" style="margin-left: 80px;" type="submit">Create
+                                <button [disabled]="!registerForm.valid" class="btn btn-success mt-3"
+                                    style="margin-left: 80px;" type="submit">Create
                                     account</button>
                             </div>
                         </form>
