@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { Photo } from 'src/app/_models/photo';
 import { AccountService } from 'src/app/_services/account.service';
 
 @Component({
@@ -10,6 +11,7 @@ import { AccountService } from 'src/app/_services/account.service';
 export class HomeComponent implements OnInit {
   loginForm: FormGroup = new FormGroup({});
   registerForm: FormGroup = new FormGroup({});
+  photos?: Photo[];
 
   constructor(private accountService: AccountService, private fb: FormBuilder) {
   }
