@@ -9,12 +9,14 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoadingInterceptor } from './_interceptors/loading.interceptor';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TextInputComponent } from './_components/forms/text-input/text-input.component';
+import { GamesHomeComponent } from './_components/games-home/games-home.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    TextInputComponent
+    TextInputComponent,
+    GamesHomeComponent
   ],
   imports: [
     BrowserModule,

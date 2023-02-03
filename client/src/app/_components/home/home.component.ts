@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Photo } from 'src/app/_models/photo';
+import { UserLogin, UserRegister } from 'src/app/_models/user';
 import { AccountService } from 'src/app/_services/account.service';
 
 @Component({
@@ -12,8 +14,10 @@ export class HomeComponent implements OnInit {
   loginForm: FormGroup = new FormGroup({});
   registerForm: FormGroup = new FormGroup({});
   photos?: Photo[];
+  userLogin?: UserLogin;
+  userRegister?: UserRegister;
 
-  constructor(private accountService: AccountService, private fb: FormBuilder) {
+  constructor(private accountService: AccountService, private fb: FormBuilder, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -42,11 +46,24 @@ export class HomeComponent implements OnInit {
   }
 
   register() {
-    console.log('register');
+    this.userRegister = { ...this.registerForm.value, photoId: 1 };
+    if (this.userRegister) {
+      this.accountService.register(this.userRegister).subscribe({
+        next: () => this.navigateToGamesHome()
+      });
+    }
   }
 
   login() {
-    console.log('login');
+    this.userLogin = { ...this.loginForm.value };
+    if (this.userLogin) {
+      this.accountService.login(this.userLogin).subscribe({
+        next: () => this.navigateToGamesHome()
+      });
+    }
   }
 
+  navigateToGamesHome() {
+    this.router.navigateByUrl('/games');
+  }
 }
