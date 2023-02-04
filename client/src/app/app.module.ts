@@ -10,13 +10,15 @@ import { LoadingInterceptor } from './_interceptors/loading.interceptor';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TextInputComponent } from './_components/forms/text-input/text-input.component';
 import { GamesHomeComponent } from './_components/games-home/games-home.component';
+import { NotFoundComponent } from './_components/not-found/not-found.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     TextInputComponent,
-    GamesHomeComponent
+    GamesHomeComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,

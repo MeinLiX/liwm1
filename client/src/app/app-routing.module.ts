@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { GamesHomeComponent } from './_components/games-home/games-home.component';
 import { HomeComponent } from './_components/home/home.component';
+import { NotFoundComponent } from './_components/not-found/not-found.component';
 import { AuthGuard } from './_guards/auth.guard';
 
 const routes: Routes = [
@@ -13,7 +14,8 @@ const routes: Routes = [
     children: [
       { path: 'games', component: GamesHomeComponent }
     ]
-  }
+  },
+  { path: '**', component: NotFoundComponent, pathMatch: 'full' }
 ];
 
 @NgModule({
