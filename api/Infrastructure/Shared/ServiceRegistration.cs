@@ -1,12 +1,15 @@
 ﻿using System.Text;
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Shared.Services.CloudinaryService;
+using Shared.Services.PhotoService;
 using Shared.Services.TokenService;
 
 namespace Shared;
@@ -15,7 +18,8 @@ public static class ServiceRegistration
 {
     public static IServiceCollection AddSharedInfrastructureLayer(this IServiceCollection services, IConfiguration configuration)
         => services.AddJwtAuthenticationService(configuration)
-                   .AddServices();
+                   .AddServices()
+                   .AddCloudinary(configuration);
 
     public static IServiceCollection AddIdentityServices<T>(this IServiceCollection services) where T : DbContext
     {
@@ -53,5 +57,10 @@ public static class ServiceRegistration
     }
 
     private static IServiceCollection AddServices(this IServiceCollection services)
-        => services.AddScoped<ITokenService, TokenService>();
+        => services.AddScoped<ITokenService, TokenService>()
+                   .AddTransient<ICloudinaryService, CloudinaryService>()
+                   .AddTransient<IPhotoService, PhotoService>();
+
+    private static IServiceCollection AddCloudinary(this IServiceCollection services, IConfiguration configuration)
+        => services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
 }

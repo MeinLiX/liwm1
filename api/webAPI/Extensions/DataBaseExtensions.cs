@@ -16,6 +16,8 @@ public static class DataBaseExtensions
 
         var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
         await roleManager.CreateRolesAsync();
+
+        await context.SyncPhotosAsync(services.GetRequiredService<IPhotoService>());
     }
 
     private static async Task CreateRolesAsync(this RoleManager<AppRole> roleManager)
@@ -33,5 +35,10 @@ public static class DataBaseExtensions
                 await roleManager.CreateAsync(role);
             }
         }
+    }
+
+    private static async Task SyncPhotosAsync(this IDataContext context, IPhotoService photoService)
+    {
+        var photos = await photoService.GetPhotosAsync();
     }
 }

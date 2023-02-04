@@ -14,6 +14,8 @@ public class DataContext : IdentityDbContext<AppUser, AppRole, int,
                                             IdentityUserToken<int>>,
                            IDataContext
 {
+    public DbSet<Photo> Photos { get; set; }
+
     public DataContext(DbContextOptions options) : base(options)
     {
     }
