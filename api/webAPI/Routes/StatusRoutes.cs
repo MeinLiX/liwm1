@@ -8,7 +8,6 @@ public static class StatusRoutes
     public static WebApplication InitStatusRoutes(this WebApplication web)
         => web.InitPingRoute();
 
-
     private static WebApplication InitPingRoute(this WebApplication web)
     {
         web.MapGet("/ping", async (IMediator mediator) =>

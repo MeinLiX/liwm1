@@ -1,5 +1,4 @@
-﻿using webAPI.Routes;
-using Application;
+﻿using Application;
 using PostgreSQL;
 using Shared;
 using SqlLite;
@@ -64,8 +63,7 @@ app.UseCors(x => x
                 .SetIsOriginAllowed(origin => true)
                 .AllowCredentials());
 
-app.InitStatusRoutes();
-app.InitAccountRoutes();
+app.InitRoutes();
 
 await app.Services.MigrateDataBaseAsync();
 

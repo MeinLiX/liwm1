@@ -19,8 +19,8 @@ public class PhotoRepository : IPhotoRepository
 
     public async Task<List<Photo>> GetPhotosAsync(int start, int count) 
     {
-        start = start > this.dataContext.Photos.Count() - 1 ? this.dataContext.Photos.Count() : start;
-        count = count - start > this.dataContext.Photos.Count() - 1 - start ? this.dataContext.Photos.Count() - 1 - start : count - 1;
+        start = start > this.dataContext.Photos.Count() - 1 ? this.dataContext.Photos.Count() - 1 : start - 1;
+        count = count - start > this.dataContext.Photos.Count() - 1 - start ? this.dataContext.Photos.Count() - start : count;
 
         return await this.dataContext.Photos.Skip(start).Take(count).ToListAsync();
     }
