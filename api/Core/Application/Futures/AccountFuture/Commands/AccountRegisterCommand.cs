@@ -40,8 +40,6 @@ public class AccountRegisterRequestHandler : IRequestHandler<AccountRegisterRequ
 
     public async Task<IRestResponseResult<UserDetailWithTokenDTO>> Handle(AccountRegisterRequest request, CancellationToken cancellationToken)
     {
-        request.username = request.username.ToLower();
-
         var user = await this.userRepository.GetUserByUsernameAsync(request.username);
 
         if (user is not null)

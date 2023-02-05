@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { TabDirective } from 'ngx-bootstrap/tabs';
 import { ToastrService } from 'ngx-toastr';
 import { take } from 'rxjs';
+import { PhotoChoosingComponent } from 'src/app/_modals/photo-choosing/photo-choosing.component';
 import { Photo } from 'src/app/_models/photo';
 import { UserLogin, UserRegister } from 'src/app/_models/user';
 import { AccountService } from 'src/app/_services/account.service';
@@ -21,8 +23,9 @@ export class HomeComponent implements OnInit {
   choosenPhoto?: Photo;
   userLogin?: UserLogin;
   userRegister?: UserRegister;
+  photoChoosingModalRef: BsModalRef<PhotoChoosingComponent> = new BsModalRef<PhotoChoosingComponent>();
 
-  constructor(private accountService: AccountService, private photoService: PhotosService, private fb: FormBuilder, private router: Router, private toastr: ToastrService) {
+  constructor(private accountService: AccountService, private photoService: PhotosService, private fb: FormBuilder, private router: Router, private toastr: ToastrService, private modalService: BsModalService) {
   }
 
   ngOnInit(): void {
@@ -51,7 +54,8 @@ export class HomeComponent implements OnInit {
   }
 
   register() {
-    this.userRegister = { ...this.registerForm.value, photoId: 1 };
+    if (this.choosenPhoto) this.userRegister = { ...this.registerForm.value, photoId: this.choosenPhoto.id };
+    console.log(this.userRegister);
     if (this.userRegister) {
       this.accountService.register(this.userRegister).subscribe({
         next: () => this.navigateToGamesHome(),
@@ -76,25 +80,16 @@ export class HomeComponent implements OnInit {
 
   onSelect(data: TabDirective): void {
     if (data.heading === 'Sign Up') {
-      if (this.photos) {
-        this.getRandomPhotoIfUndefined();
-      }
-      else {
-        this.photoService.getPhotos().pipe(take(1)).subscribe({
-          next: photos => {
-            if (photos) {
-              this.photos = photos;
-              this.getRandomPhotoIfUndefined();
+      this.photoService.getPhotos().pipe(take(1)).subscribe({
+        next: photos => {
+          if (photos) {
+            this.photos = photos;
+            if (!this.choosenPhoto) {
+              this.getRandomPhoto();
             }
           }
-        });
-      }
-    }
-  }
-
-  getRandomPhotoIfUndefined() {
-    if (!this.choosenPhoto) {
-      this.getRandomPhoto();
+        }
+      });
     }
   }
 
@@ -103,7 +98,7 @@ export class HomeComponent implements OnInit {
       let id: number = 0;
       do {
         id = this.randomIntFromInterval(1, this.photos.length);
-      } while (id === this.choosenPhoto?.photoId);
+      } while (id === this.choosenPhoto?.id);
 
       this.photoService.getPhotoById(id).pipe(take(1)).subscribe({
         next: photo => {
@@ -117,5 +112,23 @@ export class HomeComponent implements OnInit {
 
   randomIntFromInterval(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1) + min)
+  }
+
+  showPhotosModal() {
+    const config = {
+      class: 'modal-dialog-centered',
+      initialState: {
+        photos: this.photos?.filter(p => p.id !== this.choosenPhoto?.id)
+      }
+    };
+    this.photoChoosingModalRef = this.modalService.show(PhotoChoosingComponent, config);
+    this.photoChoosingModalRef.onHide?.subscribe({
+      next: () => {
+        const choosenPhoto = this.photoChoosingModalRef.content?.result;
+        if (choosenPhoto && choosenPhoto !== this.choosenPhoto) {
+          this.choosenPhoto = choosenPhoto;
+        }
+      }
+    });
   }
 }

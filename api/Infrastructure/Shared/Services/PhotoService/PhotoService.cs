@@ -1,5 +1,4 @@
 using Application.Interfaces;
-using Domain.Entities;
 
 namespace Shared.Services.PhotoService;
 

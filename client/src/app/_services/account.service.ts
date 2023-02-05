@@ -17,24 +17,22 @@ export class AccountService {
 
   login(model: UserLogin) {
     return this.http.post<DataRestResponseResult<User>>(this.baseUrl + 'account/login', model).pipe(
-      map(response => {
-        const user = response.data;
-        if (user) {
-          this.setCurrentUser(user);
-        }
-      })
+      map(response => this.getAnSetUserFromResponse(response))
     );
   }
 
   register(model: UserRegister) {
-    return this.http.post<User>(this.baseUrl + 'account/register', model).pipe(
-      map(user => {
-        if (user) {
-          this.setCurrentUser(user);
-        }
-        return user;
-      })
+    return this.http.post<DataRestResponseResult<User>>(this.baseUrl + 'account/register', model).pipe(
+      map(response => this.getAnSetUserFromResponse(response))
     );
+  }
+
+  private getAnSetUserFromResponse(response: DataRestResponseResult<User>) {
+    const user = response.data;
+    if (user) {
+      this.setCurrentUser(user);
+    }
+    return user;
   }
 
   setCurrentUser(user: User) {

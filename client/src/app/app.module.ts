@@ -11,6 +11,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TextInputComponent } from './_components/forms/text-input/text-input.component';
 import { GamesHomeComponent } from './_components/games-home/games-home.component';
 import { NotFoundComponent } from './_components/not-found/not-found.component';
+import { JwtInterceptor } from './_interceptors/jwt.interceptor';
+import { PhotoChoosingComponent } from './_modals/photo-choosing/photo-choosing.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,8 @@ import { NotFoundComponent } from './_components/not-found/not-found.component';
     HomeComponent,
     TextInputComponent,
     GamesHomeComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    PhotoChoosingComponent
   ],
   imports: [
     BrowserModule,
@@ -29,6 +32,7 @@ import { NotFoundComponent } from './_components/not-found/not-found.component';
     SharedModule
   ],
   providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]

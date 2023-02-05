@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { ToastrModule } from 'ngx-toastr';
-import { TooltipModule } from 'ngx-bootstrap/tooltip';
-
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 @NgModule({
   declarations: [],
@@ -12,16 +11,18 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
     CommonModule,
     TabsModule.forRoot(),
     NgxSpinnerModule.forRoot({
-      type: 'ball-climbing-dot'
+      type: 'ball-atom'
     }),
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right'
     }),
+    ModalModule.forRoot()
   ],
   exports: [
     NgxSpinnerModule,
     TabsModule,
     ToastrModule,
+    ModalModule
   ]
 })
 export class SharedModule { }
