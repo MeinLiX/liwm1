@@ -9,7 +9,7 @@ import { User, UserLogin, UserRegister } from '../_models/user';
   providedIn: 'root'
 })
 export class AccountService {
-  baseUrl = environment.apiUrl;
+  private baseUrl = environment.apiUrl;
   private currentUserSource = new BehaviorSubject<User | null>(null);
   currentUser$ = this.currentUserSource.asObservable();
 
@@ -45,7 +45,7 @@ export class AccountService {
     this.currentUserSource.next(user);
   }
 
-  getDecodedToken(token: string) {
+  private getDecodedToken(token: string) {
     return JSON.parse(atob(token.split('.')[1]));
   }
 }
