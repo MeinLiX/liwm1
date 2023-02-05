@@ -37,5 +37,5 @@ public class DataContext : IdentityDbContext<AppUser, AppRole, int,
                .IsRequired();
     }
 
-    public async Task<int> SaveChangesAsync() => await this.SaveChangesAsync();
+    public async Task<int> SaveChangesAsync() => await base.SaveChangesAsync();
 }

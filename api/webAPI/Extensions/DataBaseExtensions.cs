@@ -40,5 +40,8 @@ public static class DataBaseExtensions
     private static async Task SyncPhotosAsync(this IDataContext context, IPhotoService photoService)
     {
         var photos = await photoService.GetPhotosAsync();
+        context.Photos.AddRange(photos.Where(photo => context.Photos.All(p => p.Url != photo))
+                                      .Select(p => new Photo { Url = p }));
+        await context.SaveChangesAsync();
     }
 }
