@@ -405,3 +405,7 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+
+# Database auto generated files
+*.db-shm
+*.db-wal
