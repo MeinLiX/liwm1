@@ -15,18 +15,26 @@ public static class DataBaseExtensions
         await context.Database.MigrateAsync();
 
         var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
-        await roleManager.CreateRolesAsync();
+        await roleManager.CreateRolesAsync(context);
 
         await context.SyncPhotosAsync(services.GetRequiredService<IPhotoService>());
     }
 
-    private static async Task CreateRolesAsync(this RoleManager<AppRole> roleManager)
+    private static async Task CreateRolesAsync(this RoleManager<AppRole> roleManager, IDataContext context)
     {
         var roles = new AppRole[]
         {
             new AppRole { Name = "Gamer" },
             new AppRole { Name = "Admin" }
         };
+
+        foreach (var role in context.Roles)
+        {
+            if (role != null && !roles.Contains(role))
+            {
+                await roleManager.DeleteAsync(role);
+            }
+        }
 
         foreach (var role in roles)
         {
@@ -42,6 +50,7 @@ public static class DataBaseExtensions
         var photos = await photoService.GetPhotosAsync();
         context.Photos.AddRange(photos.Where(photo => context.Photos.All(p => p.Url != photo))
                                       .Select(p => new Photo { Url = p }));
+        context.Photos.RemoveRange(context.Photos.Where(p => !photos.Contains(p.Url)));
         await context.SaveChangesAsync();
     }
 }
