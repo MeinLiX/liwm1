@@ -59,7 +59,7 @@ export class HomeComponent implements OnInit {
     if (this.userRegister) {
       this.accountService.register(this.userRegister).subscribe({
         next: () => this.navigateToGamesHome(),
-        error: error => this.toastr.error(error.message)
+        error: error => this.toastr.error(error.error.message)
       });
     }
   }
@@ -69,7 +69,7 @@ export class HomeComponent implements OnInit {
     if (this.userLogin) {
       this.accountService.login(this.userLogin).subscribe({
         next: () => this.navigateToGamesHome(),
-        error: error => this.toastr.error(error.message)
+        error: error => this.toastr.error(error.error.message)
       });
     }
   }
