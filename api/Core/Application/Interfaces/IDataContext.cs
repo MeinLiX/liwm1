@@ -9,6 +9,7 @@ public interface IDataContext
     DatabaseFacade Database { get; }
 
     DbSet<AppUser> Users { get; set; }
+    DbSet<AnonymousUser> AnonymousUsers { get; set; }
     DbSet<AppRole> Roles { get; set; }
     DbSet<Photo> Photos { get; set; }
     DbSet<AppUserRole> UserRoles { get; set; }
