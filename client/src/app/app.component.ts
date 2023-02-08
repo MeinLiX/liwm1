@@ -11,7 +11,7 @@ import { AccountService } from './_services/account.service';
 export class AppComponent implements OnInit {
   title = 'liwm1';
 
-  constructor(private accountService: AccountService, private router: Router) { }
+  constructor(public accountService: AccountService, private router: Router) { }
 
   ngOnInit(): void {
     this.setCurrentUser();

@@ -1,0 +1,20 @@
+<div style="float: right; margin-right: 20px; margin-top: 10px;">
+    <img *ngIf="!isDetailedFormVisible" class="avatar" src="{{photo?.url}}" alt="user photo"
+        (click)="isDetailedFormVisible = true">
+    <div *ngIf="isDetailedFormVisible" class="outer">
+        <button type="button" class="btn-close close pull-right" aria-label="Close"
+            (click)="isDetailedFormVisible = false">
+            <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+        <div style="margin-top: 10px; margin-left: 5px;">
+            <app-image-changer [choosenPhoto]="photo" (updatePhoto)="updatePhoto($event)"></app-image-changer>
+        </div>
+        <div class="username-container">
+            <button class="username-btn-edit"><i class="fa fa-pencil"></i></button>
+            <span class="username">{{user?.username}}</span>
+        </div>  
+        <div>
+            <button class="btn btn-success logout-btn" (click)="logout()">Logout</button>
+        </div>
+    </div>
+</div>

@@ -13,6 +13,8 @@ import { GamesHomeComponent } from './_components/games-home/games-home.componen
 import { NotFoundComponent } from './_components/not-found/not-found.component';
 import { JwtInterceptor } from './_interceptors/jwt.interceptor';
 import { PhotoChoosingComponent } from './_modals/photo-choosing/photo-choosing.component';
+import { AccountComponent } from './_components/account/account.component';
+import { ImageChangerComponent } from './_components/forms/image-changer/image-changer.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,9 @@ import { PhotoChoosingComponent } from './_modals/photo-choosing/photo-choosing.
     TextInputComponent,
     GamesHomeComponent,
     NotFoundComponent,
-    PhotoChoosingComponent
+    PhotoChoosingComponent,
+    AccountComponent,
+    ImageChangerComponent
   ],
   imports: [
     BrowserModule,

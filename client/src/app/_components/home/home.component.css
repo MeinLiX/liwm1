@@ -18,26 +18,3 @@
 .account {
     margin: 10px;
 }
-
-.avatar {
-    border-radius: 250px;
-    width: 150px;
-    height: 150px;
-    float: left;
-    margin-right: 20px;
-}
-
-.avatar-container {
-    position: relative;
-}
-
-.avatar-container img {
-    height: auto;
-}
-.avatar-container .avatar-btn {
-    position: absolute;
-    cursor: pointer;
-    margin-top: 115px;
-    left: 10%;
-    border-radius: 100px;
-  }

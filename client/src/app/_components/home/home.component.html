@@ -3,7 +3,7 @@
         <div class="outer" style="margin-top: 100px; margin-left: 40px; margin-bottom: 50px;">
             <div style="margin-left: 15px; margin-top: 30px; margin-right: 15px; margin-bottom: 20px;">
                 <tabset [justified]="true">
-                    <tab heading="Sign In" (selectTab)="onSelect($event)">
+                    <tab heading="Sign In">
                         <form [formGroup]="loginForm" (ngSubmit)="loginForm.valid && login()" autocomplete="off" class="mt-2">
                             <div style="margin-left: 120px">
                                 <app-text-input [formControl]="$any(loginForm.controls['username'])"
@@ -17,18 +17,10 @@
                             </div>
                         </form>
                     </tab>
-                    <tab heading="Sign Up" (selectTab)="onSelect($event)">
+                    <tab heading="Sign Up">
                         <form [formGroup]="registerForm" (ngSubmit)="registerForm.valid && register()" autocomplete="off" class="mt-2">
                             <div style="float: left;">
-                                <div class="avatar-container" *ngIf="choosenPhoto">
-                                    <img class="avatar" src="{{choosenPhoto.url}}" alt="user photo">
-                                    <button class="btn btn-secondary avatar-btn"><i
-                                            class="fa fa-ellipsis-h"
-                                            (click)="showPhotosModal()"></i></button>
-                                    <button class="btn btn-secondary avatar-btn" style="margin-left: 80px;"><i
-                                            class="fa fa-refresh"
-                                            (click)="getRandomPhoto()"></i></button>
-                                </div>
+                                <app-image-changer (updatePhoto)="setChoosenPhoto($event)"></app-image-changer>
                             </div>
                             <div style="overflow: hidden; margin-left: 15px;">
                                 <app-text-input [formControl]="$any(registerForm.controls['username'])"

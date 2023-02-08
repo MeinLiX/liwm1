@@ -21,6 +21,11 @@ export class AccountService {
     );
   }
 
+  logout() {
+    localStorage.removeItem('user');
+    this.currentUserSource.next(null);
+  }
+
   register(model: UserRegister) {
     return this.http.post<DataRestResponseResult<User>>(this.baseUrl + 'account/register', model).pipe(
       map(response => this.getAnSetUserFromResponse(response))

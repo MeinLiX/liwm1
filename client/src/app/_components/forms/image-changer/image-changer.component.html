@@ -1,0 +1,9 @@
+<div class="avatar-container" *ngIf="choosenPhoto">
+    <img class="avatar" src="{{choosenPhoto.url}}" alt="user photo">
+    <button class="btn btn-secondary avatar-btn"><i
+            class="fa fa-ellipsis-h"
+            (click)="showPhotosModal()"></i></button>
+    <button class="btn btn-secondary avatar-btn" style="margin-left: 80px;"><i
+            class="fa fa-refresh"
+            (click)="getRandomPhoto()"></i></button>
+</div>
