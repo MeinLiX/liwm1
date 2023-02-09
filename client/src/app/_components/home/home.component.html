@@ -3,8 +3,23 @@
         <div class="outer" style="margin-top: 100px; margin-left: 40px; margin-bottom: 50px;">
             <div style="margin-left: 15px; margin-top: 30px; margin-right: 15px; margin-bottom: 20px;">
                 <tabset [justified]="true">
+                    <tab heading="Anonymous">
+                        <form [formGroup]="anonymousForm" (ngSubmit)="anonymousForm.valid && loginAnonymously()"
+                            autocomplete="off" class="mt-2">
+                            <div>
+                                <app-image-changer (updatePhoto)="setChoosenPhoto($event)"></app-image-changer>
+                            </div>
+                            <div style="margin-left: 180px; height: 95px;">
+                                <app-text-input [formControl]="$any(anonymousForm.controls['username'])"
+                                    [placeholder]="'Enter your nick name...'" [label]="'Nick name'"></app-text-input>
+                            </div>
+                            <button [disabled]="!anonymousForm.valid" class="btn btn-success mt-3" type="submit"
+                                style="margin-left: 120px;">Lets go</button>
+                        </form>
+                    </tab>
                     <tab heading="Sign In">
-                        <form [formGroup]="loginForm" (ngSubmit)="loginForm.valid && login()" autocomplete="off" class="mt-2">
+                        <form [formGroup]="loginForm" (ngSubmit)="loginForm.valid && login()" autocomplete="off"
+                            class="mt-2">
                             <div style="margin-left: 120px">
                                 <app-text-input [formControl]="$any(loginForm.controls['username'])"
                                     [placeholder]="'Enter your name...'" [label]="'Username'"></app-text-input>
@@ -18,7 +33,8 @@
                         </form>
                     </tab>
                     <tab heading="Sign Up">
-                        <form [formGroup]="registerForm" (ngSubmit)="registerForm.valid && register()" autocomplete="off" class="mt-2">
+                        <form [formGroup]="registerForm" (ngSubmit)="registerForm.valid && register()"
+                            autocomplete="off" class="mt-2">
                             <div style="float: left;">
                                 <app-image-changer (updatePhoto)="setChoosenPhoto($event)"></app-image-changer>
                             </div>

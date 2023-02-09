@@ -15,3 +15,8 @@ export interface UserRegister {
     password: string;
     photoId: number;
 }
+
+export interface AnonymousLogin {
+    username: string;
+    photoId: number;
+}

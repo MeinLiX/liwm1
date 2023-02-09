@@ -3,7 +3,7 @@ import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Photo } from 'src/app/_models/photo';
-import { UserLogin, UserRegister } from 'src/app/_models/user';
+import { AnonymousLogin, UserLogin, UserRegister } from 'src/app/_models/user';
 import { AccountService } from 'src/app/_services/account.service';
 
 @Component({
@@ -12,10 +12,12 @@ import { AccountService } from 'src/app/_services/account.service';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+  anonymousForm: FormGroup = new FormGroup({});
   loginForm: FormGroup = new FormGroup({});
   registerForm: FormGroup = new FormGroup({});
   userLogin?: UserLogin;
   userRegister?: UserRegister;
+  anonymousLogin?: AnonymousLogin;
   choosenPhoto?: Photo;
 
   constructor(private accountService: AccountService, private fb: FormBuilder, private router: Router, private toastr: ToastrService) {
@@ -26,6 +28,9 @@ export class HomeComponent implements OnInit {
   }
 
   initializeForms() {
+    this.anonymousForm = this.fb.group({
+      username: ['', Validators.required]
+    });
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6), Validators.pattern('(.*[a-z].*)'), Validators.pattern('(.*[A-Z].*)'), Validators.pattern('(.*\\d.*)'),]],
@@ -48,7 +53,6 @@ export class HomeComponent implements OnInit {
 
   register() {
     if (this.choosenPhoto) this.userRegister = { ...this.registerForm.value, photoId: this.choosenPhoto.id };
-    console.log(this.userRegister);
     if (this.userRegister) {
       this.accountService.register(this.userRegister).subscribe({
         next: () => this.navigateToGamesHome(),
@@ -67,7 +71,17 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  navigateToGamesHome() {
+  loginAnonymously() {
+    if (this.choosenPhoto) this.anonymousLogin = { ...this.anonymousForm.value, photoId: this.choosenPhoto.id };
+    if (this.anonymousLogin) {
+      this.accountService.anonymousLogin(this.anonymousLogin).subscribe({
+        next: () => this.navigateToGamesHome(),
+        error: error => this.toastr.error(error.error.message)
+      });
+    }
+  }
+
+  private navigateToGamesHome() {
     this.router.navigateByUrl('/games');
   }
 
