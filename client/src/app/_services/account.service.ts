@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map } from 'rxjs';
+import { BehaviorSubject, map, take } from 'rxjs';
 import { environment } from 'src/enviroments/environment';
-import { DataRestResponseResult } from '../_models/restResponseResult';
+import { DataRestResponseResult, RestResponseResult } from '../_models/restResponseResult';
 import { AnonymousLogin, User, UserLogin, UserRegister } from '../_models/user';
 
 @Injectable({
@@ -28,8 +28,15 @@ export class AccountService {
   }
 
   logout() {
+    if (this.currentUserSource.value && this.currentUserSource.value.roles.includes('Anonymous')) {
+      this.anonymousLogout(this.currentUserSource.value).pipe(take(1)).subscribe();
+    }
     localStorage.removeItem('user');
     this.currentUserSource.next(null);
+  }
+
+  private anonymousLogout(model: User) {
+    return this.http.post<RestResponseResult>(this.baseUrl + 'account/anonymous/logout', model);
   }
 
   register(model: UserRegister) {

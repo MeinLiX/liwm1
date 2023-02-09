@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { take } from 'rxjs';
 import { User } from './_models/user';
 import { AccountService } from './_services/account.service';
 
@@ -9,7 +10,17 @@ import { AccountService } from './_services/account.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'liwm1';
+  @HostListener('window: beforeunload', ['$event'])
+
+  beforeUnloadHandler($event: any) {
+    this.accountService.currentUser$.pipe(take(1)).subscribe({
+      next: user => {
+        if (user && user.roles.includes('Anonymous')) {
+          this.accountService.logout();
+        }
+      }
+    });
+  }
 
   constructor(public accountService: AccountService, private router: Router) { }
 
