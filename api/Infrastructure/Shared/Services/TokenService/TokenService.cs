@@ -19,15 +19,17 @@ public class TokenService : ITokenService
         this.userRepository = userRepository;
     }
 
-    public async Task<string> CreateTokenAsync(AppUser user)
+    public async Task<string> CreateTokenAsync(AppUser user) => await this.CreateTokenAsync(user.Id, user.UserName, await userRepository.GetRolesForUserAsync(user), DateTime.Now.AddDays(7));
+
+    public async Task<string> CreateTokenAsync(AnonymousUser user) => await this.CreateTokenAsync(user.Id, user.UserName, new string[] { user.Role }, DateTime.Now.AddDays(1));
+
+    private Task<string> CreateTokenAsync(int id, string username, IEnumerable<string> roles, DateTime expireDate)
     {
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
+            new Claim(JwtRegisteredClaimNames.NameId, id.ToString()),
+            new Claim(JwtRegisteredClaimNames.UniqueName, username)
         };
-        
-        var roles = await this.userRepository.GetRolesForUserAsync(user);
 
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
@@ -36,7 +38,7 @@ public class TokenService : ITokenService
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.Now.AddDays(7),
+            Expires = expireDate,
             SigningCredentials = creds
         };
 
@@ -44,6 +46,6 @@ public class TokenService : ITokenService
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
 
-        return tokenHandler.WriteToken(token);
+        return Task.FromResult(tokenHandler.WriteToken(token));
     }
 }

@@ -47,7 +47,7 @@ public class AnonymousUserLoginRequestHandler : IRequestHandler<AnonymousUserLog
 
         return RestResponseResult<UserDetailWithTokenDTO>.Success(new UserDetailWithTokenDTO(user)
         {
-            // Token = await this.tokenService.CreateTokenAsync(user)
+            Token = await this.tokenService.CreateTokenAsync(user)
         });
     }
 }
