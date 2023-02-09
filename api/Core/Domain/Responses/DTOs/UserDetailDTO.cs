@@ -17,4 +17,10 @@ public class UserDetailDTO
         this.PhotoId = user.PhotoId;
         this.Username = user.UserName;
     }
+
+    public UserDetailDTO(AnonymousUser user)
+    {
+        this.PhotoId = user.PhotoId;
+        this.Username = user.UserName;
+    }
 }

@@ -17,6 +17,8 @@ public class AccountRegisterValidator : AbstractValidator<AccountRegisterRequest
                                 .Matches("(.*[A-Z].*)").WithMessage("Password must have at least 1 upper case letter")
                                 .Matches(@"(.*\d.*)").WithMessage("Password must have at least 1 digit")
                                 .GreaterThanOrEqualTo("6").WithMessage("Password must be at least 6 symbols");
+        RuleFor(r => r.photoId).NotEmpty().WithMessage("Photo id must be filled")
+                               .GreaterThan(0).WithMessage("Photo id can be only greater or equal to 1");
     }
 }
 
