@@ -10,7 +10,8 @@ public static class AccountRoutes
     public static WebApplication InitAccountRoutes(this WebApplication web)
         => web.InitAccountLoginRoute()
               .InitAccountRegisterRoute()
-              .InitAnonymousLoginRoute();
+              .InitAnonymousLoginRoute()
+              .InitAnonymousLogoutRoute();
 
     private static WebApplication InitAccountLoginRoute(this WebApplication web)
     {
@@ -46,6 +47,19 @@ public static class AccountRoutes
             return Results.Json(data: data, statusCode: data.status_code);
         })
           .WithName("Anonymous login")
+          .WithOpenApi();
+
+        return web;
+    }
+
+    private static WebApplication InitAnonymousLogoutRoute(this WebApplication web)
+    {
+        web.MapPost("/account/anonymous/logout", async (IMediator mediator, [FromBody] AnonymousUserLogoutRequest request) =>
+        {
+            var data = await mediator.Send(request);
+            return Results.Json(data: data, statusCode: data.status_code);
+        })
+          .WithName("Anonymous logout")
           .WithOpenApi();
 
         return web;
