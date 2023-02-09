@@ -56,6 +56,12 @@ public class UserRepository : IUserRepository
 
     public async Task<AppUser?> GetUserByUsernameAsync(string username) => await this.dataContext.Users.FirstOrDefaultAsync(u => u.UserName == username);
 
+    public async Task LogoutFromAnonymousUserAsync(AnonymousUser user)
+    {
+        this.dataContext.AnonymousUsers.Remove(user);
+        await this.dataContext.SaveChangesAsync();
+    }
+
     public Task UpdateUserAsync(AppUser user)
     {
         throw new NotImplementedException();
