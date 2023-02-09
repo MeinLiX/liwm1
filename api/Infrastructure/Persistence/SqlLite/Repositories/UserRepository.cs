@@ -1,4 +1,3 @@
-
 using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -17,6 +16,20 @@ public class UserRepository : IUserRepository
         this.userManager = userManager;
     }
 
+    public async Task<AnonymousUser> AddAnonymousUser(string username, int photoId)
+    {
+        var user = new AnonymousUser 
+        {
+            UserName = username,
+            PhotoId = photoId
+        };
+
+        await this.dataContext.AnonymousUsers.AddAsync(user);   
+        await this.dataContext.SaveChangesAsync();
+
+        return user;
+    }
+
     public async Task<AppUser> AddUserAsync(string username, string password, int photoId)
     {
         var user = new AppUser
@@ -32,6 +45,10 @@ public class UserRepository : IUserRepository
     }
 
     public async Task<bool> CheckPasswordForUserAsync(AppUser user, string password) => await this.userManager.CheckPasswordAsync(user, password);
+
+    public async Task<AnonymousUser?> GetAnonymousUserByIdAsync(int id) => await this.dataContext.AnonymousUsers.FirstOrDefaultAsync(u => u.Id == id);
+
+    public async Task<AnonymousUser?> GetAnonymousUserByUsernameAsync(string username) => await this.dataContext.AnonymousUsers.FirstOrDefaultAsync(u => u.UserName == username);
 
     public async Task<IEnumerable<string>> GetRolesForUserAsync(AppUser user) => await this.userManager.GetRolesAsync(user);
 
