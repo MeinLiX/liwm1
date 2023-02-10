@@ -18,6 +18,7 @@ public static class DataBaseExtensions
         await roleManager.CreateRolesAsync(context);
 
         await context.SyncPhotosAsync(services.GetRequiredService<IPhotoService>());
+        await context.SyncGamesAsync(services.GetRequiredService<IPhotoService>());
     }
 
     private static async Task CreateRolesAsync(this RoleManager<AppRole> roleManager, IDataContext context)
@@ -47,10 +48,24 @@ public static class DataBaseExtensions
 
     private static async Task SyncPhotosAsync(this IDataContext context, IPhotoService photoService)
     {
-        var photos = await photoService.GetPhotosAsync();
-        context.Photos.AddRange(photos.Where(photo => context.Photos.All(p => p.Url != photo))
-                                      .Select(p => new Photo { Url = p }));
+        var photos = await photoService.GetUsersPhotosAsync();
+        await context.Photos.AddRangeAsync(photos.Where(photo => context.Photos.All(p => p.Url != photo))
+                                                 .Select(p => new Photo { Url = p }));
         context.Photos.RemoveRange(context.Photos.Where(p => !photos.Contains(p.Url)));
         await context.SaveChangesAsync();
+    }
+
+    private static async Task SyncGamesAsync(this IDataContext context, IPhotoService photoService)
+    {
+        var games = new Game[]
+        {
+            new Game
+            {
+                Name = "Racing",
+                // PreviewUrl = await photoService.GetGamePhotoAsync("Racing")
+            }
+        };
+
+        // await context.Games.AddRangeAsync(games.Where(g => context.Games.All(cg => cg.Name != g.Name)));
     }
 }

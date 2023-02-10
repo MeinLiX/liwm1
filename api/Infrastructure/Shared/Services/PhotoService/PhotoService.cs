@@ -11,5 +11,10 @@ public class PhotoService : IPhotoService
         this.cloudinaryService = cloudinaryService;
     }
 
-    public async Task<List<string>> GetPhotosAsync() => await this.cloudinaryService.GetPhotosAsync();
+    public Task<string> GetGamePhotoAsync(string gameName)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<List<string>> GetUsersPhotosAsync() => await this.cloudinaryService.GetPhotosAsync();
 }
