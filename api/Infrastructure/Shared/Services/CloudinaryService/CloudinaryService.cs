@@ -1,6 +1,5 @@
 using CloudinaryDotNet;
 using Application.Interfaces;
-using Domain.Entities;
 using Microsoft.Extensions.Options;
 using Domain.Models;
 using CloudinaryDotNet.Actions;
@@ -18,7 +17,20 @@ public class CloudinaryService : ICloudinaryService
         this.cloudinary = new Cloudinary(account);
     }
 
-    public async Task<List<string>> GetPhotosAsync()
+    public async Task<string> GetGamePhotoAsync(string gameName)
+    {
+        var photos = await this.cloudinary.ListResourcesAsync(new ListResourcesParams
+        {
+            ResourceType = ResourceType.Image,
+            MaxResults = 100
+        });
+
+        var photoUrls = new List<string>(photos.Resources.Where(r => r.Url.OriginalString.Contains("games")).Select(r => r.Url.OriginalString));
+
+        return photoUrls.FirstOrDefault(p => p.Contains(gameName.ToLower()));
+    }
+
+    public async Task<List<string>> GetUsersPhotosAsync()
     {
         var photos = await this.cloudinary.ListResourcesAsync(new ListResourcesParams
         {

@@ -62,10 +62,11 @@ public static class DataBaseExtensions
             new Game
             {
                 Name = "Racing",
-                // PreviewUrl = await photoService.GetGamePhotoAsync("Racing")
+                PreviewUrl = await photoService.GetGamePhotoAsync("Racing")
             }
         };
 
-        // await context.Games.AddRangeAsync(games.Where(g => context.Games.All(cg => cg.Name != g.Name)));
+        await context.Games.AddRangeAsync(games.Where(g => context.Games.All(cg => cg.Name != g.Name)));
+        await context.SaveChangesAsync();
     }
 }

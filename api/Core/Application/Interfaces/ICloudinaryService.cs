@@ -4,5 +4,6 @@ namespace Application.Interfaces;
 
 public interface ICloudinaryService
 {
-    Task<List<string>> GetPhotosAsync();
+    Task<List<string>> GetUsersPhotosAsync();
+    Task<string> GetGamePhotoAsync(string gameName);
 }
