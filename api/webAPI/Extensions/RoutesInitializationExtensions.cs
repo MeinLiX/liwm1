@@ -7,5 +7,6 @@ public static class RoutesInitializationExtensions
     public static WebApplication InitRoutes(this WebApplication web)
         => web.InitStatusRoutes()
               .InitAccountRoutes()
-              .InitPhotoRoutes();
+              .InitPhotoRoutes()
+              .InitGameRoutes();
 }

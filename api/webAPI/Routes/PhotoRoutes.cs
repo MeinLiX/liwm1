@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace webAPI.Routes;
 
-public static class Routes
+public static class PhotoRoutes
 {
     public static WebApplication InitPhotoRoutes(this WebApplication web)
         => web.InitPhotoRoute();
