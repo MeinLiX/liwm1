@@ -5,6 +5,7 @@ using SqlLite;
 using Microsoft.OpenApi.Models;
 using webAPI.Middleware;
 using webAPI.Extensions;
+using webAPI.Routes;
 
 var builder = WebApplication.CreateBuilder(args);
 
