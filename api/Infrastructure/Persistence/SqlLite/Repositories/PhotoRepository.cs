@@ -1,6 +1,7 @@
 using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Shared.Extensions;
 
 namespace SqlLite.Repositories;
 
@@ -20,9 +21,7 @@ public class PhotoRepository : IPhotoRepository
     public async Task<List<Photo>> GetPhotosAsync(int start, int count)
     {
         var photosCount = this.dataContext.Photos.Count();
-        start = start > photosCount - 1 ? photosCount - 1 : start - 1;
-        count = count - start > photosCount - 1 - start ? photosCount - start : count;
-
-        return await this.dataContext.Photos.Skip(start).Take(count).ToListAsync();
+        start = start.ToStart(photosCount);
+        return await this.dataContext.Photos.Skip(start).Take(count.ToCount(start, photosCount)).ToListAsync();
     }
 }

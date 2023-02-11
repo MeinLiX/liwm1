@@ -35,7 +35,7 @@ public class AccountLoginRequestHandler : IRequestHandler<AccountLoginRequest, I
     public async Task<IRestResponseResult<UserDetailWithTokenDTO>> Handle(AccountLoginRequest request, CancellationToken cancellationToken)
     {
         request.username = request.username.ToLower();
-        
+
         var user = await this.userRepository.GetUserByUsernameAsync(request.username);
 
         if (user is null)
@@ -54,4 +54,3 @@ public class AccountLoginRequestHandler : IRequestHandler<AccountLoginRequest, I
         });
     }
 }
-
