@@ -1,0 +1,21 @@
+<div class="card" *ngIf="game">
+    <div class="card-img-wrapper">
+        <img src="{{game.previewUrl}}" alt="game">
+        <ul class="list-inline game-icons animate text-center">
+            <li class="list-inline-items">
+                <button class="btn btn-primary"><i class="fa fa-play-circle"></i></button>
+            </li>
+            <li class="list-inline-items">
+                <button class="btn btn-primary"><i class="fa fa-play-trophy"></i></button>
+            </li>
+            <li class="list-inline-items">
+                <button class="btn btn-primary"><i class="fa fa-question-circle"></i></button>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <h6 class="card-title text-center">
+            {{game.name}}
+        </h6>
+    </div>
+</div>

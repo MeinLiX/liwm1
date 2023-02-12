@@ -15,6 +15,7 @@ import { JwtInterceptor } from './_interceptors/jwt.interceptor';
 import { PhotoChoosingComponent } from './_modals/photo-choosing/photo-choosing.component';
 import { AccountComponent } from './_components/account/account.component';
 import { ImageChangerComponent } from './_components/forms/image-changer/image-changer.component';
+import { GameCardComponent } from './_components/cards/game-card/game-card.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { ImageChangerComponent } from './_components/forms/image-changer/image-c
     NotFoundComponent,
     PhotoChoosingComponent,
     AccountComponent,
-    ImageChangerComponent
+    ImageChangerComponent,
+    GameCardComponent
   ],
   imports: [
     BrowserModule,

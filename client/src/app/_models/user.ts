@@ -1,8 +1,11 @@
+import { Lobby } from "./lobby";
+
 export interface User {
     username: string;
     token: string;
     photoId: number;
     roles: string[];
+    lobby: Lobby;
 }
 
 export interface UserLogin {
