@@ -6,11 +6,10 @@ namespace webAPI.Routes;
 
 public static class GameRouteHandlers
 {
-    //m1adow??? change name
-    internal static Delegate GameRouteHandler =>
+    internal static Delegate GamesGettingRouteHandler =>
         async (IMediator mediator, [FromQuery] int? id, int? start, int? count) =>
         {
-            var request = new GameRequest
+            var request = new GamesGettingRequest
             {
                 id = id,
                 start = start,

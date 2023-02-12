@@ -6,30 +6,30 @@ using MediatR;
 
 namespace Application.Futures.GamesFuture;
 
-public class GameValidator : AbstractValidator<GameRequest>
+public class GamesGettingValidator : AbstractValidator<GamesGettingRequest>
 {
-    public GameValidator()
+    public GamesGettingValidator()
     {
     }
 }
 
-public class GameRequest : IRequest<IRestResponseResult<List<Game>>>
+public class GamesGettingRequest : IRequest<IRestResponseResult<List<Game>>>
 {
     public int? id { get; set; }
     public int? start { get; set; }
     public int? count { get; set; }
 }
 
-public class GameRequestHandler : IRequestHandler<GameRequest, IRestResponseResult<List<Game>>>
+public class GamesGettingRequestHandler : IRequestHandler<GamesGettingRequest, IRestResponseResult<List<Game>>>
 {
     private readonly IGameRepository gameRepository;
 
-    public GameRequestHandler(IGameRepository gameRepository)
+    public GamesGettingRequestHandler(IGameRepository gameRepository)
     {
         this.gameRepository = gameRepository;
     }
 
-    public async Task<IRestResponseResult<List<Game>>> Handle(GameRequest request, CancellationToken cancellationToken)
+    public async Task<IRestResponseResult<List<Game>>> Handle(GamesGettingRequest request, CancellationToken cancellationToken)
     {
         var games = new List<Game>();
 

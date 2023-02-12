@@ -10,13 +10,12 @@ public static class Routes
            .InitGameRoutes();
     }
 
-    //m1adown add descriptions
     internal static WebApplication InitAccountRoutes(this WebApplication web)
     {
         web.MapPost("/account/login", AccountRouteHandlers.AccountLoginRouteHandler)
            .SetName(nameof(AccountRouteHandlers.AccountLoginRouteHandler))
            .SetTag(nameof(AccountRouteHandlers))
-           .WithDescription("For login account")
+           .WithDescription("For login account or create temporary anonymous account")
            .WithOpenApi();
 
         web.MapPost("/account/register", AccountRouteHandlers.AccountRegisterRouteHandler)
@@ -28,7 +27,7 @@ public static class Routes
         web.MapPost("/account/logout", AccountRouteHandlers.LogoutRouteHandler)
            .SetName(nameof(AccountRouteHandlers.LogoutRouteHandler))
            .SetTag(nameof(AccountRouteHandlers))
-           .WithDescription("For logout anonymous account")
+           .WithDescription("For logout from accounts\nIf account is anonymous then it will be deleted from the database")
            .WithOpenApi();
 
         return web;
@@ -50,7 +49,7 @@ public static class Routes
         web.MapPost("/photos", PhotoRouteHandlers.GetPhotoRouteHandler)
            .SetName(nameof(PhotoRouteHandlers.GetPhotoRouteHandler))
            .SetTag(nameof(PhotoRouteHandlers))
-           .WithDescription("Check server status")
+           .WithDescription("For getting all photos from the database")
            .WithOpenApi();
 
         return web;
@@ -58,10 +57,10 @@ public static class Routes
 
     internal static WebApplication InitGameRoutes(this WebApplication web)
     {
-        web.MapPost("/games", GameRouteHandlers.GameRouteHandler)
-           .SetName(nameof(GameRouteHandlers.GameRouteHandler))
+        web.MapPost("/games", GameRouteHandlers.GamesGettingRouteHandler)
+           .SetName(nameof(GameRouteHandlers.GamesGettingRouteHandler))
            .SetTag(nameof(GameRouteHandlers))
-           .WithDescription("???   change name!!!")
+           .WithDescription("For getting all games from the database")
            .WithOpenApi();
 
         return web;
@@ -84,4 +83,3 @@ public static class Routes
 
     #endregion RouteHandlerBuilder extension
 }
-
