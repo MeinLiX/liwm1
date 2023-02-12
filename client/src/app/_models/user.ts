@@ -5,7 +5,7 @@ export interface User {
     token: string;
     photoId: number;
     roles: string[];
-    lobby: Lobby;
+    lobby?: Lobby;
 }
 
 export interface UserLogin {

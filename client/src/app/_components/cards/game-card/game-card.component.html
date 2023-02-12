@@ -1,14 +1,15 @@
 <div class="card" *ngIf="game">
     <div class="card-img-wrapper">
-        <img src="{{game.previewUrl}}" alt="game">
+        <img src="{{game.previewUrl}}" alt="game" class="card-img-top">
         <ul class="list-inline game-icons animate text-center">
-            <li class="list-inline-items">
+            <li class="list-inline-item">
+                <button class="btn btn-primary" [disabled]="!((accountService.currentUser$ | async)?.lobby)"><i
+                        class="fa fa-trophy"></i></button>
+            </li>
+            <li class="list-inline-item">
                 <button class="btn btn-primary"><i class="fa fa-play-circle"></i></button>
             </li>
-            <li class="list-inline-items">
-                <button class="btn btn-primary"><i class="fa fa-play-trophy"></i></button>
-            </li>
-            <li class="list-inline-items">
+            <li class="list-inline-item">
                 <button class="btn btn-primary"><i class="fa fa-question-circle"></i></button>
             </li>
         </ul>

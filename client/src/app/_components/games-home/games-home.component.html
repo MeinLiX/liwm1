@@ -1,1 +1,5 @@
-<p>games-home works!</p>
+<div class="mt-2 ms-2">
+    <div class="col-2" *ngFor="let game of games">
+        <app-game-card [game]="game"></app-game-card>
+    </div>
+</div>

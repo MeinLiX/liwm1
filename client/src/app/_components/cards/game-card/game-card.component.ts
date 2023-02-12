@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Game } from 'src/app/_models/game';
+import { AccountService } from 'src/app/_services/account.service';
 
 @Component({
   selector: 'app-game-card',
@@ -8,4 +9,7 @@ import { Game } from 'src/app/_models/game';
 })
 export class GameCardComponent {
   @Input() game?: Game;
+
+  constructor(public accountService: AccountService) { }
+
 }
