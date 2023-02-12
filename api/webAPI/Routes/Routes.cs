@@ -25,14 +25,7 @@ public static class Routes
            .WithDescription("For register account")
            .WithOpenApi();
 
-        web.MapPost("/account/anonymous", AccountRouteHandlers.AnonymousLoginRouteHandler)
-           .SetName(nameof(AccountRouteHandlers.AnonymousLoginRouteHandler))
-           .SetTag(nameof(AccountRouteHandlers))
-           .WithDescription("For login anonymous account")
-           .WithOpenApi();
-
-        //mb make logout for all accounts types?
-        web.MapPost("/account/anonymous/logout", AccountRouteHandlers.AnonymousLogoutRouteHandler)
+        web.MapPost("/account/logout", AccountRouteHandlers.AnonymousLogoutRouteHandler)
            .SetName(nameof(AccountRouteHandlers.AnonymousLogoutRouteHandler))
            .SetTag(nameof(AccountRouteHandlers))
            .WithDescription("For logout anonymous account")
