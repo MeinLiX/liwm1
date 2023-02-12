@@ -21,8 +21,8 @@ public static class AccountRouteHandlers
             return Results.Json(data: data, statusCode: data.status_code);
         };
 
-    internal static Delegate AnonymousLogoutRouteHandler =>
-        async (IMediator mediator, [FromBody] AnonymousUserLogoutRequest request) =>
+    internal static Delegate LogoutRouteHandler =>
+        async (IMediator mediator, [FromBody] UserLogoutRequest request) =>
         {
             var data = await mediator.Send(request);
             return Results.Json(data: data, statusCode: data.status_code);
