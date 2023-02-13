@@ -3,7 +3,7 @@ import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Photo } from 'src/app/_models/photo';
-import { AnonymousLogin, UserLogin, UserRegister } from 'src/app/_models/user';
+import { UserLogin, UserRegister } from 'src/app/_models/user';
 import { AccountService } from 'src/app/_services/account.service';
 
 @Component({
@@ -17,7 +17,6 @@ export class HomeComponent implements OnInit {
   registerForm: FormGroup = new FormGroup({});
   userLogin?: UserLogin;
   userRegister?: UserRegister;
-  anonymousLogin?: AnonymousLogin;
   choosenPhoto?: Photo;
 
   constructor(private accountService: AccountService, private fb: FormBuilder, private router: Router, private toastr: ToastrService) {
@@ -72,9 +71,9 @@ export class HomeComponent implements OnInit {
   }
 
   loginAnonymously() {
-    if (this.choosenPhoto) this.anonymousLogin = { ...this.anonymousForm.value, photoId: this.choosenPhoto.id };
-    if (this.anonymousLogin) {
-      this.accountService.anonymousLogin(this.anonymousLogin).subscribe({
+    if (this.choosenPhoto) this.userLogin = { ...this.anonymousForm.value, photoId: this.choosenPhoto.id };
+    if (this.userLogin) {
+      this.accountService.login(this.userLogin).subscribe({
         next: () => this.navigateToGamesHome(),
         error: error => this.toastr.error(error.error.message)
       });
