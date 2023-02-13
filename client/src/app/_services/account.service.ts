@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, take } from 'rxjs';
 import { environment } from 'src/enviroments/environment';
 import { DataRestResponseResult, RestResponseResult } from '../_models/restResponseResult';
-import {  User, UserLogin, UserRegister } from '../_models/user';
+import { User, UserLogin, UserLogout, UserRegister } from '../_models/user';
 
 @Injectable({
   providedIn: 'root'
@@ -21,22 +21,20 @@ export class AccountService {
     );
   }
 
-  // anonymousLogin(model: AnonymousLogin) {
-  //   return this.http.post<DataRestResponseResult<User>>(this.baseUrl + 'account/anonymous', model).pipe(
-  //     map(response => this.getAnSetUserFromResponse(response))
-  //   );
-  // }
-
   logout() {
-    if (this.currentUserSource.value && this.currentUserSource.value.roles.includes('Anonymous')) {
-      this.anonymousLogout(this.currentUserSource.value).pipe(take(1)).subscribe();
+    if (this.currentUserSource.value) {
+      const modelForLogout: UserLogout = {
+        username: this.currentUserSource.value.username,
+        isAnonymous: this.currentUserSource.value.roles.includes('Anonymous')
+      };
+      this.apiLogout(modelForLogout).pipe(take(1)).subscribe();
     }
     localStorage.removeItem('user');
     this.currentUserSource.next(null);
   }
 
-  private anonymousLogout(model: User) {
-    return this.http.post<RestResponseResult>(this.baseUrl + 'account/anonymous/logout', model);
+  private apiLogout(model: UserLogout) {
+    return this.http.post<RestResponseResult>(this.baseUrl + 'account/logout', model);
   }
 
   register(model: UserRegister) {
