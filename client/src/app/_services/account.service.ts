@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, take } from 'rxjs';
 import { environment } from 'src/enviroments/environment';
 import { DataRestResponseResult, RestResponseResult } from '../_models/restResponseResult';
-import { AnonymousLogin, User, UserLogin, UserRegister } from '../_models/user';
+import {  User, UserLogin, UserRegister } from '../_models/user';
 
 @Injectable({
   providedIn: 'root'
@@ -21,11 +21,11 @@ export class AccountService {
     );
   }
 
-  anonymousLogin(model: AnonymousLogin) {
-    return this.http.post<DataRestResponseResult<User>>(this.baseUrl + 'account/anonymous', model).pipe(
-      map(response => this.getAnSetUserFromResponse(response))
-    );
-  }
+  // anonymousLogin(model: AnonymousLogin) {
+  //   return this.http.post<DataRestResponseResult<User>>(this.baseUrl + 'account/anonymous', model).pipe(
+  //     map(response => this.getAnSetUserFromResponse(response))
+  //   );
+  // }
 
   logout() {
     if (this.currentUserSource.value && this.currentUserSource.value.roles.includes('Anonymous')) {

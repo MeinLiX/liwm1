@@ -10,7 +10,8 @@ export interface User {
 
 export interface UserLogin {
     username: string;
-    password: string;
+    password?: string;
+    photoId: number;
 }
 
 export interface UserRegister {
@@ -19,7 +20,7 @@ export interface UserRegister {
     photoId: number;
 }
 
-export interface AnonymousLogin {
+export interface UserLogout {
     username: string;
-    photoId: number;
+    isAnonymous: boolean;
 }
