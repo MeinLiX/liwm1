@@ -11,7 +11,13 @@ public class AccountLoginValidator : AbstractValidator<AccountLoginRequest>
     public AccountLoginValidator()
     {
         RuleFor(r => r.username).NotEmpty().WithMessage("Username must be filled");
-        RuleFor(r => r.isAnonymous).NotNull().WithMessage("Is anonymous must filled");
+        When(r => r.password is not null, () =>
+        {
+            RuleFor(r => r.password).Matches("(.*[a-z].*)").WithMessage("Password must have at least 1 lower case letter")
+                                    .Matches("(.*[A-Z].*)").WithMessage("Password must have at least 1 upper case letter")
+                                    .Matches(@"(.*\d.*)").WithMessage("Password must have at least 1 digit")
+                                    .GreaterThanOrEqualTo("6").WithMessage("Password must be at least 6 symbols");
+        });
     }
 }
 
@@ -20,7 +26,7 @@ public class AccountLoginRequest : IRequest<IRestResponseResult<UserDetailWithTo
     public string username { get; set; }
     public string? password { get; set; }
     public int? photoId { get; set; }
-    public bool isAnonymous { get; set; }
+    public bool isAnonymous => string.IsNullOrEmpty(password);
 }
 
 public class AccountLoginRequestHandler : IRequestHandler<AccountLoginRequest, IRestResponseResult<UserDetailWithTokenDTO>>
