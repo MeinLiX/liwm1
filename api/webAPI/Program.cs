@@ -33,7 +33,7 @@ builder.Services.AddSwaggerGen(c =>
                     Id = "bearerAuth"
                 }
             },
-            new string[]{ }
+            Array.Empty<string>()
         }
     });
 });

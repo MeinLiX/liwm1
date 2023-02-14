@@ -15,9 +15,4 @@ public class UserDetailWithTokenDTO : UserDetailDTO
     {
         
     }
-
-    public UserDetailWithTokenDTO(AnonymousUser user) : base(user) 
-    {
-        
-    }
 }

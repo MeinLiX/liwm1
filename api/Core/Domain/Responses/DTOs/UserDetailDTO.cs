@@ -17,13 +17,6 @@ public class UserDetailDTO
     {
         this.PhotoId = user.PhotoId;
         this.Username = user.UserName;
-        this.IsAnonymous = false;
-    }
-
-    public UserDetailDTO(AnonymousUser user)
-    {
-        this.PhotoId = user.PhotoId;
-        this.Username = user.UserName;
-        this.IsAnonymous = true;
+        this.IsAnonymous = string.IsNullOrEmpty(user.PasswordHash);
     }
 }

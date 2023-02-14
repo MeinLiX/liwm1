@@ -16,20 +16,6 @@ public class UserRepository : IUserRepository
         this.userManager = userManager;
     }
 
-    public async Task<AnonymousUser> AddAnonymousUser(string username, int photoId)
-    {
-        var user = new AnonymousUser 
-        {
-            UserName = username,
-            PhotoId = photoId
-        };
-
-        await this.dataContext.AnonymousUsers.AddAsync(user);   
-        await this.dataContext.SaveChangesAsync();
-
-        return user;
-    }
-
     public async Task<AppUser> AddUserAsync(string username, string password, int photoId)
     {
         var user = new AppUser
@@ -44,11 +30,21 @@ public class UserRepository : IUserRepository
         return user;
     }
 
+    public async Task<AppUser> AddUserAsync(string username, int photoId)
+    {
+        var user = new AppUser
+        {
+            UserName = username,
+            PhotoId = photoId
+        };
+
+        await this.userManager.CreateAsync(user);
+        await this.userManager.AddToRolesAsync(user, new string[] { "Gamer", "Anonymous" });
+
+        return user;
+    }
+
     public async Task<bool> CheckPasswordForUserAsync(AppUser user, string password) => await this.userManager.CheckPasswordAsync(user, password);
-
-    public async Task<AnonymousUser?> GetAnonymousUserByIdAsync(int id) => await this.dataContext.AnonymousUsers.FirstOrDefaultAsync(u => u.Id == id);
-
-    public async Task<AnonymousUser?> GetAnonymousUserByUsernameAsync(string username) => await this.dataContext.AnonymousUsers.FirstOrDefaultAsync(u => u.UserName == username);
 
     public async Task<IEnumerable<string>> GetRolesForUserAsync(AppUser user) => await this.userManager.GetRolesAsync(user);
 
@@ -56,13 +52,13 @@ public class UserRepository : IUserRepository
 
     public async Task<AppUser?> GetUserByUsernameAsync(string username) => await this.dataContext.Users.FirstOrDefaultAsync(u => u.UserName == username);
 
-    public async Task LogoutFromAnonymousUserAsync(AnonymousUser user)
+    public async Task LogoutFromAnonymousUserAsync(AppUser user)
     {
-        this.dataContext.AnonymousUsers.Remove(user);
+        this.dataContext.Users.Remove(user);
         await this.dataContext.SaveChangesAsync();
     }
 
-    public Task UpdateUserAsync(AppUser user)
+    public async Task UpdateUserAsync(AppUser user)
     {
         throw new NotImplementedException();
     }

@@ -26,6 +26,7 @@ public static class DataBaseExtensions
         var roles = new AppRole[]
         {
             new AppRole { Name = "Gamer" },
+            new AppRole { Name = "Anonymous" },
             new AppRole { Name = "Admin" }
         };
 

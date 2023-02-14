@@ -12,14 +12,12 @@ public class UserLogoutValidator : AbstractValidator<UserLogoutRequest>
     {
         RuleFor(r => r.username).NotEmpty().WithMessage("Username must be filled")
                                 .GreaterThanOrEqualTo("4").WithMessage("Username must be at least 4 symbols");
-        RuleFor(r => r.isAnonymous).NotNull().WithMessage("Is anonymous must be provided");
     }
 }
 
 public class UserLogoutRequest : IRequest<IRestResponseResult>
 {
     public string username { get; set; }
-    public bool isAnonymous { get; set; }
 }
 
 public class UserLogoutRequestHandler : IRequestHandler<UserLogoutRequest, IRestResponseResult>
@@ -35,14 +33,14 @@ public class UserLogoutRequestHandler : IRequestHandler<UserLogoutRequest, IRest
 
     public async Task<IRestResponseResult> Handle(UserLogoutRequest request, CancellationToken cancellationToken)
     {
-        dynamic? user = request.isAnonymous ? await this.userRepository.GetAnonymousUserByUsernameAsync(request.username) : await this.userRepository.GetUserByUsernameAsync(request.username);
+        var user = await this.userRepository.GetUserByUsernameAsync(request.username);
 
         if (user is null)
         {
             return RestResponseResult.Fail("User doesnt not exist");
         }
 
-        if (user is AnonymousUser)
+        if (string.IsNullOrEmpty(user.PasswordHash))
         {
             await this.userRepository.LogoutFromAnonymousUserAsync(user);
         }

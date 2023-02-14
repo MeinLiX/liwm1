@@ -1,4 +1,5 @@
 using Application.Interfaces;
+using Domain.Entities;
 using Domain.Responses;
 using Domain.Responses.DTOs;
 using FluentValidation;
@@ -42,7 +43,7 @@ public class AccountLoginRequestHandler : IRequestHandler<AccountLoginRequest, I
 
     public async Task<IRestResponseResult<UserDetailWithTokenDTO>> Handle(AccountLoginRequest request, CancellationToken cancellationToken)
     {
-        dynamic? user;
+        AppUser? user;
 
         if (request.isAnonymous)
         {
@@ -51,14 +52,14 @@ public class AccountLoginRequestHandler : IRequestHandler<AccountLoginRequest, I
                 return RestResponseResult<UserDetailWithTokenDTO>.Fail("Photo id must be provided for anonymous login");
             }
 
-            user = await this.userRepository.GetAnonymousUserByUsernameAsync(request.username);
+            user = await this.userRepository.GetUserByUsernameAsync(request.username);
 
             if (user is not null)
             {
                 return RestResponseResult<UserDetailWithTokenDTO>.Fail("User with provided username exists");
             }
 
-            user = await this.userRepository.AddAnonymousUser(request.username, request.photoId.Value);
+            user = await this.userRepository.AddUserAsync(request.username, request.photoId.Value);
         }
         else
         {

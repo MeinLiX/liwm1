@@ -19,11 +19,9 @@ public class TokenService : ITokenService
         this.userRepository = userRepository;
     }
 
-    public async Task<string> CreateTokenAsync(AppUser user) => await this.CreateTokenAsync(user.Id, user.UserName, await userRepository.GetRolesForUserAsync(user), DateTime.Now.AddDays(7));
+    public async Task<string> CreateTokenAsync(AppUser user) => await this.CreateTokenAsync(user.Id, user.UserName, await userRepository.GetRolesForUserAsync(user));
 
-    public async Task<string> CreateTokenAsync(AnonymousUser user) => await this.CreateTokenAsync(user.Id, user.UserName, new string[] { user.Role }, DateTime.Now.AddDays(1));
-
-    private Task<string> CreateTokenAsync(int id, string username, IEnumerable<string> roles, DateTime expireDate)
+    private Task<string> CreateTokenAsync(int id, string username, IEnumerable<string> roles)
     {
         var claims = new List<Claim>
         {
@@ -34,6 +32,8 @@ public class TokenService : ITokenService
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var creds = new SigningCredentials(this.key, SecurityAlgorithms.HmacSha512Signature);
+
+        var expireDate = roles.Contains("Anonymous") ? DateTime.Now.AddDays(1) : DateTime.Now.AddDays(7);
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
