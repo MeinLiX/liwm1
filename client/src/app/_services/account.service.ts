@@ -24,8 +24,7 @@ export class AccountService {
   logout() {
     if (this.currentUserSource.value) {
       const modelForLogout: UserLogout = {
-        username: this.currentUserSource.value.username,
-        isAnonymous: this.currentUserSource.value.roles.includes('Anonymous')
+        username: this.currentUserSource.value.username
       };
       this.apiLogout(modelForLogout).pipe(take(1)).subscribe();
     }

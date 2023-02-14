@@ -6,6 +6,7 @@ export interface User {
     photoId: number;
     roles: string[];
     lobby?: Lobby;
+    isAnonymous: boolean;
 }
 
 export interface UserLogin {
@@ -22,5 +23,4 @@ export interface UserRegister {
 
 export interface UserLogout {
     username: string;
-    isAnonymous: boolean;
 }
