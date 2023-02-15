@@ -1,0 +1,1 @@
+dotnet ef migrations remove -c DataContext -p api/Infrastructure/Persistence/SqlLite -s api/webApi/webApi.csproj

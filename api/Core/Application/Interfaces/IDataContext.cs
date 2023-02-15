@@ -12,6 +12,7 @@ public interface IDataContext
     DbSet<AppRole> Roles { get; set; }
     DbSet<Photo> Photos { get; set; }
     DbSet<Game> Games { get; set; }
+    DbSet<Lobby> Lobbies { get; set; }
     DbSet<AppUserRole> UserRoles { get; set; }
 
     Task<int> SaveChangesAsync();
