@@ -14,11 +14,11 @@ public class GameRepository : IGameRepository
         this.dataContext = dataContext;
     }
 
-    public async Task<Game?> GetGameByIdAsync(int id) => await this.dataContext.Games.FirstOrDefaultAsync(g => g.Id == id);
+    public async Task<GameMode?> GetGameByIdAsync(int id) => await this.dataContext.Games.FirstOrDefaultAsync(g => g.Id == id);
 
-    public async Task<List<Game>> GetGamesAsync() => await this.dataContext.Games.ToListAsync();
+    public async Task<List<GameMode>> GetGamesAsync() => await this.dataContext.Games.ToListAsync();
 
-    public async Task<List<Game>> GetGamesAsync(int start, int count)
+    public async Task<List<GameMode>> GetGamesAsync(int start, int count)
     {
         var gamesCount = this.dataContext.Games.Count();
         start = start.ToStart(gamesCount);

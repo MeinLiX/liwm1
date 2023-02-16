@@ -15,7 +15,7 @@ public class DataContext : IdentityDbContext<AppUser, AppRole, int,
                            IDataContext
 {
     public DbSet<Photo> Photos { get; set; }
-    public DbSet<Game> Games { get; set; }
+    public DbSet<GameMode> Games { get; set; }
     public DbSet<Lobby> Lobbies { get; set; }
 
     public DataContext(DbContextOptions options) : base(options)

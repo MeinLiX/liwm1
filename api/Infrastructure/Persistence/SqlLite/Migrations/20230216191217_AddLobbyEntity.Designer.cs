@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SqlLite.Contexts;
 
@@ -10,9 +11,11 @@ using SqlLite.Contexts;
 namespace Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230216191217_AddLobbyEntity")]
+    partial class AddLobbyEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.2");
@@ -135,10 +138,16 @@ namespace Migrations
                     b.ToTable("AspNetUserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.GameMode", b =>
+            modelBuilder.Entity("Domain.Entities.Game", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("EndGame")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("LobbyId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -149,9 +158,14 @@ namespace Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("StartGame")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
-                    b.ToTable("GameModes");
+                    b.HasIndex("LobbyId");
+
+                    b.ToTable("Games");
                 });
 
             modelBuilder.Entity("Domain.Entities.Lobby", b =>
@@ -160,12 +174,7 @@ namespace Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("GameModeId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("GameModeId");
 
                     b.ToTable("Lobbies");
                 });
@@ -295,11 +304,11 @@ namespace Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Lobby", b =>
+            modelBuilder.Entity("Domain.Entities.Game", b =>
                 {
-                    b.HasOne("Domain.Entities.GameMode", null)
-                        .WithMany("Lobbies")
-                        .HasForeignKey("GameModeId");
+                    b.HasOne("Domain.Entities.Lobby", null)
+                        .WithMany("Games")
+                        .HasForeignKey("LobbyId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -348,13 +357,10 @@ namespace Migrations
                     b.Navigation("UserRoles");
                 });
 
-            modelBuilder.Entity("Domain.Entities.GameMode", b =>
-                {
-                    b.Navigation("Lobbies");
-                });
-
             modelBuilder.Entity("Domain.Entities.Lobby", b =>
                 {
+                    b.Navigation("Games");
+
                     b.Navigation("Users");
                 });
 #pragma warning restore 612, 618

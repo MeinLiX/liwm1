@@ -13,14 +13,14 @@ public class GamesGettingValidator : AbstractValidator<GamesGettingRequest>
     }
 }
 
-public class GamesGettingRequest : IRequest<IRestResponseResult<List<Game>>>
+public class GamesGettingRequest : IRequest<IRestResponseResult<List<GameMode>>>
 {
     public int? id { get; set; }
     public int? start { get; set; }
     public int? count { get; set; }
 }
 
-public class GamesGettingRequestHandler : IRequestHandler<GamesGettingRequest, IRestResponseResult<List<Game>>>
+public class GamesGettingRequestHandler : IRequestHandler<GamesGettingRequest, IRestResponseResult<List<GameMode>>>
 {
     private readonly IGameRepository gameRepository;
 
@@ -29,13 +29,13 @@ public class GamesGettingRequestHandler : IRequestHandler<GamesGettingRequest, I
         this.gameRepository = gameRepository;
     }
 
-    public async Task<IRestResponseResult<List<Game>>> Handle(GamesGettingRequest request, CancellationToken cancellationToken)
+    public async Task<IRestResponseResult<List<GameMode>>> Handle(GamesGettingRequest request, CancellationToken cancellationToken)
     {
-        var games = new List<Game>();
+        var games = new List<GameMode>();
 
         if (request.id.HasValue)
         {
-            if (await this.gameRepository.GetGameByIdAsync(request.id.Value) is Game game)
+            if (await this.gameRepository.GetGameByIdAsync(request.id.Value) is GameMode game)
             {
                 games.Add(game);
             }
@@ -49,6 +49,6 @@ public class GamesGettingRequestHandler : IRequestHandler<GamesGettingRequest, I
             games = await this.gameRepository.GetGamesAsync();
         }
 
-        return RestResponseResult<List<Game>>.Success(games);
+        return RestResponseResult<List<GameMode>>.Success(games);
     }
 }

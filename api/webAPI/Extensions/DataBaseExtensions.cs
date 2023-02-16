@@ -58,16 +58,16 @@ public static class DataBaseExtensions
 
     private static async Task SyncGamesAsync(this IDataContext context, IPhotoService photoService)
     {
-        var games = new Game[]
+        var gameModes = new GameMode[]
         {
-            new Game
+            new GameMode
             {
                 Name = "Racing",
                 PreviewUrl = await photoService.GetGamePhotoAsync("Racing")
             }
         };
 
-        await context.Games.AddRangeAsync(games.Where(g => context.Games.All(cg => cg.Name != g.Name)));
+        await context.Games.AddRangeAsync(gameModes.Where(g => context.Games.All(cg => cg.Name != g.Name)));
         await context.SaveChangesAsync();
     }
 }
