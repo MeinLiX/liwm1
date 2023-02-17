@@ -19,5 +19,6 @@ public static class ServiceRegistration
     private static IServiceCollection AddRepositories(this IServiceCollection services)
         => services.AddTransient<IUserRepository, UserRepository>()
                    .AddTransient<IPhotoRepository, PhotoRepository>()
-                   .AddTransient<IGameRepository, GameRepository>();
+                   .AddTransient<IGameRepository, GameRepository>()
+                   .AddTransient<ILobbyRepository, LobbyRepository>();
 }
