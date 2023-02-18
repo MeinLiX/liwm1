@@ -1,4 +1,6 @@
-﻿namespace webAPI.Routes;
+﻿using Application.Hubs;
+
+namespace webAPI.Routes;
 
 public static class Routes
 {
@@ -7,7 +9,8 @@ public static class Routes
         web.InitAccountRoutes()
            .InitStatusRoutes()
            .InitPhotoRoutes()
-           .InitGameRoutes();
+           .InitGameRoutes()
+           .InitLobbyHub();
     }
 
     internal static WebApplication InitAccountRoutes(this WebApplication web)
@@ -66,6 +69,12 @@ public static class Routes
         return web;
     }
 
+    internal static WebApplication InitLobbyHub(this WebApplication web)
+    {
+        web.MapHub<LobbyHub>("hubs/lobby");
+
+        return web;
+    }
 
     #region RouteHandlerBuilder extension
 

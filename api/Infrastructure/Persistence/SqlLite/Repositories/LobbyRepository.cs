@@ -35,6 +35,19 @@ public class LobbyRepository : ILobbyRepository
         return lobby;
     }
 
+    public async Task<Lobby?> DeleteLobbyAsync(AppUser user)
+    {
+        var lobby = await this.GetLobbyWithUserAsync(user);
+    
+        if (lobby != null && lobby.LobbyCreator == user)
+        {
+            this.dataContext.Lobbies.Remove(lobby);
+            await this.dataContext.SaveChangesAsync();
+        }
+
+        return lobby;
+    }
+
     public async Task<Lobby?> GetLobbyByIdAsync(int id) => await this.dataContext.Lobbies.FirstOrDefaultAsync(l => l.Id == id);
 
     public async Task<Lobby?> GetLobbyByLobbyNameAsync(string lobbyName) => await this.dataContext.Lobbies.FirstOrDefaultAsync(l => l.LobbyName == lobbyName);
