@@ -10,7 +10,7 @@ public interface ILobbyRepository
     Task<Lobby?> GetLobbyWithUserAsync(AppUser user);
     Task<Lobby?> CreateLobbyAsync(AppUser user, string lobbyName, string connectionId);
     Task<Lobby?> RequestLobbyJoinAsync(AppUser user, string lobbyName, string connectionId);
-    Task<Lobby?> JoinLobbyAsync(AppUser user, string lobbyName, string connectionId);
+    Task<Lobby?> JoinLobbyAsync(AppUser user, string lobbyName);
     Task<Lobby?> LeaveLobbyAsync(AppUser user, string connectionId);
     Task<Lobby?> DeleteLobbyAsync(AppUser user);
 }

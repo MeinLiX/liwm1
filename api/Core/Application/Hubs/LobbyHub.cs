@@ -3,9 +3,12 @@ using Application.Interfaces;
 using Domain.Entities;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Application.Hubs;
+
+//TODO: Extract all signalr string methods to constants
 
 [Authorize]
 public class LobbyHub : Hub
@@ -58,7 +61,54 @@ public class LobbyHub : Hub
             case LobbyRequestMode.Leave:
                 await LeaveLobbyAsync(lobbyName, user, lobby);
                 return;
+            case LobbyRequestMode.ApproveJoin:
+                await ApproveUserJoinAsync(lobbyName, user, lobby, httpContext);
+                return;
         }
+    }
+
+    private async Task ApproveUserJoinAsync(string lobbyName, AppUser user, Lobby? lobby, HttpContext httpContext)
+    {
+        var isJoinApprovedStringified = httpContext.Request.Query["isJoinApproved"].ToString();
+        if (string.IsNullOrEmpty(isJoinApprovedStringified)) return;
+        bool isJoinApproved = bool.Parse(isJoinApprovedStringified);
+
+        var approveUsername = httpContext.Request.Query["approveUsername"].ToString();
+        if (string.IsNullOrEmpty(approveUsername)) return;
+
+        await ApproveUserJoinAsync(lobbyName, user, lobby, isJoinApproved, approveUsername);
+    }
+
+    private async Task ApproveUserJoinAsync(string lobbyName, AppUser user, Lobby? lobby, bool isJoinApproved, string approveUsername)
+    {
+        if (lobby is null)
+        {
+            await Clients.Caller.SendAsync("LobbyWithNameIsNotExtist", lobbyName);
+            return;
+        }
+
+        if (lobby.LobbyCreator != user)
+        {
+            await Clients.Caller.SendAsync("NoPermisionToApproveJoin");
+            return;
+        }
+
+        if (lobby.PendingConnections.Any(c => c.Username != approveUsername))
+        {
+            await Clients.Caller.SendAsync("NoSuchPendingJoinRequestWithProvidedName", approveUsername);
+            return;
+        }
+
+        var approveUser = await this.userRepository.GetUserByUsernameAsync(approveUsername);
+
+        if (approveUser is null)
+        {
+            await Clients.Caller.SendAsync("NoSuchUser", approveUser);
+            return;
+        }
+
+        lobby = await this.lobbyRepository.JoinLobbyAsync(approveUser, lobbyName);
+        await Clients.Group(lobbyName).SendAsync("UserJoined", lobby);
     }
 
     private async Task LeaveLobbyAsync(string lobbyName, AppUser? user, Lobby? lobby)
