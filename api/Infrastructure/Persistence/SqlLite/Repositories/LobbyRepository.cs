@@ -13,7 +13,7 @@ public class LobbyRepository : ILobbyRepository
         this.dataContext = dataContext;
     }
 
-    public async Task<Lobby?> CreateLobbyAsync(AppUser user, string lobbyName)
+    public async Task<Lobby?> CreateLobbyAsync(AppUser user, string lobbyName, string connectionId)
     {
         if (await this.CheckIsLobbyExistsAsync(lobbyName))
         {
@@ -27,7 +27,15 @@ public class LobbyRepository : ILobbyRepository
                 user
             },
             LobbyCreator = user,
-            LobbyName = lobbyName
+            LobbyName = lobbyName,
+            Connections = new List<Connection>()
+            {
+                new Connection
+                {
+                    ConnectionId = connectionId,
+                    Username = user.UserName
+                }
+            }
         };
 
         await this.dataContext.Lobbies.AddAsync(lobby);
@@ -54,7 +62,7 @@ public class LobbyRepository : ILobbyRepository
 
     public async Task<Lobby?> GetLobbyWithUserAsync(AppUser user) => await this.dataContext.Lobbies.FirstOrDefaultAsync(l => l.Users.Any(u => u == user));
 
-    public async Task<Lobby?> JoinLobbyAsync(AppUser user, string lobbyName)
+    public async Task<Lobby?> JoinLobbyAsync(AppUser user, string lobbyName, string connectionId)
     {
         Lobby? lobby = null;
 
@@ -62,13 +70,14 @@ public class LobbyRepository : ILobbyRepository
         {
             lobby = await this.GetLobbyByLobbyNameAsync(lobbyName);
             lobby.Users.Add(user);
+            lobby.Connections = lobby.Connections.Where(c => c.ConnectionId != connectionId).ToList();
             await this.dataContext.SaveChangesAsync();
         }
 
         return lobby;
     }
 
-    public async Task<Lobby?> LeaveLobbyAsync(AppUser user)
+    public async Task<Lobby?> LeaveLobbyAsync(AppUser user, string connectionId)
     {
         Lobby? lobby = null;
 
@@ -76,6 +85,7 @@ public class LobbyRepository : ILobbyRepository
         {
             lobby = await this.dataContext.Lobbies.FirstOrDefaultAsync(l => l.Users.Any(u => u == user));
             lobby.Users.Remove(user);
+            lobby.Connections = lobby.Connections.Where(c => c.ConnectionId != connectionId).ToList();
             await this.dataContext.SaveChangesAsync();
         }
 

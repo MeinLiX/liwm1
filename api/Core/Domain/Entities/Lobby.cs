@@ -11,4 +11,6 @@ public class Lobby
     public string LobbyName { get; set; }
     public AppUser LobbyCreator { get; set; }
     public ICollection<AppUser> Users { get; set; }
+    public ICollection<Connection> Connections { get; set; }
+    public ICollection<Connection> PendingConnections { get; set; }
 }
