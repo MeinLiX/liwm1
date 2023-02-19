@@ -4,5 +4,7 @@ public enum LobbyRequestMode
 {
     Create,
     Join,
-    Delete
+    Leave,
+    Delete,
+    ApproveJoin 
 }

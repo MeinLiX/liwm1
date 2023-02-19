@@ -6,6 +6,7 @@ namespace Domain.Entities;
 [Table("Lobbies")]
 public class Lobby
 {
+    //TODO: Add limit to users and connections in lobby
     [Key]
     public int Id { get; set; }
     public string LobbyName { get; set; }

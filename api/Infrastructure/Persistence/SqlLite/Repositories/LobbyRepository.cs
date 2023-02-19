@@ -46,7 +46,7 @@ public class LobbyRepository : ILobbyRepository
     public async Task<Lobby?> DeleteLobbyAsync(AppUser user)
     {
         var lobby = await this.GetLobbyWithUserAsync(user);
-    
+
         if (lobby != null && lobby.LobbyCreator == user)
         {
             this.dataContext.Lobbies.Remove(lobby);
@@ -77,6 +77,24 @@ public class LobbyRepository : ILobbyRepository
         return lobby;
     }
 
+    public async Task<Lobby?> RequestLobbyJoinAsync(AppUser user, string lobbyName, string connectionId)
+    {
+        Lobby? lobby = null;
+
+        if (await this.CheckIsLobbyExistsAsync(lobbyName))
+        {
+            lobby = await this.GetLobbyByLobbyNameAsync(lobbyName);
+            lobby.PendingConnections.Add(new Connection
+            {
+                Username = user.UserName,
+                ConnectionId = connectionId
+            });
+            await this.dataContext.SaveChangesAsync();
+        }
+
+        return lobby;
+    }
+
     public async Task<Lobby?> LeaveLobbyAsync(AppUser user, string connectionId)
     {
         Lobby? lobby = null;
@@ -92,5 +110,10 @@ public class LobbyRepository : ILobbyRepository
         return lobby;
     }
 
-    private async Task<bool> CheckIsLobbyExistsAsync(string lobbyName) => await this.dataContext.Lobbies.AnyAsync(l => l.LobbyName == lobbyName);
+    private async Task<bool> CheckIsLobbyExistsAsync(string lobbyName) 
+        => await this.dataContext.Lobbies.AnyAsync(l => l.LobbyName == lobbyName);
+
+    public async Task<bool> IsUserInLobbyAsync(AppUser user) 
+        => await this.dataContext.Lobbies.AnyAsync(l => l.Connections.Any(c => c.Username == user.UserName) 
+                                                     || l.PendingConnections.Any(c => c.Username == user.UserName));
 }
