@@ -24,24 +24,37 @@ public class LobbyHub : Hub
     public override async Task OnConnectedAsync()
     {
         var httpContext = Context.GetHttpContext();
-        if (httpContext is null) return;
+        if (httpContext is null)
+        {
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.HttpContextMustBeProvided);
+            return;
+        }
 
         var lobbyName = httpContext.Request.Query["lobbyName"].ToString();
-        if (string.IsNullOrEmpty(lobbyName)) return;
+        if (string.IsNullOrEmpty(lobbyName))
+        {
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.LobbyNameMustBeProvidedInQuery);
+            return;
+        }
 
-        var lobbyRequestModeStringified = httpContext.Request.Query["lobbyRequestMode"].ToString();
-        if (string.IsNullOrEmpty(lobbyRequestModeStringified)) return;
+        var lobbyRequestModeStringified = httpContext.Request.Query["lobbyConnectMode"].ToString();
+        if (string.IsNullOrEmpty(lobbyRequestModeStringified))
+        {
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.LobbyConnectModeMustBeProvidedInQuery);
+            return;
+        }
         var lobbyRequestMode = (LobbyConnectMode)Enum.Parse(typeof(LobbyConnectMode), lobbyRequestModeStringified);
 
-        var username = Context.User?.FindFirst(ClaimTypes.Name)?.Value;
-        if (string.IsNullOrEmpty(username)) return;
-
-        var user = await this.userRepository.GetUserByUsernameAsync(username);
+        var user = await GetCallerAsAppUserAsync();
         if (user is null) return;
 
         var isUserInLobby = await this.lobbyRepository.IsUserInLobbyAsync(user);
 
-        if ((lobbyRequestMode == LobbyConnectMode.Create || lobbyRequestMode == LobbyConnectMode.Join) && isUserInLobby) return;
+        if ((lobbyRequestMode == LobbyConnectMode.Create || lobbyRequestMode == LobbyConnectMode.Join) && isUserInLobby)
+        {
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.UserAlreadyInLobby);
+            return;
+        }
 
         var lobby = await this.lobbyRepository.GetLobbyByLobbyNameAsync(lobbyName);
 

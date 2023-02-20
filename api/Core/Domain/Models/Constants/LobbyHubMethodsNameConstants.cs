@@ -16,4 +16,8 @@ public static class LobbyHubMethodNameConstants
     public const string NoSuchPendingJoinRequestWithProvidedName = "NoSuchPendingJoinRequestWithProvidedName";
     public const string UserJoined = "UserJoined";
     public const string LobbyWasDeleted = "LobbyWasDeleted";
+    public const string UserAlreadyInLobby = "UserAlreadyInLobby";
+    public const string LobbyNameMustBeProvidedInQuery = "LobbyNameMustBeProvidedInQuery";
+    public const string LobbyConnectModeMustBeProvidedInQuery = "LobbyConnectModeMustBeProvidedInQuery";
+    public const string HttpContextMustBeProvided = "HttpContextMustBeProvided";
 }
