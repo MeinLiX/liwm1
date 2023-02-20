@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Application.Hubs;
 
-//TODO: Extract all signalr string methods to constants
-
 [Authorize]
 public class LobbyHub : Hub
 {
@@ -24,8 +22,6 @@ public class LobbyHub : Hub
 
     public override async Task OnConnectedAsync()
     {
-        //TODO: Add returning check explanations to the client
-
         var httpContext = Context.GetHttpContext();
         if (httpContext is null) return;
 
@@ -58,8 +54,6 @@ public class LobbyHub : Hub
                 return;
         }
     }
-
-
 
     private async Task RequestJoinToLobbyAsync(string lobbyName, AppUser? user, Lobby? lobby)
     {
@@ -105,37 +99,48 @@ public class LobbyHub : Hub
         await LeaveLobbyAsync(user);
     }
 
-    private async Task LeaveLobbyAsync(AppUser user)
+    private async Task<Lobby?> LeaveLobbyAsync(AppUser user)
     {
         var lobby = await this.lobbyRepository.GetLobbyWithUserAsync(user);
         if (lobby is null)
         {
             await Clients.Caller.SendAsync("NoLobbyWithSuchUser", user.UserName);
-            return;
+            return lobby;
         }
 
         lobby = await this.lobbyRepository.LeaveLobbyAsync(user, Context.ConnectionId);
         await Clients.Caller.SendAsync("SuccessfulyLeftLobby");
         await Clients.Group(lobby.LobbyName).SendAsync("UserLeft", new LobbyDTO(lobby));
+        return lobby;
     }
 
     public async Task ApproveUserJoinAsync(string lobbyName, string approveUsername, bool isJoinApproved)
+    {
+        var user = await GetCallerAsAppUserAsync();
+        if (user is null)
+        {
+            return;
+        }
+        await ApproveUserJoinAsync(lobbyName, user, isJoinApproved, approveUsername);
+    }
+
+    private async Task<AppUser?> GetCallerAsAppUserAsync()
     {
         var username = Context.User?.FindFirst(ClaimTypes.Name)?.Value;
         if (string.IsNullOrEmpty(username))
         {
             await Clients.Caller.SendAsync("NoUserWasProvided");
-            return;
+            return null;
         }
 
         var user = await this.userRepository.GetUserByUsernameAsync(username);
         if (user is null)
         {
             await Clients.Caller.SendAsync("NoSuchUser");
-            return;
+            return null;
         }
 
-        await ApproveUserJoinAsync(lobbyName, user, isJoinApproved, approveUsername);
+        return user;
     }
 
     private async Task ApproveUserJoinAsync(string lobbyName, AppUser user, bool isJoinApproved, string approveUsername)
@@ -171,7 +176,28 @@ public class LobbyHub : Hub
         await Clients.Group(lobbyName).SendAsync("UserJoined", new LobbyDTO(lobby));
     }
 
+    public async Task DeleteLobbyAsync(string lobbyName)
+    {
+        var user = await GetCallerAsAppUserAsync();
+        if (user is null)
+        {
+            return;
+        }
+        var lobby = await this.lobbyRepository.DeleteLobbyAsync(user);
+        await Clients.Group(lobbyName).SendAsync("LobbyWasDeleted");
+    }
+
     public override async Task OnDisconnectedAsync(Exception exception)
     {
+        var user = await GetCallerAsAppUserAsync();
+        if (user is null) return;
+
+        var lobby = await this.LeaveLobbyAsync(user);
+        if (lobby is null) return;
+
+        if (lobby.LobbyCreator == user)
+        {
+            await this.DeleteLobbyAsync(lobby.LobbyName);
+        }
     }
 }
