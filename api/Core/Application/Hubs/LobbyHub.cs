@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Models;
+using Domain.Models.Constants;
 using Domain.Responses.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -59,32 +60,33 @@ public class LobbyHub : Hub
     {
         if (lobby is null)
         {
-            await Clients.Caller.SendAsync("LobbyWithNameIsNotExtist", lobbyName);
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoLobbyWithSuchName, lobbyName);
             return;
         }
 
         if (lobby.PendingConnections.Any(c => c.ConnectionId == Context.ConnectionId))
         {
-            await Clients.Caller.SendAsync("JoinRequestSent", new LobbyDTO(lobby));
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.JoinRequestSent, new LobbyDTO(lobby));
             return;
         }
 
         lobby = await this.lobbyRepository.RequestLobbyJoinAsync(user, lobbyName, Context.ConnectionId);
-        await Clients.Caller.SendAsync("JoinRequestSent", new LobbyDTO(lobby));
-        await Clients.Client(lobby.Connections.FirstOrDefault(c => c.Username == lobby.LobbyCreator.UserName).ConnectionId).SendAsync("JoinRequestReceived", new LobbyDTO(lobby));
+        await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.JoinRequestSent, new LobbyDTO(lobby));
+        await Clients.Client(lobby.Connections.FirstOrDefault(c => c.Username == lobby.LobbyCreator.UserName).ConnectionId)
+                     .SendAsync(LobbyHubMethodNameConstants.JoinRequestReceived, new LobbyDTO(lobby));
     }
 
     private async Task CreateLobbyAsync(AppUser user, string lobbyName, Lobby? lobby)
     {
         if (lobby is not null)
         {
-            await Clients.Caller.SendAsync("LobbyWithThisNameExists", lobbyName);
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.LobbyAlreadyExists, lobbyName);
             return;
         }
 
         lobby = await this.lobbyRepository.CreateLobbyAsync(user, lobbyName, Context.ConnectionId);
         await Groups.AddToGroupAsync(Context.ConnectionId, lobbyName);
-        await Clients.Group(lobbyName).SendAsync("LobbyCreate", new LobbyDTO(lobby));
+        await Clients.Group(lobbyName).SendAsync(LobbyHubMethodNameConstants.LobbyCreate, new LobbyDTO(lobby));
     }
 
     public async Task LeaveLobbyAsync(string username)
@@ -92,7 +94,7 @@ public class LobbyHub : Hub
         var user = await this.userRepository.GetUserByUsernameAsync(username);
         if (user is null)
         {
-            await Clients.Caller.SendAsync("UserWithSuchNameDoesNotExist");
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoUserWithSuchName);
             return;
         }
 
@@ -104,13 +106,13 @@ public class LobbyHub : Hub
         var lobby = await this.lobbyRepository.GetLobbyWithUserAsync(user);
         if (lobby is null)
         {
-            await Clients.Caller.SendAsync("NoLobbyWithSuchUser", user.UserName);
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoLobbyWithSuchUser, user.UserName);
             return lobby;
         }
 
         lobby = await this.lobbyRepository.LeaveLobbyAsync(user, Context.ConnectionId);
-        await Clients.Caller.SendAsync("SuccessfulyLeftLobby");
-        await Clients.Group(lobby.LobbyName).SendAsync("UserLeft", new LobbyDTO(lobby));
+        await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.SuccessfulyLeftLobby);
+        await Clients.Group(lobby.LobbyName).SendAsync(LobbyHubMethodNameConstants.UserLeftLobby, new LobbyDTO(lobby));
         return lobby;
     }
 
@@ -129,14 +131,14 @@ public class LobbyHub : Hub
         var username = Context.User?.FindFirst(ClaimTypes.Name)?.Value;
         if (string.IsNullOrEmpty(username))
         {
-            await Clients.Caller.SendAsync("NoUserWasProvided");
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoUserWasProvided);
             return null;
         }
 
         var user = await this.userRepository.GetUserByUsernameAsync(username);
         if (user is null)
         {
-            await Clients.Caller.SendAsync("NoSuchUser");
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoUserWithSuchName);
             return null;
         }
 
@@ -148,19 +150,19 @@ public class LobbyHub : Hub
         var lobby = await this.lobbyRepository.GetLobbyByLobbyNameAsync(lobbyName);
         if (lobby is null)
         {
-            await Clients.Caller.SendAsync("LobbyWithNameIsNotExtist", lobbyName);
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoLobbyWithSuchName, lobbyName);
             return;
         }
 
         if (lobby.LobbyCreator != user)
         {
-            await Clients.Caller.SendAsync("NoPermisionToApproveJoin");
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoPermisionToApproveJoin);
             return;
         }
 
         if (lobby.PendingConnections.Any(c => c.Username != approveUsername))
         {
-            await Clients.Caller.SendAsync("NoSuchPendingJoinRequestWithProvidedName", approveUsername);
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoSuchPendingJoinRequestWithProvidedName, approveUsername);
             return;
         }
 
@@ -168,12 +170,12 @@ public class LobbyHub : Hub
 
         if (approveUser is null)
         {
-            await Clients.Caller.SendAsync("NoSuchUser", approveUser);
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoUserWithSuchName, approveUser);
             return;
         }
 
         lobby = await this.lobbyRepository.JoinLobbyAsync(approveUser, lobbyName);
-        await Clients.Group(lobbyName).SendAsync("UserJoined", new LobbyDTO(lobby));
+        await Clients.Group(lobbyName).SendAsync(LobbyHubMethodNameConstants.UserJoined, new LobbyDTO(lobby));
     }
 
     public async Task DeleteLobbyAsync(string lobbyName)
@@ -184,7 +186,7 @@ public class LobbyHub : Hub
             return;
         }
         var lobby = await this.lobbyRepository.DeleteLobbyAsync(user);
-        await Clients.Group(lobbyName).SendAsync("LobbyWasDeleted");
+        await Clients.Group(lobbyName).SendAsync(LobbyHubMethodNameConstants.LobbyWasDeleted);
     }
 
     public override async Task OnDisconnectedAsync(Exception exception)
