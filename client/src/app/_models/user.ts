@@ -24,3 +24,9 @@ export interface UserRegister {
 export interface UserLogout {
     username: string;
 }
+
+export interface LobbyUser {
+    photoId: number;
+    username: string;
+    isAnonymous: boolean
+}
