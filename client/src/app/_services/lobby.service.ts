@@ -4,6 +4,8 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { User } from '../_models/user';
 import { ToastrService } from 'ngx-toastr';
 import { LobbyConnectMode } from '../_models/lobbyConnectMode';
+import { BehaviorSubject } from 'rxjs';
+import { Lobby } from '../_models/lobby';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +13,8 @@ import { LobbyConnectMode } from '../_models/lobbyConnectMode';
 export class LobbyService {
   hubUrl = environment.hubUrl;
   private hubConnection?: HubConnection;
+  private lobbySource = new BehaviorSubject<Lobby | null>(null);
+  lobby$ = this.lobbySource.asObservable();
 
   constructor(private toastr: ToastrService) { }
 
