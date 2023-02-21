@@ -16,6 +16,7 @@ import { PhotoChoosingComponent } from './_modals/photo-choosing/photo-choosing.
 import { AccountComponent } from './_components/account/account.component';
 import { ImageChangerComponent } from './_components/forms/image-changer/image-changer.component';
 import { GameCardComponent } from './_components/cards/game-card/game-card.component';
+import { LobbyComponent } from './_components/lobby/lobby.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { GameCardComponent } from './_components/cards/game-card/game-card.compo
     PhotoChoosingComponent,
     AccountComponent,
     ImageChangerComponent,
-    GameCardComponent
+    GameCardComponent,
+    LobbyComponent
   ],
   imports: [
     BrowserModule,
