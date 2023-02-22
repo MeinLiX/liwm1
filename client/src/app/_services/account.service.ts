@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, take } from 'rxjs';
 import { environment } from 'src/enviroments/environment';
+import { Lobby } from '../_models/lobby';
 import { DataRestResponseResult, RestResponseResult } from '../_models/restResponseResult';
 import { User, UserLogin, UserLogout, UserRegister } from '../_models/user';
 
@@ -60,5 +61,11 @@ export class AccountService {
 
   private getDecodedToken(token: string) {
     return JSON.parse(atob(token.split('.')[1]));
+  }
+
+  addLobbyToUser(lobby: Lobby) {
+    if (this.currentUserSource.value) {
+      this.currentUserSource.value.lobby = lobby;
+    }
   }
 }

@@ -79,12 +79,12 @@ public class LobbyHub : Hub
 
         if (lobby.PendingConnections.Any(c => c.ConnectionId == Context.ConnectionId))
         {
-            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.JoinRequestSent, new LobbyDTO(lobby));
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.JoinRequestSent);
             return;
         }
 
         lobby = await this.lobbyRepository.RequestLobbyJoinAsync(user, lobbyName, Context.ConnectionId);
-        await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.JoinRequestSent, new LobbyDTO(lobby));
+        await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.JoinRequestSent);
         await Clients.Client(lobby.Connections.FirstOrDefault(c => c.Username == lobby.LobbyCreator.UserName).ConnectionId)
                      .SendAsync(LobbyHubMethodNameConstants.JoinRequestReceived, new LobbyDTO(lobby));
     }

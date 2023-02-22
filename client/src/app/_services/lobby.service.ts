@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { LobbyConnectMode } from '../_models/lobbyConnectMode';
 import { BehaviorSubject } from 'rxjs';
 import { Lobby } from '../_models/lobby';
+import { AccountService } from './account.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +17,9 @@ export class LobbyService {
   private lobbySource = new BehaviorSubject<Lobby | null>(null);
   lobby$ = this.lobbySource.asObservable();
 
-  constructor(private toastr: ToastrService) { }
+  constructor(private toastr: ToastrService, private accountService: AccountService) { }
 
-  createHubConnection(user: User, lobbyName: string, lobbyConnectMode: LobbyConnectMode) {
+  connectToLobby(user: User, lobbyName: string, lobbyConnectMode: LobbyConnectMode) {
     this.hubConnection = new HubConnectionBuilder()
       .withUrl(this.hubUrl + 'lobby?lobbyName=' + lobbyName + '&lobbyConnectMode=' + lobbyConnectMode, {
         accessTokenFactory: () => user.token
@@ -32,11 +33,34 @@ export class LobbyService {
       this.toastr.error('User already in lobby');
       this.stopHubConnection();
     });
+
+    this.hubConnection.on('JoinRequestSent', () => {
+      this.toastr.success('Your join request was sent');
+    });
+
+    this.hubConnection.on('UserJoined', (lobby: Lobby) => {
+      const lastLobby = this.lobbySource.value;
+      if (lastLobby) {
+        const newUser = lobby.users.find(u => !lastLobby.users.includes(u));
+        if (newUser) {
+          this.toastr.info('New user has joined: ' + newUser.username)
+        }
+      }
+
+      this.lobbySource.next(lobby);
+      this.accountService.addLobbyToUser(lobby);
+      this.toastr.success('Your join request was sent');
+    });
   }
 
   stopHubConnection() {
     if (this.hubConnection) {
       this.hubConnection.stop();
     }
+  }
+
+  async approveUserJoin(lobbyName: string, approveUserName: string, isJoinApproved: boolean) {
+    return this.hubConnection?.invoke('ApproveUserJoinAsync', { lobbyName, approveUserName, isJoinApproved })
+      .catch(error => console.log(error));
   }
 }
