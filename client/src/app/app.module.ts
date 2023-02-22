@@ -17,6 +17,7 @@ import { AccountComponent } from './_components/account/account.component';
 import { ImageChangerComponent } from './_components/forms/image-changer/image-changer.component';
 import { GameCardComponent } from './_components/cards/game-card/game-card.component';
 import { LobbyComponent } from './_components/lobby/lobby.component';
+import { LobbyConnectComponent } from './_modals/lobby-connect/lobby-connect.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { LobbyComponent } from './_components/lobby/lobby.component';
     AccountComponent,
     ImageChangerComponent,
     GameCardComponent,
-    LobbyComponent
+    LobbyComponent,
+    LobbyConnectComponent
   ],
   imports: [
     BrowserModule,
