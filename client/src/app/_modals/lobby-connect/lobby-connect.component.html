@@ -1,7 +1,30 @@
-<div class="modal-header">
+<div class="modal-header" *ngIf="!lobbyConnectMode">
+    <h4>Choose lobby connect mode</h4>
     <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef.hide()">
         <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
 </div>
 <div class="modal-body">
+    <div *ngIf="!lobbyConnectMode">
+        <div style="float: left;">
+            <button class="btn btn-danger option" (click)="lobbyConnectMode = 1">
+                <i class="fa fa-plus"></i>
+                <p>Create</p>
+            </button>
+        </div>
+        <div style="float: right;">
+            <button class="btn btn-warning option" (click)="lobbyConnectMode = 2">
+                <i class="fa fa-user-plus" style="margin-left: 35px;"></i>
+                <p>Join</p>
+            </button>
+        </div>
+    </div>
+    <div *ngIf="lobbyConnectMode" class="center">
+        <h5>Write lobby name</h5>
+        <input type="text">
+    </div>
+</div>
+<div class="modal-footer" *ngIf="lobbyConnectMode">
+    <button class="btn btn-success" style="margin-right: 170px; width: 150px;"
+        (click)="connectToLobby()">{{lobbyConnectMode === 1 ? 'Create' : 'Join'}}</button>
 </div>
