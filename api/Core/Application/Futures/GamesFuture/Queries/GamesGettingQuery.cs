@@ -22,9 +22,9 @@ public class GamesGettingRequest : IRequest<IRestResponseResult<List<GameMode>>>
 
 public class GamesGettingRequestHandler : IRequestHandler<GamesGettingRequest, IRestResponseResult<List<GameMode>>>
 {
-    private readonly IGameRepository gameRepository;
+    private readonly IGameModeRepository gameRepository;
 
-    public GamesGettingRequestHandler(IGameRepository gameRepository)
+    public GamesGettingRequestHandler(IGameModeRepository gameRepository)
     {
         this.gameRepository = gameRepository;
     }

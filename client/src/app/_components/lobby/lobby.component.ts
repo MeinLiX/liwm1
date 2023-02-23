@@ -9,6 +9,7 @@ import { LobbyService } from 'src/app/_services/lobby.service';
   styleUrls: ['./lobby.component.css']
 })
 export class LobbyComponent {
+  isDetailedVisible = false;
   lobbyConnectModalRef: BsModalRef<LobbyConnectComponent> = new BsModalRef<LobbyConnectComponent>();
 
   constructor(public lobbyService: LobbyService, private modalService: BsModalService) { }

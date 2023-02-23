@@ -11,7 +11,7 @@ public interface IDataContext
     DbSet<AppUser> Users { get; set; }
     DbSet<AppRole> Roles { get; set; }
     DbSet<Photo> Photos { get; set; }
-    DbSet<GameMode> Games { get; set; }
+    DbSet<GameMode> GameModes { get; set; }
     DbSet<Lobby> Lobbies { get; set; }
     DbSet<AppUserRole> UserRoles { get; set; }
 

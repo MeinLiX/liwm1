@@ -2,6 +2,6 @@
 
 <app-account *ngIf="(accountService.currentUser$ | async)"></app-account>
 
-<app-lobby></app-lobby>
+<app-lobby *ngIf="(accountService.currentUser$ | async)"></app-lobby>
 
 <router-outlet></router-outlet>

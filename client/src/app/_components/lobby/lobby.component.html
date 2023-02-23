@@ -1,9 +1,12 @@
 <div style="float: right; margin-right: 20px; margin-top: 10px;">
     <div *ngIf="lobbyService.lobby$ | async">
-        <button class="btn btn-info" (click)="openLobbyModal()">
+        <button class="btn btn-info" (pointerenter)="isDetailedVisible = true">
             <i class="fa fa-users"></i>
             <p>{{(lobbyService.lobby$ | async)?.users?.length}}</p>
         </button>
+    </div>
+    <div *ngIf="(lobbyService.lobby$ | async) && isDetailedVisible">
+        
     </div>
     <div *ngIf="!(lobbyService.lobby$ | async)">
         <button class="btn btn-info" (click)="openLobbyModal()"><i class="fa fa-users"></i></button>

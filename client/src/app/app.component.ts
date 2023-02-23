@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { take } from 'rxjs';
 import { User } from './_models/user';
 import { AccountService } from './_services/account.service';
+import { LobbyService } from './_services/lobby.service';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +23,7 @@ export class AppComponent implements OnInit {
     });
   }
 
-  constructor(public accountService: AccountService, private router: Router) { }
+  constructor(public accountService: AccountService, public lobbyService: LobbyService, private router: Router) { }
 
   ngOnInit(): void {
     this.setCurrentUser();

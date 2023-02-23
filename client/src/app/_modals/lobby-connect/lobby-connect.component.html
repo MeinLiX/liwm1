@@ -21,7 +21,7 @@
     </div>
     <div *ngIf="lobbyConnectMode" class="center">
         <h5>Write lobby name</h5>
-        <input type="text">
+        <input type="text" name="lobbyName" [(ngModel)]="lobbyName" placeholder="Enter a lobby name">
     </div>
 </div>
 <div class="modal-footer" *ngIf="lobbyConnectMode">

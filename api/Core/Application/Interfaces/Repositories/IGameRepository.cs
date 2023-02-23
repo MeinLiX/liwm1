@@ -2,7 +2,7 @@ using Domain.Entities;
 
 namespace Application.Interfaces;
 
-public interface IGameRepository
+public interface IGameModeRepository
 {
     Task<GameMode?> GetGameByIdAsync(int id);
     Task<List<GameMode>> GetGamesAsync();

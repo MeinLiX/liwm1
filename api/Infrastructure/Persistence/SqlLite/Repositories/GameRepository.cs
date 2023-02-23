@@ -5,23 +5,23 @@ using Shared.Extensions;
 
 namespace SqlLite.Repositories;
 
-public class GameRepository : IGameRepository
+public class GameModeRepository : IGameModeRepository
 {
     private readonly IDataContext dataContext;
 
-    public GameRepository(IDataContext dataContext)
+    public GameModeRepository(IDataContext dataContext)
     {
         this.dataContext = dataContext;
     }
 
-    public async Task<GameMode?> GetGameByIdAsync(int id) => await this.dataContext.Games.FirstOrDefaultAsync(g => g.Id == id);
+    public async Task<GameMode?> GetGameByIdAsync(int id) => await this.dataContext.GameModes.FirstOrDefaultAsync(g => g.Id == id);
 
-    public async Task<List<GameMode>> GetGamesAsync() => await this.dataContext.Games.ToListAsync();
+    public async Task<List<GameMode>> GetGamesAsync() => await this.dataContext.GameModes.ToListAsync();
 
     public async Task<List<GameMode>> GetGamesAsync(int start, int count)
     {
-        var gamesCount = this.dataContext.Games.Count();
+        var gamesCount = this.dataContext.GameModes.Count();
         start = start.ToStart(gamesCount);
-        return await this.dataContext.Games.Skip(start).Take(count.ToCount(start, gamesCount)).ToListAsync();
+        return await this.dataContext.GameModes.Skip(start).Take(count.ToCount(start, gamesCount)).ToListAsync();
     }
 }

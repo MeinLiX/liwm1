@@ -67,7 +67,7 @@ public static class DataBaseExtensions
             }
         };
 
-        await context.Games.AddRangeAsync(gameModes.Where(g => context.Games.All(cg => cg.Name != g.Name)));
+        await context.GameModes.AddRangeAsync(gameModes.Where(g => context.GameModes.All(cg => cg.Name != g.Name)));
         await context.SaveChangesAsync();
     }
 }

@@ -47,10 +47,18 @@ export class LobbyService {
         }
       }
 
-      this.lobbySource.next(lobby);
-      this.accountService.addLobbyToUser(lobby);
-      this.toastr.success('Your join request was sent');
+      this.setLobby(lobby);
     });
+
+    this.hubConnection.on('LobbyCreate', (lobby: Lobby) => {
+      this.setLobby(lobby);
+      this.toastr.success('Lobby was created with name: ' + lobby.lobbyName);
+    });
+  }
+
+  private setLobby(lobby: Lobby) {
+    this.lobbySource.next(lobby);
+    this.accountService.addLobbyToUser(lobby);
   }
 
   stopHubConnection() {
