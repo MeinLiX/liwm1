@@ -38,11 +38,11 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddSignalR();
 builder.Services.AddAplicationLayer();
 // builder.Services.AddPersistencePostgreSQLInfrastructureLayer();
 builder.Services.AddPersistenceSqlLiteInfrastructureLayer(builder.Configuration);
 builder.Services.AddSharedInfrastructureLayer(builder.Configuration);
-builder.Services.AddSignalR();
 
 builder.Services.AddTransient<ExceptionMiddleware>();
 builder.Services.AddCors();
@@ -59,11 +59,13 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
-app.UseCors(x => x
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .SetIsOriginAllowed(origin => true)
-                .AllowCredentials());
+app.UseCors(x => x.AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials()
+                  .WithOrigins("http://localhost:4200"));
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.InitRoutes();
 

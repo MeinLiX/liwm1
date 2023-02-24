@@ -21,11 +21,10 @@ export class LobbyService {
 
   connectToLobby(user: User, lobbyName: string, lobbyConnectMode: LobbyConnectMode) {
     this.hubConnection = new HubConnectionBuilder()
-      .withUrl(this.hubUrl + 'lobby?lobbyName=' + lobbyName + '&lobbyConnectMode=' + lobbyConnectMode, {
+      .withUrl(this.hubUrl + 'lobby', {
         accessTokenFactory: () => user.token
       })
-      .withAutomaticReconnect()
-      .build();
+      .build(); 
 
     this.hubConnection.start().catch(error => console.log(error));
 
