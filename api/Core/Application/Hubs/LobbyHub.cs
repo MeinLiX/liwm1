@@ -125,6 +125,7 @@ public class LobbyHub : Hub
 
         lobby = await this.lobbyRepository.LeaveLobbyAsync(user, Context.ConnectionId);
         await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.SuccessfulyLeftLobby);
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobby.LobbyName);
         await Clients.Group(lobby.LobbyName).SendAsync(LobbyHubMethodNameConstants.UserLeftLobby, new LobbyDTO(lobby));
         return lobby;
     }
@@ -187,6 +188,7 @@ public class LobbyHub : Hub
             return;
         }
 
+        await Groups.AddToGroupAsync(lobby.PendingConnections.FirstOrDefault(pc => pc.Username == approveUsername).ConnectionId, lobbyName);
         lobby = await this.lobbyRepository.JoinLobbyAsync(approveUser, lobbyName);
         await Clients.Group(lobbyName).SendAsync(LobbyHubMethodNameConstants.UserJoined, new LobbyDTO(lobby));
     }
@@ -214,5 +216,7 @@ public class LobbyHub : Hub
         {
             await this.DeleteLobbyAsync(lobby.LobbyName);
         }
+
+        await base.OnDisconnectedAsync(exception);
     }
 }

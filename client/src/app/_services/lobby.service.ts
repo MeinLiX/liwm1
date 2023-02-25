@@ -21,12 +21,18 @@ export class LobbyService {
 
   connectToLobby(user: User, lobbyName: string, lobbyConnectMode: LobbyConnectMode) {
     this.hubConnection = new HubConnectionBuilder()
-      .withUrl(this.hubUrl + 'lobby', {
+      .withUrl(this.hubUrl + 'lobby?lobbyName=' + lobbyName + '&lobbyConnectMode=' + lobbyConnectMode, {
         accessTokenFactory: () => user.token
       })
-      .build(); 
+      .withAutomaticReconnect()
+      .build();
 
     this.hubConnection.start().catch(error => console.log(error));
+
+    this.hubConnection.on('LobbyAlreadyExists', () => {
+      this.toastr.error("Lobby with same name already exists");
+      this.stopHubConnection();
+    })
 
     this.hubConnection.on('UserAlreadyInLobby', () => {
       this.toastr.error('User already in lobby');

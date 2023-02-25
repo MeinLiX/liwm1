@@ -21,6 +21,7 @@ export class LobbyConnectComponent {
       next: user => {
         if (user && this.lobbyConnectMode && this.lobbyName) {
           this.lobbyService.connectToLobby(user, this.lobbyName, this.lobbyConnectMode);
+          this.modalRef.hide();
         }
       }
     });
