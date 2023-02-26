@@ -224,17 +224,6 @@ public class LobbyHub : Hub
 
     public override async Task OnDisconnectedAsync(Exception exception)
     {
-        var user = await GetCallerAsAppUserAsync();
-        if (user is null) return;
-
-        var lobby = await this.LeaveLobbyAsync(user);
-        if (lobby is null) return;
-
-        if (lobby.LobbyCreator == user)
-        {
-            await this.DeleteLobbyAsync(lobby.LobbyName);
-        }
-
         await base.OnDisconnectedAsync(exception);
     }
 }

@@ -45,9 +45,9 @@ public class LobbyRepository : ILobbyRepository
 
     public async Task<Lobby?> DeleteLobbyAsync(AppUser user)
     {
-        var lobby = await this.GetLobbyWithUserAsync(user);
+        var lobby = await this.dataContext.Lobbies.FirstOrDefaultAsync(l => l.LobbyCreator == user);
 
-        if (lobby != null && lobby.LobbyCreator == user)
+        if (lobby != null)
         {
             this.dataContext.Lobbies.Remove(lobby);
             await this.dataContext.SaveChangesAsync();
