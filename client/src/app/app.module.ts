@@ -18,6 +18,7 @@ import { ImageChangerComponent } from './_components/forms/image-changer/image-c
 import { GameCardComponent } from './_components/cards/game-card/game-card.component';
 import { LobbyComponent } from './_components/lobby/lobby.component';
 import { LobbyConnectComponent } from './_modals/lobby-connect/lobby-connect.component';
+import { LobbyUserCardComponent } from './_components/cards/user-card/lobbyUser-card.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { LobbyConnectComponent } from './_modals/lobby-connect/lobby-connect.com
     ImageChangerComponent,
     GameCardComponent,
     LobbyComponent,
-    LobbyConnectComponent
+    LobbyConnectComponent,
+    LobbyUserCardComponent
   ],
   imports: [
     BrowserModule,

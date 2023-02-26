@@ -1,14 +1,19 @@
 <div style="float: right; margin-right: 20px; margin-top: 10px;">
-    <div *ngIf="lobbyService.lobby$ | async">
-        <button class="btn btn-info" (pointerenter)="isDetailedVisible = true">
+    <div *ngIf="lobby">
+        <button class="btn btn-info" style="height: 32px;" (click)="isDetailedVisible = !isDetailedVisible">
             <i class="fa fa-users"></i>
-            <p>{{(lobbyService.lobby$ | async)?.users?.length}}</p>
+            <p style="display: inline-block; margin-left: 70px">{{lobby.users.length}}</p>
         </button>
     </div>
-    <div *ngIf="(lobbyService.lobby$ | async) && isDetailedVisible">
-        
+    <div *ngIf="lobby && isDetailedVisible" class="outer">
+        <ul>
+            <li *ngFor="let lobbyUser of lobby.users">
+                <i class="fas fa-crown" *ngIf="lobby.lobbyCreator == lobbyUser" style="color: orange;"></i>
+                <app-lobbyUser-card [lobbyUser]="lobbyUser" />
+            </li>
+        </ul>
     </div>
-    <div *ngIf="!(lobbyService.lobby$ | async)">
+    <div *ngIf="!lobby">
         <button class="btn btn-info" (click)="openLobbyModal()"><i class="fa fa-users"></i></button>
     </div>
 </div>
