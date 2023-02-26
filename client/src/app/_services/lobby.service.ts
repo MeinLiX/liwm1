@@ -59,6 +59,14 @@ export class LobbyService {
       this.setLobby(lobby);
       this.toastr.success('Lobby was created with name: ' + lobby.lobbyName);
     });
+
+    this.hubConnection.on('LobbyForUserFound', (lobby: Lobby) => {
+      this.setLobby(lobby);
+    });
+
+    this.hubConnection.on('LobbyForUserNotFound', () => {
+      this.stopHubConnection();
+    });
   }
 
   private setLobby(lobby: Lobby) {
