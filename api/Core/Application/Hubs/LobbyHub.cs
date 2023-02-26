@@ -50,6 +50,7 @@ public class LobbyHub : Hub
                 var lobby = await this.lobbyRepository.GetLobbyWithUserAsync(user);
                 if (lobby is not null)
                 {
+                    await this.lobbyRepository.AddConnectionAsync(user, lobby.LobbyName, Context.ConnectionId);
                     await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.LobbyForUserFound, new LobbyDTO(lobby));
                     return;
                 }
@@ -224,6 +225,15 @@ public class LobbyHub : Hub
 
     public override async Task OnDisconnectedAsync(Exception exception)
     {
+        var user = await GetCallerAsAppUserAsync();
+        if (user is not null)
+        {
+            var lobby = await this.lobbyRepository.GetLobbyWithUserAsync(user);
+            if (lobby is not null)
+            {
+                await this.lobbyRepository.RemoveConnectionAsync(user, lobby.LobbyName);
+            }
+        }
         await base.OnDisconnectedAsync(exception);
     }
 }
