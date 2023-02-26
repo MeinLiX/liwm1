@@ -1,6 +1,6 @@
 <div *ngIf="lobbyUser && photo">
     <div class="avatar-container">
-        <img src="{{photo.url}}" alt="user photo">
+        <img class="avatar" src="{{photo.url}}" alt="user photo">
         <button class="btn btn-secondary avatar-btn"><i class="fa fa-trash" (click)="kickUser()"></i></button>
     </div>
     <p>{{lobbyUser.username}}</p>

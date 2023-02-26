@@ -1,12 +1,19 @@
 <div style="float: right; margin-right: 20px; margin-top: 10px;">
-    <div *ngIf="lobby">
-        <button class="btn btn-info" style="height: 32px;" (click)="isDetailedVisible = !isDetailedVisible">
+    <div *ngIf="lobby && !isDetailedVisible">
+        <button class="btn btn-info" style="height: 38px;" (click)="isDetailedVisible = !isDetailedVisible">
             <i class="fa fa-users"></i>
-            <p style="display: inline-block; margin-left: 70px">{{lobby.users.length}}</p>
+            <p style="display: inline-block; margin-left: 10px">{{lobby.users.length}}</p>
         </button>
     </div>
     <div *ngIf="lobby && isDetailedVisible" class="outer">
-        <ul>
+        <button type="button" class="btn-close close pull-right" aria-label="Close"
+            (click)="isDetailedVisible = false">
+            <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+        <div style="margin-left: 150px;">
+            <h4>{{lobby.lobbyName}}</h4>
+        </div>
+        <ul style="list-style-type: none; margin-top: 5px; display: table-cell;">
             <li *ngFor="let lobbyUser of lobby.users">
                 <i class="fas fa-crown" *ngIf="lobby.lobbyCreator == lobbyUser" style="color: orange;"></i>
                 <app-lobbyUser-card [lobbyUser]="lobbyUser" />
