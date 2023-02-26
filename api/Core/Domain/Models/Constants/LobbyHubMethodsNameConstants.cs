@@ -20,4 +20,6 @@ public static class LobbyHubMethodNameConstants
     public const string LobbyNameMustBeProvidedInQuery = "LobbyNameMustBeProvidedInQuery";
     public const string LobbyConnectModeMustBeProvidedInQuery = "LobbyConnectModeMustBeProvidedInQuery";
     public const string HttpContextMustBeProvided = "HttpContextMustBeProvided";
+    public const string LobbyForUserFound = "LobbyForUserFound";
+    public const string LobbyForUserNotFound = "LobbyForUserNotFound";
 }

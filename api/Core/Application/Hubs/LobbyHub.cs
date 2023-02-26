@@ -30,13 +30,6 @@ public class LobbyHub : Hub
             return;
         }
 
-        var lobbyName = httpContext.Request.Query["lobbyName"].ToString();
-        if (string.IsNullOrEmpty(lobbyName))
-        {
-            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.LobbyNameMustBeProvidedInQuery);
-            return;
-        }
-
         var lobbyRequestModeStringified = httpContext.Request.Query["lobbyConnectMode"].ToString();
         if (string.IsNullOrEmpty(lobbyRequestModeStringified))
         {
@@ -50,22 +43,47 @@ public class LobbyHub : Hub
 
         var isUserInLobby = await this.lobbyRepository.IsUserInLobbyAsync(user);
 
-        if ((lobbyRequestMode == LobbyConnectMode.Create || lobbyRequestMode == LobbyConnectMode.Join) && isUserInLobby)
+        if (lobbyRequestMode == LobbyConnectMode.None)
         {
-            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.UserAlreadyInLobby);
+            if (isUserInLobby)
+            {
+                var lobby = await this.lobbyRepository.GetLobbyWithUserAsync(user);
+                if (lobby is not null)
+                {
+                    await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.LobbyForUserFound, new LobbyDTO(lobby));
+                    return;
+                }
+            }
+
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.LobbyForUserNotFound);
             return;
         }
-
-        var lobby = await this.lobbyRepository.GetLobbyByLobbyNameAsync(lobbyName);
-
-        switch (lobbyRequestMode)
+        else
         {
-            case LobbyConnectMode.Create:
-                await CreateLobbyAsync(user, lobbyName, lobby);
+            if ((lobbyRequestMode == LobbyConnectMode.Create || lobbyRequestMode == LobbyConnectMode.Join) && isUserInLobby)
+            {
+                await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.UserAlreadyInLobby);
                 return;
-            case LobbyConnectMode.Join:
-                await RequestJoinToLobbyAsync(lobbyName, user, lobby);
+            }
+
+            var lobbyName = httpContext.Request.Query["lobbyName"].ToString();
+            if (string.IsNullOrEmpty(lobbyName))
+            {
+                await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.LobbyNameMustBeProvidedInQuery);
                 return;
+            }
+
+            var lobby = await this.lobbyRepository.GetLobbyByLobbyNameAsync(lobbyName);
+
+            switch (lobbyRequestMode)
+            {
+                case LobbyConnectMode.Create:
+                    await CreateLobbyAsync(user, lobbyName, lobby);
+                    return;
+                case LobbyConnectMode.Join:
+                    await RequestJoinToLobbyAsync(lobbyName, user, lobby);
+                    return;
+            }
         }
     }
 
