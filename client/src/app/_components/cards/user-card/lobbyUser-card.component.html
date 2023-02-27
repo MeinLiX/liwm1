@@ -1,7 +1,8 @@
 <div *ngIf="lobbyUser && photo">
     <div class="avatar-container">
+        <i class="fa fa-user" *ngIf="lobbyUser.username == lobbyCreatorName" style="color: orange; margin-left: 10px; margin-top: 10px;"></i>
         <img class="avatar" src="{{photo.url}}" alt="user photo">
-        <button class="btn btn-secondary avatar-btn"><i class="fa fa-trash" (click)="kickUser()"></i></button>
+        <button *ngIf="lobbyUser.username !== lobbyCreatorName" class="btn btn-secondary avatar-btn"><i class="fa fa-trash" (click)="kickUser()"></i></button>
     </div>
     <p>{{lobbyUser.username}}</p>
 </div>

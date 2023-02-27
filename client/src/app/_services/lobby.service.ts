@@ -67,6 +67,11 @@ export class LobbyService {
     this.hubConnection.on('LobbyForUserNotFound', () => {
       this.stopHubConnection();
     });
+
+    this.hubConnection.on('JoinRequestReceived', (lobby: Lobby) => {
+      this.setLobby(lobby);
+      this.toastr.info('New join request recieved');
+    });
   }
 
   private setLobby(lobby: Lobby) {
@@ -80,8 +85,12 @@ export class LobbyService {
     }
   }
 
-  async approveUserJoin(lobbyName: string, approveUserName: string, isJoinApproved: boolean) {
-    return this.hubConnection?.invoke('ApproveUserJoinAsync', { lobbyName, approveUserName, isJoinApproved })
+  async approveUserJoin(approveUsername: string, isJoinApproved: boolean) {
+    const lobbyName = this.lobbySource.value?.lobbyName;
+    const newLobby = await this.hubConnection?.invoke<Lobby>('ApproveUserJoinAsync', { lobbyName, approveUserName: approveUsername, isJoinApproved })
       .catch(error => console.log(error));
+    if (newLobby) {
+      this.setLobby(newLobby);
+    }
   }
 }

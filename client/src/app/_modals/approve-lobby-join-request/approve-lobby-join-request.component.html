@@ -1,0 +1,17 @@
+<div class="modal-header">
+    <h3>Approve user join requests</h3>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <ul>
+        <li *ngFor="let connection of pendingConnections">
+            <div style="float: left;">
+                <p>{{connection}}</p>
+                <button class="btn-act" style="color: rgb(0, 255, 0);"><i class="fa fa-check"></i></button>
+                <button class="btn-act" style="color: red"><i class="fa fa-xmark"></i></button>
+            </div>
+        </li>
+    </ul>
+</div>

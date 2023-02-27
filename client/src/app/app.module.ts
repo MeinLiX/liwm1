@@ -19,6 +19,7 @@ import { GameCardComponent } from './_components/cards/game-card/game-card.compo
 import { LobbyComponent } from './_components/lobby/lobby.component';
 import { LobbyConnectComponent } from './_modals/lobby-connect/lobby-connect.component';
 import { LobbyUserCardComponent } from './_components/cards/user-card/lobbyUser-card.component';
+import { ApproveLobbyJoinRequestComponent } from './_modals/approve-lobby-join-request/approve-lobby-join-request.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { LobbyUserCardComponent } from './_components/cards/user-card/lobbyUser-
     GameCardComponent,
     LobbyComponent,
     LobbyConnectComponent,
-    LobbyUserCardComponent
+    LobbyUserCardComponent,
+    ApproveLobbyJoinRequestComponent
   ],
   imports: [
     BrowserModule,

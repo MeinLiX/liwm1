@@ -11,6 +11,7 @@ import { PhotosService } from 'src/app/_services/photos.service';
 })
 export class LobbyUserCardComponent implements OnInit {
   @Input() lobbyUser?: LobbyUser;
+  @Input() lobbyCreatorName?: string;
   photo?: Photo;
 
   constructor(private photosService: PhotosService) { }
