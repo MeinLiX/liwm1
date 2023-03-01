@@ -5,12 +5,16 @@
     </button>
 </div>
 <div class="modal-body">
-    <ul>
-        <li *ngFor="let connection of pendingConnections">
+    <ul style="list-style-type: none;">
+        <li *ngFor="let connection of pendingConnections" style="margin-top: 10px;">
             <div style="float: left;">
-                <p>{{connection}}</p>
-                <button class="btn-act" style="color: rgb(0, 255, 0);"><i class="fa fa-check"></i></button>
-                <button class="btn-act" style="color: red"><i class="fa fa-xmark"></i></button>
+                <h6 style="margin-top: 10px;">{{connection}}</h6>
+            </div>
+            <div>
+                <button class="btn-act btn btn-success" style="margin-left: 10px;"
+                    (click)="approveUserJoin(connection, true)"><i class=" fa fa-check"></i></button>
+                <button class="btn-act btn btn-danger" style="margin-left: 5px;"
+                    (click)="approveUserJoin(connection, false)"><i class="fa fa-trash"></i></button>
             </div>
         </li>
     </ul>

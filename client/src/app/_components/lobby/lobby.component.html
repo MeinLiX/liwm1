@@ -20,7 +20,7 @@
         <button class="btn btn-danger" style="position: relative; left: 42%; bottom: 5px;" (click)="leaveLobby()">{{(accountService.currentUser$ | async)?.username ===
             lobby.lobbyCreator.username ? 'Delete' : 'Leave'}}</button>
         <button class="btn btn-info" *ngIf="lobby.pendingConnections.length > 0"
-            style="position: relative; left: 300px; top: -4px;" (click)="openRequestsModal()"><i
+            style="position: relative; left: 220px; top: -4px;" (click)="openRequestsModal()"><i
                 class="fa fa-user-plus"></i></button>
     </div>
     <div *ngIf="!lobby">
