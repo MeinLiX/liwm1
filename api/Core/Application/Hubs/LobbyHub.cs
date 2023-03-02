@@ -105,7 +105,7 @@ public class LobbyHub : Hub
         lobby = await this.lobbyRepository.RequestLobbyJoinAsync(user, lobbyName, Context.ConnectionId);
         await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.JoinRequestSent);
         var lobbyLeaderConnectionId = lobby?.Connections.FirstOrDefault(c => c.Username == lobby.LobbyCreator.UserName)?.ConnectionId;
-        await Clients.Client(lobbyLeaderConnectionId)
+        await Clients.Clients(lobbyLeaderConnectionId)
                      .SendAsync(LobbyHubMethodNameConstants.JoinRequestReceived, new LobbyDTO(lobby));
     }
 
