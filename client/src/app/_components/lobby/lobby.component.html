@@ -12,12 +12,13 @@
         <div style="margin-left: 150px;">
             <h4>{{lobby.lobbyName}}</h4>
         </div>
-        <ul style="list-style-type: none; margin-top: 5px; display: table-cell;">
+        <ul style="list-style-type: none; margin-top: 5px; display: table-cell; max-height: 500px;">
             <li *ngFor="let lobbyUser of lobby.users">
                 <app-lobbyUser-card [lobbyUser]="lobbyUser" [lobbyCreatorName]="lobby.lobbyCreator.username" />
             </li>
         </ul>
-        <button class="btn btn-danger" style="position: relative; left: 42%; bottom: 5px;" (click)="leaveLobby()">{{(accountService.currentUser$ | async)?.username ===
+        <button class="btn btn-danger" style="position: relative; left: 42%; bottom: 5px;"
+            (click)="leaveLobby()">{{(accountService.currentUser$ | async)?.username ===
             lobby.lobbyCreator.username ? 'Delete' : 'Leave'}}</button>
         <button class="btn btn-info" *ngIf="lobby.pendingConnections.length > 0"
             style="position: relative; left: 220px; top: -4px;" (click)="openRequestsModal()"><i

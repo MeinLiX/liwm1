@@ -24,7 +24,7 @@ export class ApproveLobbyJoinRequestComponent implements OnInit {
   approveUserJoin(approveUsername: string, isJoinApproved: boolean) {
     this.lobbyService.approveUserJoin(approveUsername, isJoinApproved);
     if (this.pendingConnections) {
-      this.pendingConnections = this.pendingConnections?.filter(c => c != approveUsername);
+      this.pendingConnections = this.pendingConnections?.filter(c => c !== approveUsername);
       if (this.pendingConnections.length <= 0) {
         this.modalRef.hide();
       }

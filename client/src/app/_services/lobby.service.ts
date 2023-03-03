@@ -87,10 +87,14 @@ export class LobbyService {
 
   async approveUserJoin(approveUsername: string, isJoinApproved: boolean) {
     const lobbyName = this.lobbySource.value?.lobbyName;
-    const newLobby = await this.hubConnection?.invoke<Lobby>('ApproveUserJoinAsync', { lobbyName, approveUserName: approveUsername, isJoinApproved })
-      .catch(error => console.log(error));
-    if (newLobby) {
-      this.setLobby(newLobby);
+    if (lobbyName) {
+      console.log(lobbyName);
+      const newLobby = await this.hubConnection?.invoke<Lobby>('ApproveUserJoinAsync', lobbyName, approveUsername, isJoinApproved)
+        .catch(error => console.log(error));
+      console.log(newLobby);
+      if (newLobby) {
+        this.setLobby(newLobby);
+      }
     }
   }
 }

@@ -125,7 +125,8 @@ public class LobbyRepository : ILobbyRepository
 
     public async Task<bool> IsUserInLobbyAsync(AppUser user)
         => await this.dataContext.Lobbies.AnyAsync(l => l.Connections.Any(c => c.Username == user.UserName)
-                                                     || l.PendingConnections.Any(c => c.Username == user.UserName));
+                                                     || l.PendingConnections.Any(c => c.Username == user.UserName)
+                                                     || l.Users.Any(c => c.UserName == user.UserName));
 
     public async Task<Lobby?> AddConnectionAsync(AppUser user, string lobbyName, string connectionId)
     {
