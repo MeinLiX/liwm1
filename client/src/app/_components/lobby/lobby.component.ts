@@ -14,7 +14,7 @@ import { LobbyService } from 'src/app/_services/lobby.service';
   styleUrls: ['./lobby.component.css']
 })
 export class LobbyComponent implements OnInit {
-  lobby?: Lobby;
+  lobby: Lobby | null = null;
   isDetailedVisible = false;
   lobbyConnectModalRef: BsModalRef<LobbyConnectComponent> = new BsModalRef<LobbyConnectComponent>();
   approveLobbyJoinRequestModalRef: BsModalRef<ApproveLobbyJoinRequestComponent> = new BsModalRef<ApproveLobbyJoinRequestComponent>();
@@ -31,7 +31,7 @@ export class LobbyComponent implements OnInit {
     });
     this.lobbyService.lobby$.subscribe({
       next: lobby => {
-        if (lobby) this.lobby = lobby;
+        this.lobby = lobby;
       }
     });
   }
@@ -47,6 +47,13 @@ export class LobbyComponent implements OnInit {
   }
 
   leaveLobby() {
-
+    this.accountService.currentUser$.pipe(take(1)).subscribe({
+      next: user => {
+        if (user) {
+          this.lobbyService.leaveLobby(user.username);
+          this.isDetailedVisible = false;
+        }
+      }
+    });
   }
 }

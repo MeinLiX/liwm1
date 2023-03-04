@@ -72,11 +72,26 @@ export class LobbyService {
       this.setLobby(lobby);
       this.toastr.info('New join request recieved');
     });
+
+    this.hubConnection.on('SuccessfulyLeftLobby', () => {
+      this.toastr.success('You have left lobby: ' + this.lobbySource.value?.lobbyName);
+      this.clearLobby();
+    });
+
+    this.hubConnection.on('LobbyWasDeleted', () => {
+      this.toastr.warning('You have deleted lobby: ' + this.lobbySource.value?.lobbyName);
+      this.clearLobby();
+    });
   }
 
   private setLobby(lobby: Lobby) {
     this.lobbySource.next(lobby);
     this.accountService.addLobbyToUser(lobby);
+  }
+
+  private clearLobby() {
+    this.lobbySource.next(null);
+    this.stopHubConnection();
   }
 
   stopHubConnection() {
@@ -94,6 +109,18 @@ export class LobbyService {
       console.log(newLobby);
       if (newLobby) {
         this.setLobby(newLobby);
+      }
+    }
+  }
+
+  async leaveLobby(username: string) {
+    if (this.lobbySource.value) {
+      if (this.lobbySource.value.lobbyCreator.username === username) {
+        await this.hubConnection?.invoke('DeleteLobbyAsync', username)
+          .catch(error => console.log(error));
+      } else {
+        await this.hubConnection?.invoke('LeaveLobbyAsync', username)
+          .catch(error => console.log(error));
       }
     }
   }
