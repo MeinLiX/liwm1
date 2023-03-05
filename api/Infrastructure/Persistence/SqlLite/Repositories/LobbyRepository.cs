@@ -1,5 +1,6 @@
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace SqlLite.Repositories;
@@ -33,7 +34,8 @@ public class LobbyRepository : ILobbyRepository
                 new Connection
                 {
                     ConnectionId = connectionId,
-                    Username = user.UserName
+                    Username = user.UserName,
+                    ConnectionState = ConnectionState.Connected
                 }
             }
         };
@@ -61,7 +63,6 @@ public class LobbyRepository : ILobbyRepository
     public async Task<Lobby?> GetLobbyByLobbyNameAsync(string lobbyName) => await this.dataContext.Lobbies
                                                                                                   .Include(l => l.Connections)
                                                                                                   .Include(l => l.Users)
-                                                                                                  .Include(l => l.PendingConnections)
                                                                                                   .Include(l => l.LobbyCreator)
                                                                                                   .FirstOrDefaultAsync(l => l.LobbyName == lobbyName);
 
@@ -76,10 +77,8 @@ public class LobbyRepository : ILobbyRepository
             lobby = await this.GetLobbyByLobbyNameAsync(lobbyName);
             lobby.Users.Add(user);
 
-            var connection = lobby.PendingConnections.FirstOrDefault(c => c.Username == user.UserName);
-
-            lobby.Connections.Add(connection);
-            lobby.PendingConnections.Remove(connection);
+            var connection = lobby.Connections.FirstOrDefault(c => c.Username == user.UserName);
+            connection.ConnectionState = ConnectionState.Connected;
 
             await this.dataContext.SaveChangesAsync();
         }
@@ -94,10 +93,11 @@ public class LobbyRepository : ILobbyRepository
         if (await this.CheckIsLobbyExistsAsync(lobbyName))
         {
             lobby = await this.GetLobbyByLobbyNameAsync(lobbyName);
-            lobby.PendingConnections.Add(new Connection
+            lobby.Connections.Add(new Connection
             {
                 Username = user.UserName,
-                ConnectionId = connectionId
+                ConnectionId = connectionId,
+                ConnectionState = ConnectionState.Pending
             });
             await this.dataContext.SaveChangesAsync();
         }
@@ -125,7 +125,6 @@ public class LobbyRepository : ILobbyRepository
 
     public async Task<bool> IsUserInLobbyAsync(AppUser user)
         => await this.dataContext.Lobbies.AnyAsync(l => l.Connections.Any(c => c.Username == user.UserName)
-                                                     || l.PendingConnections.Any(c => c.Username == user.UserName)
                                                      || l.Users.Any(c => c.UserName == user.UserName));
 
     public async Task<Lobby?> AddConnectionAsync(AppUser user, string lobbyName, string connectionId)

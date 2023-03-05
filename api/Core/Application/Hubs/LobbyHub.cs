@@ -96,7 +96,7 @@ public class LobbyHub : Hub
             return;
         }
 
-        if (lobby.PendingConnections.Any(c => c.ConnectionId == Context.ConnectionId))
+        if (lobby.Connections.Where(c => c.ConnectionState == ConnectionState.Pending).Any(c => c.ConnectionId == Context.ConnectionId))
         {
             await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.JoinRequestSent);
             return;
@@ -194,7 +194,7 @@ public class LobbyHub : Hub
             return;
         }
 
-        if (lobby.PendingConnections.Any(c => c.Username != approveUsername))
+        if (lobby.Connections.Where(c => c.ConnectionState == ConnectionState.Pending).Any(c => c.Username != approveUsername))
         {
             await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoSuchPendingJoinRequestWithProvidedName, approveUsername);
             return;
@@ -208,9 +208,20 @@ public class LobbyHub : Hub
             return;
         }
 
-        await Groups.AddToGroupAsync(lobby.PendingConnections.FirstOrDefault(pc => pc.Username == approveUsername).ConnectionId, lobbyName);
-        lobby = await this.lobbyRepository.JoinLobbyAsync(approveUser, lobbyName);
-        await Clients.Group(lobbyName).SendAsync(LobbyHubMethodNameConstants.UserJoined, new LobbyDTO(lobby));
+        var pendingConnection = lobby.Connections.Where(c => c.ConnectionState == ConnectionState.Pending).FirstOrDefault(pc => pc.Username == approveUsername).ConnectionId;
+
+        if (isJoinApproved)
+        {
+            await Groups.AddToGroupAsync(pendingConnection, lobbyName);
+            lobby = await this.lobbyRepository.JoinLobbyAsync(approveUser, lobbyName);
+            await Clients.Group(lobbyName).SendAsync(LobbyHubMethodNameConstants.UserJoined, new LobbyDTO(lobby));
+        }
+        else
+        {
+            lobby = await this.lobbyRepository.RemoveConnectionAsync(approveUser, lobbyName);
+            await Clients.Clients(pendingConnection).SendAsync(LobbyHubMethodNameConstants.UserJoinDenied);
+            await Clients.Group(lobbyName).SendAsync(LobbyHubMethodNameConstants.PendingConnectionRemoved, new LobbyDTO(lobby));
+        }
     }
 
     public async Task DeleteLobbyAsync(string lobbyName)

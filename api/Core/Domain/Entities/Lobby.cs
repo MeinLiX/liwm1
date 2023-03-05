@@ -13,5 +13,4 @@ public class Lobby
     public AppUser LobbyCreator { get; set; }
     public ICollection<AppUser> Users { get; set; } = new List<AppUser>();
     public ICollection<Connection> Connections { get; set; } = new List<Connection>();
-    public ICollection<Connection> PendingConnections { get; set; } = new List<Connection>();
 }

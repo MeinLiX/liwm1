@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Models;
 
 namespace Domain.Responses.DTOs;
 
@@ -14,6 +15,6 @@ public class LobbyDTO
         this.LobbyName = lobby.LobbyName;
         this.LobbyCreator = new(lobby.LobbyCreator);
         this.Users = new List<UserDetailDTO>(lobby.Users.Select(u => new UserDetailDTO(u)));
-        this.PendingConnections = new List<string>(lobby.PendingConnections.Select(pc => pc.Username));
+        this.PendingConnections = new List<string>(lobby.Connections.Where(c => c.ConnectionState == ConnectionState.Pending).Select(c => c.Username));
     }
 }
