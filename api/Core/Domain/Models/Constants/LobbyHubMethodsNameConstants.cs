@@ -13,6 +13,7 @@ public static class LobbyHubMethodNameConstants
     public const string UserLeftLobby = "UserLeftLobby";
     public const string NoUserWasProvided = "NoUserWasProvided";
     public const string NoPermisionToApproveJoin = "NoPermisionToApproveJoin";
+    public const string NoPermisionOwnerLobby = "NoPermisionOwnerLobby";
     public const string NoSuchPendingJoinRequestWithProvidedName = "NoSuchPendingJoinRequestWithProvidedName";
     public const string UserJoined = "UserJoined";
     public const string LobbyWasDeleted = "LobbyWasDeleted";
@@ -24,4 +25,6 @@ public static class LobbyHubMethodNameConstants
     public const string LobbyForUserNotFound = "LobbyForUserNotFound";
     public const string PendingConnectionRemoved = "PendingConnectionRemoved";
     public const string UserJoinDenied = "UserJoinDenied";
+    public const string UserKicked = "UserKicked";
+    public const string UHaveBeenKicked = "UHaveBeenKicked";
 }

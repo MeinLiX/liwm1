@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Security.Claims;
 using Application.Interfaces;
 using Domain.Entities;
@@ -179,6 +180,37 @@ public class LobbyHub : Hub
         return user;
     }
 
+    private async Task<(AppUser?,Lobby?)> GetCallerAsAppUserOwnerLobbyAsync()
+    {
+        /*return (await GetCallerAsAppUserAsync()) switch
+        {
+            null => (null,null),
+            AppUser user => (await this.lobbyRepository.GetLobbyWithUserAsync(user)) switch
+            {
+                null => (null, null),
+                Lobby lobby => lobby.LobbyCreator != user ? (null, null): (user,lobby)
+            }
+        };
+        */
+        var user = await GetCallerAsAppUserAsync();
+        if (user is null)
+        {
+            return (null,null);
+        }
+        var lobby = await this.lobbyRepository.GetLobbyWithUserAsync(user);
+        if (lobby is null)
+        {
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoLobbyWithSuchUser);
+            return (null, null);
+        }
+        if (lobby.LobbyCreator != user)
+        {
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoPermisionOwnerLobby);
+            return (null, null); 
+        }
+        return (user, lobby);
+    }
+
     private async Task ApproveUserJoinAsync(string lobbyName, AppUser user, bool isJoinApproved, string approveUsername)
     {
         var lobby = await this.lobbyRepository.GetLobbyByLobbyNameAsync(lobbyName);
@@ -208,7 +240,7 @@ public class LobbyHub : Hub
             return;
         }
 
-        var pendingConnection = lobby.Connections.Where(c => c.ConnectionState == ConnectionState.Pending).FirstOrDefault(pc => pc.Username == approveUsername).ConnectionId;
+        var pendingConnection = lobby.Connections.Where(c => c.ConnectionState == ConnectionState.Pending).FirstOrDefault(pc => pc.Username == approveUsername)?.ConnectionId;
 
         if (isJoinApproved)
         {
@@ -233,6 +265,28 @@ public class LobbyHub : Hub
         }
         var lobby = await this.lobbyRepository.DeleteLobbyAsync(user);
         await Clients.Group(lobbyName).SendAsync(LobbyHubMethodNameConstants.LobbyWasDeleted);
+    }
+
+    public async Task KickUserFromLobbyAsync(string usernameKick)
+    {
+        var (user,lobby) = await GetCallerAsAppUserOwnerLobbyAsync();
+        if(user is null)
+        {
+            return;
+        }
+
+        var userToKick = lobby!.Users.FirstOrDefault(u => string.Equals(u.UserName, usernameKick));
+        if (userToKick is null)
+        {
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoUserWithSuchName);
+            return;
+        }
+
+        string connectionKickedUser = lobby.Connections.First(pc => pc.Username == userToKick.UserName).ConnectionId;
+        await this.lobbyRepository.LeaveLobbyAsync(userToKick, connectionKickedUser);
+
+        await Clients.Clients(connectionKickedUser).SendAsync(LobbyHubMethodNameConstants.UHaveBeenKicked);
+        await Clients.Group(lobby.LobbyName).SendAsync(LobbyHubMethodNameConstants.UserKicked, new LobbyDTO(lobby));
     }
 
     public override async Task OnDisconnectedAsync(Exception exception)

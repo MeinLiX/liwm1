@@ -66,7 +66,11 @@ public class LobbyRepository : ILobbyRepository
                                                                                                   .Include(l => l.LobbyCreator)
                                                                                                   .FirstOrDefaultAsync(l => l.LobbyName == lobbyName);
 
-    public async Task<Lobby?> GetLobbyWithUserAsync(AppUser user) => await this.dataContext.Lobbies.FirstOrDefaultAsync(l => l.Users.Any(u => u == user));
+    public async Task<Lobby?> GetLobbyWithUserAsync(AppUser user) => await this.dataContext.Lobbies
+                                                                                           .Include(l => l.Connections)
+                                                                                           .Include(l => l.Users)
+                                                                                           .Include(l => l.LobbyCreator)
+                                                                                           .FirstOrDefaultAsync(l => l.Users.Any(u => u == user));
 
     public async Task<Lobby?> JoinLobbyAsync(AppUser user, string lobbyName)
     {
