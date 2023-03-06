@@ -75,12 +75,22 @@ export class LobbyService {
 
     this.hubConnection.on('SuccessfulyLeftLobby', () => {
       this.toastr.success('You have left lobby: ' + this.lobbySource.value?.lobbyName);
-      this.clearLobby();
     });
 
     this.hubConnection.on('LobbyWasDeleted', () => {
       this.toastr.warning('You have deleted lobby: ' + this.lobbySource.value?.lobbyName);
-      this.clearLobby();
+    });
+
+    this.hubConnection.on('PendingConnectionRemoved', (lobby: Lobby) => {
+      this.setLobby(lobby);
+    });
+
+    this.hubConnection.on('UserLeftLobby', (lobby: Lobby) => {
+      const leftUser = this.lobbySource.value?.users.find(u => !lobby.users.includes(u));
+      if (leftUser) {
+        this.toastr.warning(leftUser.username + ' left lobby');
+      }
+      this.setLobby(lobby);
     });
   }
 
@@ -103,13 +113,8 @@ export class LobbyService {
   async approveUserJoin(approveUsername: string, isJoinApproved: boolean) {
     const lobbyName = this.lobbySource.value?.lobbyName;
     if (lobbyName) {
-      console.log(lobbyName);
-      const newLobby = await this.hubConnection?.invoke<Lobby>('ApproveUserJoinAsync', lobbyName, approveUsername, isJoinApproved)
+      await this.hubConnection?.invoke('ApproveUserJoinAsync', lobbyName, approveUsername, isJoinApproved)
         .catch(error => console.log(error));
-      console.log(newLobby);
-      if (newLobby) {
-        this.setLobby(newLobby);
-      }
     }
   }
 
@@ -122,6 +127,7 @@ export class LobbyService {
         await this.hubConnection?.invoke('LeaveLobbyAsync', username)
           .catch(error => console.log(error));
       }
+      this.clearLobby();
     }
   }
 }

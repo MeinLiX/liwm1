@@ -252,7 +252,7 @@ public class LobbyHub : Hub
         {
             lobby = await this.lobbyRepository.RemoveConnectionAsync(approveUser, lobbyName);
             await Clients.Clients(pendingConnection).SendAsync(LobbyHubMethodNameConstants.UserJoinDenied);
-            await Clients.Group(lobbyName).SendAsync(LobbyHubMethodNameConstants.PendingConnectionRemoved, new LobbyDTO(lobby));
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.PendingConnectionRemoved, new LobbyDTO(lobby));
         }
     }
 
@@ -265,6 +265,7 @@ public class LobbyHub : Hub
         }
         var lobby = await this.lobbyRepository.DeleteLobbyAsync(user);
         await Clients.Group(lobbyName).SendAsync(LobbyHubMethodNameConstants.LobbyWasDeleted);
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyName);
     }
 
     public async Task KickUserFromLobbyAsync(string usernameKick)
