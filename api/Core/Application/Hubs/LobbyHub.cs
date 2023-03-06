@@ -220,7 +220,7 @@ public class LobbyHub : Hub
         {
             lobby = await this.lobbyRepository.RemoveConnectionAsync(approveUser, lobbyName);
             await Clients.Clients(pendingConnection).SendAsync(LobbyHubMethodNameConstants.UserJoinDenied);
-            await Clients.Group(lobbyName).SendAsync(LobbyHubMethodNameConstants.PendingConnectionRemoved, new LobbyDTO(lobby));
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.PendingConnectionRemoved, new LobbyDTO(lobby));
         }
     }
 
