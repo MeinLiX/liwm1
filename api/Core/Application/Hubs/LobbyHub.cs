@@ -233,6 +233,7 @@ public class LobbyHub : Hub
         }
         var lobby = await this.lobbyRepository.DeleteLobbyAsync(user);
         await Clients.Group(lobbyName).SendAsync(LobbyHubMethodNameConstants.LobbyWasDeleted);
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyName);
     }
 
     public override async Task OnDisconnectedAsync(Exception exception)

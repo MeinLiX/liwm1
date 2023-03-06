@@ -137,7 +137,8 @@ public class LobbyRepository : ILobbyRepository
             lobby?.Connections.Add(new Connection
             {
                 Username = user.UserName,
-                ConnectionId = connectionId
+                ConnectionId = connectionId,
+                ConnectionState = ConnectionState.Connected
             });
             await this.dataContext.SaveChangesAsync();
         }

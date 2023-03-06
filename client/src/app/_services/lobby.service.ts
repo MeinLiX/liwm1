@@ -75,12 +75,10 @@ export class LobbyService {
 
     this.hubConnection.on('SuccessfulyLeftLobby', () => {
       this.toastr.success('You have left lobby: ' + this.lobbySource.value?.lobbyName);
-      this.clearLobby();
     });
 
     this.hubConnection.on('LobbyWasDeleted', () => {
       this.toastr.warning('You have deleted lobby: ' + this.lobbySource.value?.lobbyName);
-      this.clearLobby();
     });
   }
 
@@ -122,6 +120,7 @@ export class LobbyService {
         await this.hubConnection?.invoke('LeaveLobbyAsync', username)
           .catch(error => console.log(error));
       }
+      this.clearLobby();
     }
   }
 }
