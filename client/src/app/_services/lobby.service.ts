@@ -92,6 +92,15 @@ export class LobbyService {
       }
       this.setLobby(lobby);
     });
+
+    this.hubConnection.on('UHaveBeenKicked', () => {
+      this.toastr.warning('You have been kicked from lobby');
+      this.clearLobby();
+    });
+
+    this.hubConnection.on('UserKicked', (lobby: Lobby) => {
+      this.setLobby(lobby);
+    });
   }
 
   private setLobby(lobby: Lobby) {
@@ -129,5 +138,10 @@ export class LobbyService {
       }
       this.clearLobby();
     }
+  }
+
+  async kickUser(username: string) {
+    await this.hubConnection?.invoke('KickUserFromLobbyAsync', username)
+      .catch(error => console.log(error));
   }
 }

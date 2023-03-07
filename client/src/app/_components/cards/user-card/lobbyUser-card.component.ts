@@ -3,6 +3,7 @@ import { take } from 'rxjs';
 import { Photo } from 'src/app/_models/photo';
 import { LobbyUser } from 'src/app/_models/user';
 import { AccountService } from 'src/app/_services/account.service';
+import { LobbyService } from 'src/app/_services/lobby.service';
 import { PhotosService } from 'src/app/_services/photos.service';
 
 @Component({
@@ -16,7 +17,7 @@ export class LobbyUserCardComponent implements OnInit {
   currentUsername?: string;
   photo?: Photo;
 
-  constructor(private photosService: PhotosService, private accountService: AccountService) { }
+  constructor(private photosService: PhotosService, private accountService: AccountService, private lobbyService: LobbyService) { }
 
   ngOnInit(): void {
     if (this.lobbyUser) {
@@ -35,6 +36,8 @@ export class LobbyUserCardComponent implements OnInit {
   }
 
   kickUser() {
-    
+    if (this.lobbyUser) {
+      this.lobbyService.kickUser(this.lobbyUser.username);
+    }
   }
 }
