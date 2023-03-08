@@ -101,6 +101,10 @@ export class LobbyService {
     this.hubConnection.on('UserKicked', (lobby: Lobby) => {
       this.setLobby(lobby);
     });
+
+    this.hubConnection.on('UserJoinDenied', () => {
+      this.toastr.warning('Your join request was denied');
+    });
   }
 
   private setLobby(lobby: Lobby) {
