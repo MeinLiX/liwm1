@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Security.Claims;
 using Application.Interfaces;
 using Domain.Entities;
@@ -51,6 +50,7 @@ public class LobbyHub : Hub
                 var lobby = await this.lobbyRepository.GetLobbyWithUserAsync(user);
                 if (lobby is not null)
                 {
+                    await Groups.AddToGroupAsync(Context.ConnectionId, lobby.LobbyName);
                     await this.lobbyRepository.AddConnectionAsync(user, lobby.LobbyName, Context.ConnectionId);
                     await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.LobbyForUserFound, new LobbyDTO(lobby));
                     return;
@@ -180,7 +180,7 @@ public class LobbyHub : Hub
         return user;
     }
 
-    private async Task<(AppUser?,Lobby?)> GetCallerAsAppUserOwnerLobbyAsync()
+    private async Task<(AppUser?, Lobby?)> GetCallerAsAppUserOwnerLobbyAsync()
     {
         /*return (await GetCallerAsAppUserAsync()) switch
         {
@@ -195,7 +195,7 @@ public class LobbyHub : Hub
         var user = await GetCallerAsAppUserAsync();
         if (user is null)
         {
-            return (null,null);
+            return (null, null);
         }
         var lobby = await this.lobbyRepository.GetLobbyWithUserAsync(user);
         if (lobby is null)
@@ -206,7 +206,7 @@ public class LobbyHub : Hub
         if (lobby.LobbyCreator != user)
         {
             await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoPermisionOwnerLobby);
-            return (null, null); 
+            return (null, null);
         }
         return (user, lobby);
     }
@@ -270,8 +270,8 @@ public class LobbyHub : Hub
 
     public async Task KickUserFromLobbyAsync(string usernameKick)
     {
-        var (user,lobby) = await GetCallerAsAppUserOwnerLobbyAsync();
-        if(user is null)
+        var (user, lobby) = await GetCallerAsAppUserOwnerLobbyAsync();
+        if (user is null)
         {
             return;
         }
@@ -299,6 +299,7 @@ public class LobbyHub : Hub
             if (lobby is not null)
             {
                 await this.lobbyRepository.RemoveConnectionAsync(user, lobby.LobbyName);
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobby.LobbyName);
             }
         }
         await base.OnDisconnectedAsync(exception);
