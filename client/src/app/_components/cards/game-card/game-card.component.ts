@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { Game } from 'src/app/_models/game';
+import { Router } from '@angular/router';
+import { GameMode } from 'src/app/_models/gameMode';
 import { AccountService } from 'src/app/_services/account.service';
 
 @Component({
@@ -8,8 +9,13 @@ import { AccountService } from 'src/app/_services/account.service';
   styleUrls: ['./game-card.component.css']
 })
 export class GameCardComponent {
-  @Input() game?: Game;
+  @Input() game?: GameMode;
 
-  constructor(public accountService: AccountService) { }
+  constructor(public accountService: AccountService, private router: Router) { }
 
+  playSoloGame() {
+    if (this.game) {
+      this.router.navigateByUrl(this.game.name.toLowerCase());
+    }
+  }
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { take } from 'rxjs';
-import { Game } from 'src/app/_models/game';
+import { GameMode } from 'src/app/_models/gameMode';
 import { GamesService } from 'src/app/_services/games.service';
 
 @Component({
@@ -9,7 +9,7 @@ import { GamesService } from 'src/app/_services/games.service';
   styleUrls: ['./games-home.component.css']
 })
 export class GamesHomeComponent implements OnInit {
-  games?: Game[];
+  games?: GameMode[];
 
   constructor(private gamesService: GamesService) { }
 

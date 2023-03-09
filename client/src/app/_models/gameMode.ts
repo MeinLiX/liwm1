@@ -1,4 +1,4 @@
-export interface Game 
+export interface GameMode 
 {
     id: number;
     previewUrl: string;

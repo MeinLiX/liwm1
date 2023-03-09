@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 import { environment } from 'src/enviroments/environment';
-import { Game } from '../_models/game';
+import { GameMode } from '../_models/gameMode';
 import { DataRestResponseResult } from '../_models/restResponseResult';
 
 @Injectable({
@@ -14,7 +14,7 @@ export class GamesService {
   constructor(private http: HttpClient) { }
 
   getGames() {
-    return this.http.post<DataRestResponseResult<Game[]>>(this.baseUrl + 'games', {}).pipe(
+    return this.http.post<DataRestResponseResult<GameMode[]>>(this.baseUrl + 'games', {}).pipe(
       map(response => {
         return response.data;
       })
@@ -22,7 +22,7 @@ export class GamesService {
   }
 
   getGameById(id: number) {
-    return this.http.post<DataRestResponseResult<Game>>(this.baseUrl + 'games?id=' + id, {}).pipe(
+    return this.http.post<DataRestResponseResult<GameMode>>(this.baseUrl + 'games?id=' + id, {}).pipe(
       map(response => {
         return response.data;
       })
@@ -30,7 +30,7 @@ export class GamesService {
   }
 
   getGameRange(start: number, count: number) {
-    return this.http.post<DataRestResponseResult<Game[]>>(this.baseUrl + 'games?start=' + start + '&count=' + count, {}).pipe(
+    return this.http.post<DataRestResponseResult<GameMode[]>>(this.baseUrl + 'games?start=' + start + '&count=' + count, {}).pipe(
       map(response => {
         return response.data;
       })
