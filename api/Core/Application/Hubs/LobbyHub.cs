@@ -14,11 +14,13 @@ public class LobbyHub : Hub
 {
     private readonly IUserRepository userRepository;
     private readonly ILobbyRepository lobbyRepository;
+    private readonly IGameModesRepository gameModesRepository;
 
-    public LobbyHub(IUserRepository userRepository, ILobbyRepository lobbyRepository)
+    public LobbyHub(IUserRepository userRepository, ILobbyRepository lobbyRepository, IGameModesRepository gameModeRepository)
     {
         this.userRepository = userRepository;
         this.lobbyRepository = lobbyRepository;
+        this.gameModesRepository = gameModeRepository;
     }
 
     public override async Task OnConnectedAsync()
@@ -288,6 +290,31 @@ public class LobbyHub : Hub
 
         await Clients.Clients(connectionKickedUser).SendAsync(LobbyHubMethodNameConstants.UHaveBeenKicked);
         await Clients.Group(lobby.LobbyName).SendAsync(LobbyHubMethodNameConstants.UserKicked, new LobbyDTO(lobby));
+    }
+
+    public async Task ChangeGameAsync(string gameModeName)
+    {
+        var (user, lobby) = await GetCallerAsAppUserOwnerLobbyAsync();
+        if (user is null || lobby is null)
+        {
+            return;
+        }
+
+        var gameMode = await this.gameModesRepository.GetGameByNameAsync(gameModeName);
+        if (gameMode is null)
+        {
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoSuchGameModeWithProvidedName);
+            return;
+        }
+
+        // if (lobby.GameMode == gameMode)
+        // {
+        //     await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.LobbyAlreadyInThatGameMode);
+        //     return;
+        // }
+
+        lobby = await this.lobbyRepository.ChangeGameAsync(user, gameMode);
+        await Clients.Group(lobby.LobbyName).SendAsync(LobbyHubMethodNameConstants.LobbyGameModeChanged, new LobbyDTO(lobby));
     }
 
     public override async Task OnDisconnectedAsync(Exception exception)

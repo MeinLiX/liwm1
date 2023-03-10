@@ -8,10 +8,12 @@ namespace SqlLite.Repositories;
 public class LobbyRepository : ILobbyRepository
 {
     private readonly IDataContext dataContext;
+    private readonly IGameModesRepository gameModesRepository;
 
-    public LobbyRepository(IDataContext dataContext)
+    public LobbyRepository(IDataContext dataContext, IGameModesRepository gameModesRepository)
     {
         this.dataContext = dataContext;
+        this.gameModesRepository = gameModesRepository;
     }
 
     public async Task<Lobby?> CreateLobbyAsync(AppUser user, string lobbyName, string connectionId)
@@ -162,6 +164,22 @@ public class LobbyRepository : ILobbyRepository
                 lobby.Connections = lobby.Connections.Where(c => c.Username != user.UserName).ToList();
                 await this.dataContext.SaveChangesAsync();
             }
+        }
+
+        return lobby;
+    }
+
+    public async Task<Lobby?> ChangeGameAsync(AppUser user, GameMode gameMode)
+    {
+        Lobby? lobby = null;
+
+        if (await this.IsUserInLobbyAsync(user))
+        {
+            lobby = await this.GetLobbyWithUserAsync(user);
+            // if (lobby.LobbyCreator == user && gameMode.Lobbies)
+            // {
+            //     await this.dataContext.SaveChangesAsync();
+            // }
         }
 
         return lobby;

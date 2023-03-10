@@ -154,7 +154,7 @@ namespace Migrations
 
                     b.HasIndex("LobbyId");
 
-                    b.ToTable("Connections");
+                    b.ToTable("Connections", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.GameMode", b =>
@@ -173,7 +173,7 @@ namespace Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GameModes");
+                    b.ToTable("GameModes", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Lobby", b =>
@@ -198,7 +198,7 @@ namespace Migrations
 
                     b.HasIndex("LobbyCreatorId");
 
-                    b.ToTable("Lobbies");
+                    b.ToTable("Lobbies", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Photo", b =>
@@ -213,7 +213,7 @@ namespace Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Photos");
+                    b.ToTable("Photos", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

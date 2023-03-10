@@ -27,4 +27,7 @@ public static class LobbyHubMethodNameConstants
     public const string UserJoinDenied = "UserJoinDenied";
     public const string UserKicked = "UserKicked";
     public const string UHaveBeenKicked = "UHaveBeenKicked";
+    public const string NoSuchGameModeWithProvidedName = "NoSuchGameWithProvidedName";
+    public const string LobbyAlreadyInThatGameMode = "LobbyAlreadyInThatGameMode";
+    public const string LobbyGameModeChanged = "LobbyGameModeChanged";
 }

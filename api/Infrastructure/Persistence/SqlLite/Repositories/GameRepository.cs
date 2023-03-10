@@ -5,7 +5,7 @@ using Shared.Extensions;
 
 namespace SqlLite.Repositories;
 
-public class GameModeRepository : IGameModeRepository
+public class GameModeRepository : IGameModesRepository
 {
     private readonly IDataContext dataContext;
 
@@ -15,6 +15,8 @@ public class GameModeRepository : IGameModeRepository
     }
 
     public async Task<GameMode?> GetGameByIdAsync(int id) => await this.dataContext.GameModes.FirstOrDefaultAsync(g => g.Id == id);
+
+    public async Task<GameMode?> GetGameByNameAsync(string gameModeName) => await this.dataContext.GameModes.FirstOrDefaultAsync(gm => gm.Name == gameModeName);
 
     public async Task<List<GameMode>> GetGamesAsync() => await this.dataContext.GameModes.ToListAsync();
 
