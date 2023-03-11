@@ -4,8 +4,8 @@ namespace Application.Interfaces;
 
 public interface IGameModesRepository
 {
-    Task<GameMode?> GetGameByIdAsync(int id);
-    Task<GameMode?> GetGameByNameAsync(string gameModeName);
-    Task<List<GameMode>> GetGamesAsync();
-    Task<List<GameMode>> GetGamesAsync(int start, int count);
+    Task<GameMode?> GetGameModeByIdAsync(int id);
+    Task<GameMode?> GetGameModeByNameAsync(string gameModeName);
+    Task<List<GameMode>> GetGameModesAsync();
+    Task<List<GameMode>> GetGameModesAsync(int start, int count);
 }

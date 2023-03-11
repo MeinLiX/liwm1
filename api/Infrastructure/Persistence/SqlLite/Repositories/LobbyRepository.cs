@@ -176,10 +176,11 @@ public class LobbyRepository : ILobbyRepository
         if (await this.IsUserInLobbyAsync(user))
         {
             lobby = await this.GetLobbyWithUserAsync(user);
-            // if (lobby.LobbyCreator == user && gameMode.Lobbies)
-            // {
-            //     await this.dataContext.SaveChangesAsync();
-            // }
+            if (lobby.LobbyCreator == user && !gameMode.Lobbies.Contains(lobby))
+            {
+                gameMode.Lobbies.Add(lobby);
+                await this.dataContext.SaveChangesAsync();
+            }
         }
 
         return lobby;

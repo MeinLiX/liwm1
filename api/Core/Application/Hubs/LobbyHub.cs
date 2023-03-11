@@ -300,18 +300,18 @@ public class LobbyHub : Hub
             return;
         }
 
-        var gameMode = await this.gameModesRepository.GetGameByNameAsync(gameModeName);
+        var gameMode = await this.gameModesRepository.GetGameModeByNameAsync(gameModeName);
         if (gameMode is null)
         {
             await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoSuchGameModeWithProvidedName);
             return;
         }
 
-        // if (lobby.GameMode == gameMode)
-        // {
-        //     await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.LobbyAlreadyInThatGameMode);
-        //     return;
-        // }
+        if (gameMode.Lobbies.Contains(lobby))
+        {
+            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.LobbyAlreadyInThatGameMode);
+            return;
+        }
 
         lobby = await this.lobbyRepository.ChangeGameAsync(user, gameMode);
         await Clients.Group(lobby.LobbyName).SendAsync(LobbyHubMethodNameConstants.LobbyGameModeChanged, new LobbyDTO(lobby));

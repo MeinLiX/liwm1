@@ -35,18 +35,18 @@ public class GamesGettingRequestHandler : IRequestHandler<GamesGettingRequest, I
 
         if (request.id.HasValue)
         {
-            if (await this.gameRepository.GetGameByIdAsync(request.id.Value) is GameMode game)
+            if (await this.gameRepository.GetGameModeByIdAsync(request.id.Value) is GameMode game)
             {
                 games.Add(game);
             }
         }
         else if (request.start.HasValue && request.count.HasValue)
         {
-            games = await this.gameRepository.GetGamesAsync(request.start.Value, request.count.Value);
+            games = await this.gameRepository.GetGameModesAsync(request.start.Value, request.count.Value);
         }
         else
         {
-            games = await this.gameRepository.GetGamesAsync();
+            games = await this.gameRepository.GetGameModesAsync();
         }
 
         return RestResponseResult<List<GameMode>>.Success(games);

@@ -14,16 +14,16 @@ public class GameModeRepository : IGameModesRepository
         this.dataContext = dataContext;
     }
 
-    public async Task<GameMode?> GetGameByIdAsync(int id) => await this.dataContext.GameModes.FirstOrDefaultAsync(g => g.Id == id);
+    public async Task<GameMode?> GetGameModeByIdAsync(int id) => await this.dataContext.GameModes.Include(gm => gm.Lobbies).FirstOrDefaultAsync(g => g.Id == id);
 
-    public async Task<GameMode?> GetGameByNameAsync(string gameModeName) => await this.dataContext.GameModes.FirstOrDefaultAsync(gm => gm.Name == gameModeName);
+    public async Task<GameMode?> GetGameModeByNameAsync(string gameModeName) => await this.dataContext.GameModes.Include(gm => gm.Lobbies).FirstOrDefaultAsync(gm => gm.Name == gameModeName);
 
-    public async Task<List<GameMode>> GetGamesAsync() => await this.dataContext.GameModes.ToListAsync();
+    public async Task<List<GameMode>> GetGameModesAsync() => await this.dataContext.GameModes.Include(gm => gm.Lobbies).ToListAsync();
 
-    public async Task<List<GameMode>> GetGamesAsync(int start, int count)
+    public async Task<List<GameMode>> GetGameModesAsync(int start, int count)
     {
         var gamesCount = this.dataContext.GameModes.Count();
         start = start.ToStart(gamesCount);
-        return await this.dataContext.GameModes.Skip(start).Take(count.ToCount(start, gamesCount)).ToListAsync();
+        return await this.dataContext.GameModes.Include(gm => gm.Lobbies).Skip(start).Take(count.ToCount(start, gamesCount)).ToListAsync();
     }
 }
