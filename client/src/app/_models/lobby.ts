@@ -1,3 +1,4 @@
+import { GameMode } from "./gameMode";
 import { LobbyUser } from "./user";
 
 export interface Lobby {
@@ -5,4 +6,5 @@ export interface Lobby {
     lobbyCreator: LobbyUser;
     users: LobbyUser[];
     pendingConnections: string[];
+    gameMode: GameMode;
 }

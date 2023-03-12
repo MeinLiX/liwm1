@@ -7,6 +7,7 @@ import { LobbyConnectMode } from '../_models/lobbyConnectMode';
 import { BehaviorSubject } from 'rxjs';
 import { Lobby } from '../_models/lobby';
 import { AccountService } from './account.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class LobbyService {
   private lobbySource = new BehaviorSubject<Lobby | null>(null);
   lobby$ = this.lobbySource.asObservable();
 
-  constructor(private toastr: ToastrService, private accountService: AccountService) { }
+  constructor(private toastr: ToastrService, private accountService: AccountService, private router: Router) { }
 
   connectToLobby(user: User, lobbyName: string, lobbyConnectMode: LobbyConnectMode) {
     this.hubConnection = new HubConnectionBuilder()
@@ -105,6 +106,15 @@ export class LobbyService {
     this.hubConnection.on('UserJoinDenied', () => {
       this.toastr.warning('Your join request was denied');
     });
+
+    this.hubConnection.on('NoSuchGameWithProvidedName', () => {
+      this.toastr.warning('This game does not exist');
+    });
+
+    this.hubConnection.on('LobbyGameModeChanged', (lobby: Lobby) => {
+      this.setLobby(lobby);
+      this.router.navigateByUrl(lobby.gameMode.name);
+    });
   }
 
   private setLobby(lobby: Lobby) {
@@ -146,6 +156,11 @@ export class LobbyService {
 
   async kickUser(username: string) {
     await this.hubConnection?.invoke('KickUserFromLobbyAsync', username)
+      .catch(error => console.log(error));
+  }
+
+  async changeGameMode(gameModeName: string) {
+    await this.hubConnection?.invoke('ChangeGameModeAsync', gameModeName)
       .catch(error => console.log(error));
   }
 }

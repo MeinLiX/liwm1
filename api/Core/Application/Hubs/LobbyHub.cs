@@ -292,7 +292,7 @@ public class LobbyHub : Hub
         await Clients.Group(lobby.LobbyName).SendAsync(LobbyHubMethodNameConstants.UserKicked, new LobbyDTO(lobby));
     }
 
-    public async Task ChangeGameAsync(string gameModeName)
+    public async Task ChangeGameModeAsync(string gameModeName)
     {
         var (user, lobby) = await GetCallerAsAppUserOwnerLobbyAsync();
         if (user is null || lobby is null)
