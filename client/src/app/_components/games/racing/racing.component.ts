@@ -1,5 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { delay } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
 import { Car } from 'src/app/_models/car';
 import { LobbyService } from 'src/app/_services/lobby.service';
 
@@ -41,7 +40,7 @@ export class RacingComponent implements OnInit {
         });
 
         this.ctx.font = '72px serif';
-        this.ctx.fillText('Tap to start', 355, 350);
+        this.ctx.fillText('Tap to start', this.canvas.width / 2 - 155, this.canvas.height / 2);
       }
     }
   }
@@ -57,13 +56,14 @@ export class RacingComponent implements OnInit {
           this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
           this.ctx.font = '72px serif';
-          this.ctx.fillText(counter.toString(), 485, 350);
+          this.ctx.fillText(counter.toString(), this.canvas.width / 2 - 25, this.canvas.height / 2);
 
           await sleep(1000);
         }
 
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawCars();
+        this.drawTransmissionGUI();
       }
     } else {
 
@@ -80,25 +80,27 @@ export class RacingComponent implements OnInit {
   }
 
   private createCar() {
-    if (this.cars && this.cars.length > 1) {
-      const isLastIndexEven = (this.cars.length - 1) % 2 === 0;
-      if (isLastIndexEven) {
-        const car = this.cars.length - 3 !== -1
-          ? this.cars[this.cars.length - 3]
-          : this.cars[0];
-        this.cars.push(new Car(car.x + (this.carWidth * 1.5), car.y));
+    if (this.canvas) {
+      if (this.cars && this.cars.length > 1) {
+        const isLastIndexEven = (this.cars.length - 1) % 2 === 0;
+        if (isLastIndexEven) {
+          const car = this.cars.length - 3 !== -1
+            ? this.cars[this.cars.length - 3]
+            : this.cars[0];
+          this.cars.push(new Car(car.x + (this.carWidth * 1.5), car.y));
+        } else {
+          const car = this.cars[this.cars.length - 3];
+          this.cars.push(new Car(car.x - (this.carWidth * 1.5), car.y));
+        }
       } else {
-        const car = this.cars[this.cars.length - 3];
-        this.cars.push(new Car(car.x - (this.carWidth * 1.5), car.y));
+        const cars = [new Car(this.canvas.width / 2 - this.carWidth * 0.5, this.canvas.height - 100)];
+        this.cars = cars;
       }
-    } else {
-      const cars = [new Car(480, 600)];
-      this.cars = cars;
     }
   }
 
   private drawRoad(car: Car): void {
-    if (this.ctx) {
+    if (this.ctx && this.canvas) {
       this.ctx.beginPath();
 
       this.ctx.moveTo(car.x - this.carWidth * 0.5, 0);
@@ -109,7 +111,7 @@ export class RacingComponent implements OnInit {
       this.ctx.lineTo(car.x + this.carWidth * 1.5, 700);
       this.ctx.stroke();
 
-      for (let i = 0; i <= 700; i += 40) {
+      for (let i = 0; i <= this.canvas.height; i += 40) {
         this.ctx.moveTo(car.x + this.carWidth * 0.5, i + this.carWidth * 0.5);
         this.ctx.lineTo(car.x + this.carWidth * 0.5, i + this.carWidth);
         this.ctx.stroke();
@@ -126,5 +128,9 @@ export class RacingComponent implements OnInit {
       this.ctx.stroke();
       this.ctx.closePath();
     }
+  }
+
+  private drawTransmissionGUI(): void {
+
   }
 }
