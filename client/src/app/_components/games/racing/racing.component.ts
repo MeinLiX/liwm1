@@ -11,6 +11,8 @@ export class RacingComponent implements OnInit {
 
   readonly carWidth = 40;
   readonly carHeight = 65;
+  readonly transmissionGUIWidth = 30;
+  readonly transmissionGUIHeight = 200;
 
   canvas?: HTMLCanvasElement;
   ctx?: CanvasRenderingContext2D | null;
@@ -125,12 +127,28 @@ export class RacingComponent implements OnInit {
     if (this.ctx) {
       this.ctx.beginPath();
       this.ctx.fillRect(car.x, car.y, this.carWidth, this.carHeight);
-      this.ctx.stroke();
       this.ctx.closePath();
     }
   }
 
   private drawTransmissionGUI(): void {
-
+    if (this.ctx && this.canvas) {
+      const x = this.canvas.width - this.transmissionGUIWidth * 1.5;
+      this.ctx.beginPath();
+      //red part
+      this.ctx.fillStyle = '#E74C3C';
+      this.ctx.fillRect(x, this.canvas.height / 2 + this.transmissionGUIHeight / 5, this.transmissionGUIWidth, this.transmissionGUIHeight / 2.5);
+      this.ctx.fillRect(x, this.canvas.height / 2 - this.transmissionGUIHeight / 2.5, this.transmissionGUIWidth, this.transmissionGUIHeight / 5);
+      //yellow part
+      this.ctx.fillStyle = '#FFA533';
+      this.ctx.fillRect(x, this.canvas.height / 2 - this.transmissionGUIHeight / 5, this.transmissionGUIWidth, this.transmissionGUIHeight / 2.5);
+      //green part
+      this.ctx.fillStyle = '#00BB08';
+      this.ctx.fillRect(x, this.canvas.height / 2 - this.transmissionGUIHeight / 5, this.transmissionGUIWidth, this.transmissionGUIHeight / 10);
+      //blue part (rare)
+      this.ctx.fillStyle = '#5834eb';
+      this.ctx.fillRect(x, this.canvas.height / 2 - this.transmissionGUIHeight / 6, this.transmissionGUIWidth, this.transmissionGUIHeight / 50);
+      this.ctx.closePath();
+    }
   }
 }
