@@ -65,7 +65,16 @@ export class RacingComponent implements OnInit {
 
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawCars();
-        this.drawTransmissionGUI();
+
+        let positionLineY = this.canvas.height / 2 + this.transmissionGUIHeight / 5 + this.transmissionGUIHeight / 2.5;
+        setInterval(() => {
+          this.drawTransmissionGUI();
+          this.drawTransmissionPosition(positionLineY);
+          positionLineY -= this.transmissionGUIHeight / 100;
+          if (this.canvas && positionLineY <  this.canvas.height / 2 - this.transmissionGUIHeight / 2.5) {
+            positionLineY = this.canvas.height / 2 + this.transmissionGUIHeight / 5 + this.transmissionGUIHeight / 2.5;
+          }
+        }, 10);
       }
     } else {
 
@@ -148,6 +157,18 @@ export class RacingComponent implements OnInit {
       //blue part (rare)
       this.ctx.fillStyle = '#5834eb';
       this.ctx.fillRect(x, this.canvas.height / 2 - this.transmissionGUIHeight / 6, this.transmissionGUIWidth, this.transmissionGUIHeight / 50);
+      this.ctx.closePath();
+    }
+  }
+
+  private drawTransmissionPosition(y: number): void {
+    if (this.ctx && this.canvas) {
+      this.ctx.beginPath();
+      const x = this.canvas.width - this.transmissionGUIWidth * 1.5 - 15;
+      this.ctx.clearRect(x - 10, 0, 20, this.canvas.height);
+      this.ctx.arc(x, y, 10, 0, Math.PI * 2);
+      this.ctx.fillStyle = "#0095DD";
+      this.ctx.fill();
       this.ctx.closePath();
     }
   }
