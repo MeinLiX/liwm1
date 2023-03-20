@@ -13,6 +13,7 @@ export class RacingComponent implements OnInit {
   readonly carHeight = 65;
   readonly transmissionGUIWidth = 30;
   readonly transmissionGUIHeight = 200;
+  readonly transmissionBallRadius = 10;
 
   canvas?: HTMLCanvasElement;
   ctx?: CanvasRenderingContext2D | null;
@@ -71,10 +72,10 @@ export class RacingComponent implements OnInit {
           this.drawTransmissionGUI();
           this.drawTransmissionPosition(positionLineY);
           positionLineY -= this.transmissionGUIHeight / 100;
-          if (this.canvas && positionLineY <  this.canvas.height / 2 - this.transmissionGUIHeight / 2.5) {
+          if (this.canvas && positionLineY < this.canvas.height / 2 - this.transmissionGUIHeight / 2.5) {
             positionLineY = this.canvas.height / 2 + this.transmissionGUIHeight / 5 + this.transmissionGUIHeight / 2.5;
           }
-        }, 10);
+        }, 15);
       }
     } else {
 
@@ -112,8 +113,6 @@ export class RacingComponent implements OnInit {
 
   private drawRoad(car: Car): void {
     if (this.ctx && this.canvas) {
-      this.ctx.beginPath();
-
       this.ctx.moveTo(car.x - this.carWidth * 0.5, 0);
       this.ctx.lineTo(car.x - this.carWidth * 0.5, 700);
       this.ctx.stroke();
@@ -127,47 +126,58 @@ export class RacingComponent implements OnInit {
         this.ctx.lineTo(car.x + this.carWidth * 0.5, i + this.carWidth);
         this.ctx.stroke();
       }
-
-      this.ctx.closePath();
     }
   }
 
   private drawCar(car: Car): void {
     if (this.ctx) {
-      this.ctx.beginPath();
       this.ctx.fillRect(car.x, car.y, this.carWidth, this.carHeight);
-      this.ctx.closePath();
     }
   }
 
   private drawTransmissionGUI(): void {
     if (this.ctx && this.canvas) {
       const x = this.canvas.width - this.transmissionGUIWidth * 1.5;
-      this.ctx.beginPath();
       //red part
       this.ctx.fillStyle = '#E74C3C';
       this.ctx.fillRect(x, this.canvas.height / 2 + this.transmissionGUIHeight / 5, this.transmissionGUIWidth, this.transmissionGUIHeight / 2.5);
       this.ctx.fillRect(x, this.canvas.height / 2 - this.transmissionGUIHeight / 2.5, this.transmissionGUIWidth, this.transmissionGUIHeight / 5);
       //yellow part
       this.ctx.fillStyle = '#FFA533';
-      this.ctx.fillRect(x, this.canvas.height / 2 - this.transmissionGUIHeight / 5, this.transmissionGUIWidth, this.transmissionGUIHeight / 2.5);
+      this.ctx.fillRect(x, this.canvas.height / 2 - this.transmissionGUIHeight / 10, this.transmissionGUIWidth, this.transmissionGUIHeight / 2.5);
       //green part
       this.ctx.fillStyle = '#00BB08';
       this.ctx.fillRect(x, this.canvas.height / 2 - this.transmissionGUIHeight / 5, this.transmissionGUIWidth, this.transmissionGUIHeight / 10);
       //blue part (rare)
       this.ctx.fillStyle = '#5834eb';
       this.ctx.fillRect(x, this.canvas.height / 2 - this.transmissionGUIHeight / 6, this.transmissionGUIWidth, this.transmissionGUIHeight / 50);
-      this.ctx.closePath();
     }
   }
 
   private drawTransmissionPosition(y: number): void {
     if (this.ctx && this.canvas) {
+      const x = this.canvas.width - this.transmissionGUIWidth * 1.5 - this.transmissionBallRadius * 1.8;
+      this.ctx.clearRect(x - this.transmissionBallRadius, 0, 2.5 * this.transmissionBallRadius, this.canvas.height);
+      
       this.ctx.beginPath();
-      const x = this.canvas.width - this.transmissionGUIWidth * 1.5 - 15;
-      this.ctx.clearRect(x - 10, 0, 20, this.canvas.height);
-      this.ctx.arc(x, y, 10, 0, Math.PI * 2);
-      this.ctx.fillStyle = "#0095DD";
+      this.ctx.moveTo(x, y);
+      this.ctx.lineTo(x + this.transmissionBallRadius * 1.5, y);
+      this.ctx.stroke();
+      this.ctx.closePath();
+
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, this.transmissionBallRadius, 0, Math.PI * 2);
+      
+      if (y > this.canvas.height / 2 - this.transmissionGUIHeight / 6 && y < this.canvas.height / 2 - this.transmissionGUIHeight / 6 + this.transmissionGUIHeight / 50) {
+        this.ctx.fillStyle = '#5834eb';
+      } else if (y > this.canvas.height / 2 + this.transmissionGUIHeight / 5 || (y > this.canvas.height / 2 - this.transmissionGUIHeight / 2.5 && y < this.canvas.height / 2 - this.transmissionGUIHeight / 5)) {
+        this.ctx.fillStyle = '#E74C3C';
+      } else if (y > this.canvas.height / 2 - this.transmissionGUIHeight / 10) {
+        this.ctx.fillStyle = '#FFA533';
+      } else if (y > this.canvas.height / 2 - this.transmissionGUIHeight / 5) {
+        this.ctx.fillStyle = '#00BB08';
+      }
+
       this.ctx.fill();
       this.ctx.closePath();
     }
