@@ -20,6 +20,8 @@ export class RacingComponent implements OnInit {
   cars?: Car[];
 
   isGamePlaying = false;
+  positionLineY = 0;
+  transmission = 0;
 
   constructor(private lobbyService: LobbyService) { }
 
@@ -67,18 +69,53 @@ export class RacingComponent implements OnInit {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawCars();
 
-        let positionLineY = this.canvas.height / 2 + this.transmissionGUIHeight / 5 + this.transmissionGUIHeight / 2.5;
+        this.resetPositionLineY();
+        this.drawTransmissionNumber();
         setInterval(() => {
           this.drawTransmissionGUI();
-          this.drawTransmissionPosition(positionLineY);
-          positionLineY -= this.transmissionGUIHeight / 100;
-          if (this.canvas && positionLineY < this.canvas.height / 2 - this.transmissionGUIHeight / 2.5) {
-            positionLineY = this.canvas.height / 2 + this.transmissionGUIHeight / 5 + this.transmissionGUIHeight / 2.5;
+          this.drawTransmissionPosition(this.positionLineY);
+          this.positionLineY -= this.transmissionGUIHeight / 100;
+          if (this.canvas && this.positionLineY < this.canvas.height / 2 - this.transmissionGUIHeight / 2.5) {
+            this.resetPositionLineY();
+            this.incrementTransmission();
+            this.drawTransmissionNumber();
           }
         }, 15);
       }
     } else {
+      this.resetPositionLineY();
+      this.incrementTransmission();
+      this.drawTransmissionNumber();
+    }
+  }
 
+  private resetPositionLineY() {
+    if (this.canvas) {
+      this.positionLineY = this.canvas.height / 2 + this.transmissionGUIHeight / 5 + this.transmissionGUIHeight / 2.5;
+    }
+  }
+
+  private incrementTransmission() {
+    this.transmission++;
+    if (this.transmission >= 10) {
+      this.transmission--;
+    }
+  }
+
+  private drawTransmissionNumber() {
+    if (this.ctx && this.canvas) {
+      this.ctx.beginPath();
+
+      const x = this.canvas.width - this.transmissionGUIWidth * 1.5 + 48 / 10;
+      const y = this.canvas.height / 2 - this.transmissionGUIHeight / 2.5 - 15;
+
+      this.ctx.clearRect(x - 17, y - 40, 48, 48);
+
+      this.ctx.font = '48px serif';
+      this.ctx.fillStyle = '#000';
+      this.ctx.fillText(this.transmission.toString(), x, y);
+
+      this.ctx.closePath();
     }
   }
 
@@ -158,7 +195,7 @@ export class RacingComponent implements OnInit {
     if (this.ctx && this.canvas) {
       const x = this.canvas.width - this.transmissionGUIWidth * 1.5 - this.transmissionBallRadius * 1.8;
       this.ctx.clearRect(x - this.transmissionBallRadius, 0, 2.5 * this.transmissionBallRadius, this.canvas.height);
-      
+
       this.ctx.beginPath();
       this.ctx.moveTo(x, y);
       this.ctx.lineTo(x + this.transmissionBallRadius * 1.5, y);
@@ -167,7 +204,7 @@ export class RacingComponent implements OnInit {
 
       this.ctx.beginPath();
       this.ctx.arc(x, y, this.transmissionBallRadius, 0, Math.PI * 2);
-      
+
       if (y > this.canvas.height / 2 - this.transmissionGUIHeight / 6 && y < this.canvas.height / 2 - this.transmissionGUIHeight / 6 + this.transmissionGUIHeight / 50) {
         this.ctx.fillStyle = '#5834eb';
       } else if (y > this.canvas.height / 2 + this.transmissionGUIHeight / 5 || (y > this.canvas.height / 2 - this.transmissionGUIHeight / 2.5 && y < this.canvas.height / 2 - this.transmissionGUIHeight / 5)) {
