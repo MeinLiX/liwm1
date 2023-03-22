@@ -22,6 +22,7 @@ export class RacingComponent implements OnInit {
   isGamePlaying = false;
   positionLineY = 0;
   transmission = 0;
+  transmissionDelayTime = 15;
 
   constructor(private lobbyService: LobbyService) { }
 
@@ -71,6 +72,7 @@ export class RacingComponent implements OnInit {
 
         this.resetPositionLineY();
         this.drawTransmissionNumber();
+
         setInterval(() => {
           this.drawTransmissionGUI();
           this.drawTransmissionPosition(this.positionLineY);
@@ -80,18 +82,42 @@ export class RacingComponent implements OnInit {
             this.incrementTransmission();
             this.drawTransmissionNumber();
           }
+        }, this.transmissionDelayTime);
+
+        setInterval(() => {
+          if (this.ctx && this.canvas) {
+            this.ctx.clearRect(0, 0, this.canvas.width - this.transmissionGUIWidth * 1.5 - this.transmissionBallRadius * 3, this.canvas.height);
+
+            if (this.cars) {
+              const car = this.cars[0];
+              car.y -= car.dy;
+
+              if (car.y < 0) {
+                car.y = this.canvas.height - 100;
+              }
+            }
+
+            this.drawCars();
+          }
         }, 15);
       }
     } else {
       this.resetPositionLineY();
       this.incrementTransmission();
       this.drawTransmissionNumber();
+      this.accelerateCars();
     }
   }
 
   private resetPositionLineY() {
     if (this.canvas) {
       this.positionLineY = this.canvas.height / 2 + this.transmissionGUIHeight / 5 + this.transmissionGUIHeight / 2.5;
+    }
+  }
+
+  private accelerateCars() {
+    if (this.cars) {
+      this.cars[0].dy += 0.5;
     }
   }
 
@@ -150,6 +176,8 @@ export class RacingComponent implements OnInit {
 
   private drawRoad(car: Car): void {
     if (this.ctx && this.canvas) {
+      this.ctx.beginPath();
+
       this.ctx.moveTo(car.x - this.carWidth * 0.5, 0);
       this.ctx.lineTo(car.x - this.carWidth * 0.5, 700);
       this.ctx.stroke();
@@ -163,12 +191,17 @@ export class RacingComponent implements OnInit {
         this.ctx.lineTo(car.x + this.carWidth * 0.5, i + this.carWidth);
         this.ctx.stroke();
       }
+
+      this.ctx.closePath();
     }
   }
 
   private drawCar(car: Car): void {
     if (this.ctx) {
+      this.ctx.beginPath();
+      this.ctx.fillStyle = '#000';
       this.ctx.fillRect(car.x, car.y, this.carWidth, this.carHeight);
+      this.ctx.closePath();
     }
   }
 
