@@ -117,11 +117,12 @@ export class RacingComponent implements OnInit {
 
   private accelerateCars() {
     if (this.cars) {
-      this.cars[0].dy += 0.5;
+      this.cars[0].dy += 1;
     }
   }
 
   private incrementTransmission() {
+    this.transmissionDelayTime += 15;
     this.transmission++;
     if (this.transmission >= 10) {
       this.transmission--;
