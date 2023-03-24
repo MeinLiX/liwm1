@@ -105,7 +105,7 @@ export class RacingComponent implements OnInit {
       this.resetPositionLineY();
       this.incrementTransmission();
       this.drawTransmissionNumber();
-      this.accelerateCars();
+      this.accelerateCar();
     }
   }
 
@@ -115,9 +115,30 @@ export class RacingComponent implements OnInit {
     }
   }
 
-  private accelerateCars() {
-    if (this.cars) {
-      this.cars[0].dy += 1;
+  private accelerateCar() {
+    if (this.cars && this.canvas && this.ctx) {
+      let addedSpeed = 0;
+
+      console.log(this.positionLineY);
+
+      if (this.positionLineY > this.canvas.height / 2 - this.transmissionGUIHeight / 6 && this.positionLineY < this.canvas.height / 2 - this.transmissionGUIHeight / 6 + this.transmissionGUIHeight / 50) {
+        addedSpeed = 1.5;
+      } else if (this.positionLineY > this.canvas.height / 2 + this.transmissionGUIHeight / 5 || (this.positionLineY > this.canvas.height / 2 - this.transmissionGUIHeight / 2.5 && this.positionLineY < this.canvas.height / 2 - this.transmissionGUIHeight / 5)) {
+        addedSpeed = -1;
+      } else if (this.positionLineY > this.canvas.height / 2 - this.transmissionGUIHeight / 10) {
+        addedSpeed = -0.5;
+      } else if (this.positionLineY > this.canvas.height / 2 - this.transmissionGUIHeight / 5) {
+        addedSpeed = 1;
+      }
+
+      console.log(addedSpeed);
+
+      const currentCar = this.cars[0];
+      if (currentCar.dy + addedSpeed > 0) {
+        currentCar.dy += addedSpeed;
+      } else {
+        currentCar.dy = 1;
+      }
     }
   }
 
