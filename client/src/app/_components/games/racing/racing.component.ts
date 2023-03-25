@@ -22,7 +22,7 @@ export class RacingComponent implements OnInit {
   isGamePlaying = false;
   positionLineY = 0;
   transmission = 0;
-  transmissionDelayTime = 15;
+  transmissionDelayTime = 1;
 
   constructor(private lobbyService: LobbyService) { }
 
@@ -76,16 +76,17 @@ export class RacingComponent implements OnInit {
         setInterval(() => {
           this.drawTransmissionGUI();
           this.drawTransmissionPosition(this.positionLineY);
-          this.positionLineY -= this.transmissionGUIHeight / 100;
+          this.positionLineY -= this.transmissionGUIHeight / 100 / this.transmissionDelayTime;
           if (this.canvas && this.positionLineY < this.canvas.height / 2 - this.transmissionGUIHeight / 2.5) {
             this.resetPositionLineY();
             this.incrementTransmission();
             this.drawTransmissionNumber();
+            this.accelerateCar();
           }
-        }, this.transmissionDelayTime);
+        }, 15);
 
         setInterval(() => {
-          if (this.ctx && this.canvas) {
+          if (this.ctx && this.canvas) {  
             this.ctx.clearRect(0, 0, this.canvas.width - this.transmissionGUIWidth * 1.5 - this.transmissionBallRadius * 3, this.canvas.height);
 
             if (this.cars) {
@@ -102,10 +103,10 @@ export class RacingComponent implements OnInit {
         }, 15);
       }
     } else {
-      this.resetPositionLineY();
       this.incrementTransmission();
       this.drawTransmissionNumber();
       this.accelerateCar();
+      this.resetPositionLineY();
     }
   }
 
@@ -119,19 +120,15 @@ export class RacingComponent implements OnInit {
     if (this.cars && this.canvas && this.ctx) {
       let addedSpeed = 0;
 
-      console.log(this.positionLineY);
-
       if (this.positionLineY > this.canvas.height / 2 - this.transmissionGUIHeight / 6 && this.positionLineY < this.canvas.height / 2 - this.transmissionGUIHeight / 6 + this.transmissionGUIHeight / 50) {
         addedSpeed = 1.5;
       } else if (this.positionLineY > this.canvas.height / 2 + this.transmissionGUIHeight / 5 || (this.positionLineY > this.canvas.height / 2 - this.transmissionGUIHeight / 2.5 && this.positionLineY < this.canvas.height / 2 - this.transmissionGUIHeight / 5)) {
         addedSpeed = -1;
       } else if (this.positionLineY > this.canvas.height / 2 - this.transmissionGUIHeight / 10) {
-        addedSpeed = -0.5;
+        addedSpeed = 0.5;
       } else if (this.positionLineY > this.canvas.height / 2 - this.transmissionGUIHeight / 5) {
         addedSpeed = 1;
       }
-
-      console.log(addedSpeed);
 
       const currentCar = this.cars[0];
       if (currentCar.dy + addedSpeed > 0) {
@@ -143,7 +140,10 @@ export class RacingComponent implements OnInit {
   }
 
   private incrementTransmission() {
-    this.transmissionDelayTime += 15;
+    if (this.transmissionDelayTime < 2) {
+      this.transmissionDelayTime += 0.25;
+    }
+
     this.transmission++;
     if (this.transmission >= 10) {
       this.transmission--;
