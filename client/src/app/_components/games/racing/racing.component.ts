@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Car } from 'src/app/_models/car';
+import { RacingTransmissionRange } from 'src/app/_models/racingTransmissionRange';
 import { LobbyService } from 'src/app/_services/lobby.service';
 
 @Component({
@@ -14,6 +15,7 @@ export class RacingComponent implements OnInit {
   readonly transmissionGUIWidth = 30;
   readonly transmissionGUIHeight = 200;
   readonly transmissionBallRadius = 10;
+  readonly interval = 15;
 
   canvas?: HTMLCanvasElement;
   ctx?: CanvasRenderingContext2D | null;
@@ -83,10 +85,10 @@ export class RacingComponent implements OnInit {
             this.drawTransmissionNumber();
             this.accelerateCar();
           }
-        }, 15);
+        }, this.interval);
 
         setInterval(() => {
-          if (this.ctx && this.canvas) {  
+          if (this.ctx && this.canvas) {
             this.ctx.clearRect(0, 0, this.canvas.width - this.transmissionGUIWidth * 1.5 - this.transmissionBallRadius * 3, this.canvas.height);
 
             if (this.cars) {
@@ -100,7 +102,7 @@ export class RacingComponent implements OnInit {
 
             this.drawCars();
           }
-        }, 15);
+        }, this.interval);
       }
     } else {
       this.incrementTransmission();
@@ -120,13 +122,13 @@ export class RacingComponent implements OnInit {
     if (this.cars && this.canvas && this.ctx) {
       let addedSpeed = 0;
 
-      if (this.positionLineY > this.canvas.height / 2 - this.transmissionGUIHeight / 6 && this.positionLineY < this.canvas.height / 2 - this.transmissionGUIHeight / 6 + this.transmissionGUIHeight / 50) {
+      if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Rare)) {
         addedSpeed = 1.5;
-      } else if (this.positionLineY > this.canvas.height / 2 + this.transmissionGUIHeight / 5 || (this.positionLineY > this.canvas.height / 2 - this.transmissionGUIHeight / 2.5 && this.positionLineY < this.canvas.height / 2 - this.transmissionGUIHeight / 5)) {
+      } else if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Bad)) {
         addedSpeed = -1;
-      } else if (this.positionLineY > this.canvas.height / 2 - this.transmissionGUIHeight / 10) {
+      } else if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Medium)) {
         addedSpeed = 0.5;
-      } else if (this.positionLineY > this.canvas.height / 2 - this.transmissionGUIHeight / 5) {
+      } else if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Good)) {
         addedSpeed = 1;
       }
 
@@ -260,18 +262,41 @@ export class RacingComponent implements OnInit {
       this.ctx.beginPath();
       this.ctx.arc(x, y, this.transmissionBallRadius, 0, Math.PI * 2);
 
-      if (y > this.canvas.height / 2 - this.transmissionGUIHeight / 6 && y < this.canvas.height / 2 - this.transmissionGUIHeight / 6 + this.transmissionGUIHeight / 50) {
+      if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Rare)) {
         this.ctx.fillStyle = '#5834eb';
-      } else if (y > this.canvas.height / 2 + this.transmissionGUIHeight / 5 || (y > this.canvas.height / 2 - this.transmissionGUIHeight / 2.5 && y < this.canvas.height / 2 - this.transmissionGUIHeight / 5)) {
+      } else if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Bad)) {
         this.ctx.fillStyle = '#E74C3C';
-      } else if (y > this.canvas.height / 2 - this.transmissionGUIHeight / 10) {
+      } else if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Medium)) {
         this.ctx.fillStyle = '#FFA533';
-      } else if (y > this.canvas.height / 2 - this.transmissionGUIHeight / 5) {
+      } else if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Good)) {
         this.ctx.fillStyle = '#00BB08';
       }
 
       this.ctx.fill();
       this.ctx.closePath();
     }
+  }
+
+  private isYInRange(y: number, racingTransmissionRange: RacingTransmissionRange): boolean {
+    let result = false;
+
+    if (this.canvas) {
+      switch (racingTransmissionRange) {
+        case RacingTransmissionRange.Bad:
+          result = this.positionLineY > this.canvas.height / 2 + this.transmissionGUIHeight / 5 || (this.positionLineY > this.canvas.height / 2 - this.transmissionGUIHeight / 2.5 && this.positionLineY < this.canvas.height / 2 - this.transmissionGUIHeight / 5);
+          break;
+        case RacingTransmissionRange.Medium:
+          result = this.positionLineY > this.canvas.height / 2 - this.transmissionGUIHeight / 10;
+          break;
+        case RacingTransmissionRange.Good:
+          result = this.positionLineY > this.canvas.height / 2 - this.transmissionGUIHeight / 5;
+          break;
+        case RacingTransmissionRange.Rare:
+          result = this.positionLineY > this.canvas.height / 2 - this.transmissionGUIHeight / 6 && this.positionLineY < this.canvas.height / 2 - this.transmissionGUIHeight / 6 + this.transmissionGUIHeight / 50;
+          break;
+      }
+    }
+
+    return result;
   }
 }
