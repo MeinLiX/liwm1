@@ -76,6 +76,7 @@ export class RacingComponent implements OnInit {
         this.drawTransmissionNumber();
 
         setInterval(() => {
+          this.drawSpeedText();
           this.drawTransmissionGUI();
           this.drawTransmissionPosition(this.positionLineY);
           this.positionLineY -= this.transmissionGUIHeight / 100 / this.transmissionDelayTime;
@@ -164,6 +165,29 @@ export class RacingComponent implements OnInit {
       this.ctx.font = '48px serif';
       this.ctx.fillStyle = '#000';
       this.ctx.fillText(this.transmission.toString(), x, y);
+
+      this.ctx.closePath();
+    }
+  }
+
+  private drawSpeedText() {
+    if (this.ctx && this.canvas && this.cars) {
+      this.ctx.beginPath();
+
+      const car = this.cars[0];
+
+      const x = this.canvas.width - this.transmissionGUIWidth * 1.5 + 3;
+      const y = this.canvas.height / 2 + this.transmissionGUIHeight / 1.5 + 15;
+
+      this.ctx.clearRect(x - 12, y - 20, 100, 58);
+
+      this.ctx.fillStyle = '#000';
+
+      this.ctx.font = '24px serif';
+      this.ctx.fillText((Math.round(car.dy / 4 * 100)).toString(), x, y);
+
+      this.ctx.font = '16px serif';
+      this.ctx.fillText('km/h', x - 3, y + 15);
 
       this.ctx.closePath();
     }
