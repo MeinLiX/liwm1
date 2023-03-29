@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { timeout } from 'rxjs';
 import { Car } from 'src/app/_models/car';
 import { RacingTransmissionRange } from 'src/app/_models/racingTransmissionRange';
 import { LobbyService } from 'src/app/_services/lobby.service';
@@ -93,11 +94,14 @@ export class RacingComponent implements OnInit {
             this.ctx.clearRect(0, 0, this.canvas.width - this.transmissionGUIWidth * 1.5 - this.transmissionBallRadius * 3, this.canvas.height);
 
             if (this.cars) {
-              const car = this.cars[0];
-              car.y -= car.dy;
+              for (let i = 0; i < this.cars.length; i++) {
+                const car = this.cars[i];
+                car.dy += 0.5 * this.transmission / 100 / this.interval;
+                car.y -= car.dy;
 
-              if (car.y < 0) {
-                car.y = this.canvas.height - 100;
+                if (car.y < 0) {
+                  car.y = this.canvas.height - 100;
+                }
               }
             }
 
@@ -124,20 +128,20 @@ export class RacingComponent implements OnInit {
       let addedSpeed = 0;
 
       if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Rare)) {
-        addedSpeed = 1.5;
+        addedSpeed = 1.2;
       } else if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Bad)) {
         addedSpeed = -1;
       } else if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Medium)) {
-        addedSpeed = 0.5;
+        addedSpeed = 0.2;
       } else if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Good)) {
         addedSpeed = 1;
       }
 
       const currentCar = this.cars[0];
       if (currentCar.dy + addedSpeed > 0) {
-        currentCar.dy += addedSpeed;
+        currentCar.dy += addedSpeed * this.transmission;
       } else {
-        currentCar.dy = 1;
+        currentCar.dy = 1 * this.transmission;
       }
     }
   }
@@ -184,7 +188,7 @@ export class RacingComponent implements OnInit {
       this.ctx.fillStyle = '#000';
 
       this.ctx.font = '24px serif';
-      this.ctx.fillText((Math.round(car.dy / 4 * 100)).toString(), x, y);
+      this.ctx.fillText((Math.round(car.dy * 10)).toString(), x, y);
 
       this.ctx.font = '16px serif';
       this.ctx.fillText('km/h', x - 3, y + 15);
