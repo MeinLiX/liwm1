@@ -90,23 +90,8 @@ export class RacingComponent implements OnInit {
         }, this.interval);
 
         setInterval(() => {
-          if (this.ctx && this.canvas) {
-            this.ctx.clearRect(0, 0, this.canvas.width - this.transmissionGUIWidth * 1.5 - this.transmissionBallRadius * 3, this.canvas.height);
-
-            if (this.cars) {
-              for (let i = 0; i < this.cars.length; i++) {
-                const car = this.cars[i];
-                car.dy += 0.5 * this.transmission / 100 / this.interval;
-                car.y -= car.dy;
-
-                if (car.y < 0) {
-                  car.y = this.canvas.height - 100;
-                }
-              }
-            }
-
-            this.drawCars();
-          }
+          this.moveCars();
+          this.drawCars();
         }, this.interval);
       }
     } else {
@@ -194,6 +179,24 @@ export class RacingComponent implements OnInit {
       this.ctx.fillText('km/h', x - 3, y + 15);
 
       this.ctx.closePath();
+    }
+  }
+
+  private moveCars() {
+    if (this.canvas && this.ctx) {
+      this.ctx.clearRect(0, 0, this.canvas.width - this.transmissionGUIWidth * 1.5 - this.transmissionBallRadius * 3, this.canvas.height);
+
+      if (this.cars) {
+        for (let i = 0; i < this.cars.length; i++) {
+          const car = this.cars[i];
+          car.dy += 0.5 * this.transmission / 100 / this.interval;
+          car.y -= car.dy;
+
+          if (car.y < 0) {
+            car.y = this.canvas.height - 100;
+          }
+        }
+      }
     }
   }
 
