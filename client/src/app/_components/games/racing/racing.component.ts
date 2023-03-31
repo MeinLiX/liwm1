@@ -112,22 +112,23 @@ export class RacingComponent implements OnInit {
     if (this.cars && this.canvas && this.ctx) {
       let addedSpeed = 0;
 
-      if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Rare)) {
+      if (this.isYInRange(RacingTransmissionRange.Rare)) {
         addedSpeed = 1.2;
-      } else if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Bad)) {
+      } else if (this.isYInRange(RacingTransmissionRange.Bad)) {
         addedSpeed = -1;
-      } else if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Medium)) {
+      } else if (this.isYInRange(RacingTransmissionRange.Medium)) {
         addedSpeed = 0.2;
-      } else if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Good)) {
+      } else if (this.isYInRange(RacingTransmissionRange.Good)) {
         addedSpeed = 1;
       }
 
       const currentCar = this.cars[0];
       if (currentCar.dy + addedSpeed > 0) {
-        currentCar.dy += addedSpeed * this.transmission;
+        currentCar.dy += addedSpeed;
       } else {
-        currentCar.dy = 1 * this.transmission;
+        currentCar.dy = 1;
       }
+      currentCar.dy *= this.transmission;
     }
   }
 
@@ -293,13 +294,13 @@ export class RacingComponent implements OnInit {
       this.ctx.beginPath();
       this.ctx.arc(x, y, this.transmissionBallRadius, 0, Math.PI * 2);
 
-      if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Rare)) {
+      if (this.isYInRange(RacingTransmissionRange.Rare)) {
         this.ctx.fillStyle = '#5834eb';
-      } else if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Bad)) {
+      } else if (this.isYInRange(RacingTransmissionRange.Bad)) {
         this.ctx.fillStyle = '#E74C3C';
-      } else if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Medium)) {
+      } else if (this.isYInRange(RacingTransmissionRange.Medium)) {
         this.ctx.fillStyle = '#FFA533';
-      } else if (this.isYInRange(this.positionLineY, RacingTransmissionRange.Good)) {
+      } else if (this.isYInRange(RacingTransmissionRange.Good)) {
         this.ctx.fillStyle = '#00BB08';
       }
 
@@ -308,7 +309,7 @@ export class RacingComponent implements OnInit {
     }
   }
 
-  private isYInRange(y: number, racingTransmissionRange: RacingTransmissionRange): boolean {
+  private isYInRange(racingTransmissionRange: RacingTransmissionRange): boolean {
     let result = false;
 
     if (this.canvas) {
