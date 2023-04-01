@@ -17,6 +17,7 @@ export class RacingComponent implements OnInit {
   readonly transmissionGUIHeight = 200;
   readonly transmissionBallRadius = 10;
   readonly interval = 15;
+  readonly maxLap = 10;
 
   canvas?: HTMLCanvasElement;
   ctx?: CanvasRenderingContext2D | null;
@@ -190,11 +191,14 @@ export class RacingComponent implements OnInit {
       if (this.cars) {
         for (let i = 0; i < this.cars.length; i++) {
           const car = this.cars[i];
-          car.dy += 0.5 * this.transmission / 100 / this.interval;
-          car.y -= car.dy;
+          if (car.lap <= this.maxLap) {
+            car.dy += 0.5 * this.transmission / 100 / this.interval;
+            car.y -= car.dy;
 
-          if (car.y < 0) {
-            car.y = this.canvas.height - 100;
+            if (car.y < 0) {
+              car.y = this.canvas.height - 100;
+              car.lap++;
+            }
           }
         }
       }
