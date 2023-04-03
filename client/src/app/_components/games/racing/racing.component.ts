@@ -81,7 +81,7 @@ export class RacingComponent implements OnInit {
           this.drawSpeedText();
           this.drawTransmissionGUI();
           this.drawTransmissionPosition(this.positionLineY);
-          this.positionLineY -= this.transmissionGUIHeight / 100 / this.transmissionDelayTime;
+          this.positionLineY -= this.transmissionGUIHeight / 20 / (this.transmission + 2) / this.transmissionDelayTime;
           if (this.canvas && this.positionLineY < this.canvas.height / 2 - this.transmissionGUIHeight / 2.5) {
             this.resetPositionLineY();
             this.incrementTransmission();
@@ -92,6 +92,7 @@ export class RacingComponent implements OnInit {
 
         setInterval(() => {
           this.moveCars();
+          this.drawSpeedText();
           this.drawCars();
         }, this.interval);
       }
@@ -114,22 +115,22 @@ export class RacingComponent implements OnInit {
       let addedSpeed = 0;
 
       if (this.isYInRange(RacingTransmissionRange.Rare)) {
-        addedSpeed = 1.2;
+        addedSpeed = 0.7;
       } else if (this.isYInRange(RacingTransmissionRange.Bad)) {
         addedSpeed = -1;
       } else if (this.isYInRange(RacingTransmissionRange.Medium)) {
-        addedSpeed = 0.2;
+        addedSpeed = 0.1;
       } else if (this.isYInRange(RacingTransmissionRange.Good)) {
-        addedSpeed = 1;
+        addedSpeed = 0.4;
       }
 
       const currentCar = this.cars[0];
-      if (currentCar.dy + addedSpeed > 0) {
+      if (this.getCarSpeed(currentCar.dy + addedSpeed) > 0) {
+        addedSpeed *= this.transmission;
         currentCar.dy += addedSpeed;
       } else {
         currentCar.dy = 1;
       }
-      currentCar.dy *= this.transmission;
     }
   }
 
@@ -175,13 +176,17 @@ export class RacingComponent implements OnInit {
       this.ctx.fillStyle = '#000';
 
       this.ctx.font = '24px serif';
-      this.ctx.fillText((Math.round(car.dy * 10)).toString(), x, y);
+      this.ctx.fillText((this.getCarSpeed(car.dy)).toString(), x, y);
 
       this.ctx.font = '16px serif';
       this.ctx.fillText('km/h', x - 3, y + 15);
 
       this.ctx.closePath();
     }
+  }
+
+  private getCarSpeed(dy: number): number {
+    return Math.round(dy * 15);
   }
 
   private moveCars() {
