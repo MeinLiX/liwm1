@@ -78,6 +78,17 @@ export class RacingComponent implements OnInit {
         this.drawTransmissionNumber();
 
         setInterval(() => {
+          if (this.cars) {
+            const playerCar = this.cars[0];
+            if (playerCar.lap >= this.maxLap) {
+              this.resetPositionLineY();
+              this.drawTransmissionPosition(this.positionLineY);
+              this.transmission = 0;
+              this.drawTransmissionNumber();
+              return;
+            }
+          }
+
           this.drawSpeedText();
           this.drawTransmissionGUI();
           this.drawTransmissionPosition(this.positionLineY);
@@ -86,7 +97,7 @@ export class RacingComponent implements OnInit {
             this.resetPositionLineY();
             this.incrementTransmission();
             this.drawTransmissionNumber();
-            this.accelerateCar();
+            this.turnTransmissionCar();
           }
         }, this.interval);
 
@@ -99,7 +110,7 @@ export class RacingComponent implements OnInit {
     } else {
       this.incrementTransmission();
       this.drawTransmissionNumber();
-      this.accelerateCar();
+      this.turnTransmissionCar();
       this.resetPositionLineY();
     }
   }
@@ -110,7 +121,7 @@ export class RacingComponent implements OnInit {
     }
   }
 
-  private accelerateCar() {
+  private turnTransmissionCar() {
     if (this.cars && this.canvas && this.ctx) {
       let addedSpeed = 0;
 
@@ -197,6 +208,7 @@ export class RacingComponent implements OnInit {
         for (let i = 0; i < this.cars.length; i++) {
           const car = this.cars[i];
           if (car.lap <= this.maxLap) {
+            // TODO: Rework dy updating
             car.dy += 0.5 * this.transmission / 100 / this.interval;
             car.y -= car.dy;
 
@@ -204,6 +216,8 @@ export class RacingComponent implements OnInit {
               car.y = this.canvas.height - 100;
               car.lap++;
             }
+          } else {
+            car.dy = 0;
           }
         }
       }
@@ -266,6 +280,7 @@ export class RacingComponent implements OnInit {
       this.ctx.beginPath();
       this.ctx.fillStyle = '#000';
       this.ctx.fillRect(car.x, car.y, this.carWidth, this.carHeight);
+      console.log(car.y);
       this.ctx.closePath();
     }
   }
