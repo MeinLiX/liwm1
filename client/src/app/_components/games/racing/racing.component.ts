@@ -208,8 +208,7 @@ export class RacingComponent implements OnInit {
         for (let i = 0; i < this.cars.length; i++) {
           const car = this.cars[i];
           if (car.lap <= this.maxLap) {
-            // TODO: Rework dy updating
-            car.dy += 0.5 * this.transmission / 100 / this.interval;
+            car.dy += 0.075 * this.transmission / this.interval;
             car.y -= car.dy;
 
             if (car.y < 0) {
