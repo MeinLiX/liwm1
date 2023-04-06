@@ -214,6 +214,10 @@ export class RacingComponent implements OnInit {
             if (car.y < 0) {
               car.y = this.canvas.height - 100;
               car.lap++;
+
+              if (car.lap >= this.maxLap) {
+                car.y = -this.carHeight;
+              }
             }
           } else {
             car.dy = 0;
