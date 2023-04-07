@@ -223,7 +223,28 @@ export class RacingComponent implements OnInit {
             car.dy = 0;
           }
         }
+
+        this.drawLapNumber(this.cars[0].lap);
       }
+    }
+  }
+
+  private drawLapNumber(lap: number) {
+    if (this.canvas && this.ctx) {
+      this.ctx.beginPath();
+
+      const x = this.canvas.width - this.transmissionGUIWidth * 5;
+      const y = 50;
+
+      this.ctx.clearRect(x - 48, 0, 200, 60);
+
+      if (lap < this.maxLap) {
+        this.ctx.font = '48px serif';
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillText('Lap: ' + lap, x, y);
+      }
+
+      this.ctx.closePath();
     }
   }
 
