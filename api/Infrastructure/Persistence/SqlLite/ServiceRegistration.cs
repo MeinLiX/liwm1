@@ -20,5 +20,6 @@ public static class ServiceRegistration
         => services.AddTransient<IUserRepository, UserRepository>()
                    .AddTransient<IPhotoRepository, PhotoRepository>()
                    .AddTransient<IGameModesRepository, GameModeRepository>()
-                   .AddTransient<ILobbyRepository, LobbyRepository>();
+                   .AddTransient<ILobbyRepository, LobbyRepository>()
+                   .AddTransient<IRacingCarRepository, RacingCarRepository>();
 }
