@@ -72,6 +72,7 @@ public static class Routes
     internal static WebApplication InitLobbyHub(this WebApplication web)
     {
         web.MapHub<LobbyHub>("hubs/lobby");
+        web.MapHub<LobbyHub>("hubs/racing-game");
 
         return web;
     }

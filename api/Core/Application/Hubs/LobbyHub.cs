@@ -184,16 +184,6 @@ public class LobbyHub : Hub
 
     private async Task<(AppUser?, Lobby?)> GetCallerAsAppUserOwnerLobbyAsync()
     {
-        /*return (await GetCallerAsAppUserAsync()) switch
-        {
-            null => (null,null),
-            AppUser user => (await this.lobbyRepository.GetLobbyWithUserAsync(user)) switch
-            {
-                null => (null, null),
-                Lobby lobby => lobby.LobbyCreator != user ? (null, null): (user,lobby)
-            }
-        };
-        */
         var user = await GetCallerAsAppUserAsync();
         if (user is null)
         {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using FluentValidation.AspNetCore;
 using MediatR;
 using MediatR.Extensions.FluentValidation.AspNetCore;
