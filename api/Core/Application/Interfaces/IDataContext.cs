@@ -15,6 +15,7 @@ public interface IDataContext
     DbSet<Lobby> Lobbies { get; set; }
     DbSet<AppUserRole> UserRoles { get; set; }
     DbSet<RacingCar> RacingCars { get; set; }
+    DbSet<Game> Games { get; set; }
 
     Task<int> SaveChangesAsync();
 }
