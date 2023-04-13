@@ -13,7 +13,11 @@ public class RacingCarRepository : IRacingCarRepository
         this.dataContext = dataContext;
     }
 
-    public async Task AddRacingCar(RacingCar racingCar) => await this.dataContext.RacingCars.AddAsync(racingCar);
+    public async Task AddRacingCarAsync(RacingCar racingCar)
+    {
+        await this.dataContext.RacingCars.AddAsync(racingCar);
+        await this.dataContext.SaveChangesAsync();
+    }
 
     public async Task DeleteRacingCarByIdAsync(int id)
     {
@@ -21,6 +25,7 @@ public class RacingCarRepository : IRacingCarRepository
         if (carToDelete != null)
         {
             this.dataContext.RacingCars.Remove(carToDelete);
+            await this.dataContext.SaveChangesAsync();
         }
     }
 

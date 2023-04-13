@@ -1,29 +1,23 @@
 using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Shared.Extensions;
 
 namespace SqlLite.Repositories;
 
-public class GameModeRepository : IGameModesRepository
+public class GameRepository : IGameRepository
 {
     private readonly IDataContext dataContext;
 
-    public GameModeRepository(IDataContext dataContext)
+    public GameRepository(IDataContext dataContext)
     {
         this.dataContext = dataContext;
     }
 
-    public async Task<GameMode?> GetGameModeByIdAsync(int id) => await this.dataContext.GameModes.Include(gm => gm.Lobbies).FirstOrDefaultAsync(g => g.Id == id);
-
-    public async Task<GameMode?> GetGameModeByNameAsync(string gameModeName) => await this.dataContext.GameModes.Include(gm => gm.Lobbies).FirstOrDefaultAsync(gm => gm.Name == gameModeName);
-
-    public async Task<List<GameMode>> GetGameModesAsync() => await this.dataContext.GameModes.Include(gm => gm.Lobbies).ToListAsync();
-
-    public async Task<List<GameMode>> GetGameModesAsync(int start, int count)
+    public async Task AddGameAsync(Game game)
     {
-        var gamesCount = this.dataContext.GameModes.Count();
-        start = start.ToStart(gamesCount);
-        return await this.dataContext.GameModes.Include(gm => gm.Lobbies).Skip(start).Take(count.ToCount(start, gamesCount)).ToListAsync();
+        await this.dataContext.Games.AddAsync(game);
+        await this.dataContext.SaveChangesAsync();
     }
+
+    public async Task<Game?> GetGameByIdAsync(int id) => await this.dataContext.Games.FirstOrDefaultAsync(g => g.Id == id);
 }
