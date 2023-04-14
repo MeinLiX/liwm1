@@ -1,4 +1,7 @@
+using Application.Extensions;
 using Application.Interfaces;
+using Domain.Entities;
+using Domain.Models.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -20,6 +23,28 @@ public class RacingGameHub : Hub
 
     public override async Task OnConnectedAsync()
     {
-        
+        var user = await HubExtensions.GetCallerAsAppUserAsync(Context, Clients, this.userRepository);
+        if (user is null)
+        {
+            return;
+        }
+
+        var car = await this.racingCarRepository.GetRacingCarByRacerNameAsync(user.UserName);
+        if (car is null)
+        {
+            car = new RacingCar
+            {
+                RacerName = user.UserName
+            };
+            await this.racingCarRepository.AddRacingCarAsync(car);
+        }
+        await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.RecieveRacingCar, car);
+        //TODO: Add group creating | adding. Add sending new car to other players 
+    }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        //TODO: Add car deleting and group leaving
+        await base.OnDisconnectedAsync(exception);
     }
 }

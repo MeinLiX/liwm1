@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Application.Extensions;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Models;
@@ -40,7 +41,7 @@ public class LobbyHub : Hub
         }
         var lobbyRequestMode = (LobbyConnectMode)Enum.Parse(typeof(LobbyConnectMode), lobbyRequestModeStringified);
 
-        var user = await GetCallerAsAppUserAsync();
+        var user = await HubExtensions.GetCallerAsAppUserAsync(Context, Clients, this.userRepository);
         if (user is null) return;
 
         var isUserInLobby = await this.lobbyRepository.IsUserInLobbyAsync(user);
@@ -130,7 +131,7 @@ public class LobbyHub : Hub
         var user = await this.userRepository.GetUserByUsernameAsync(username);
         if (user is null)
         {
-            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoUserWithSuchName);
+            await Clients.Caller.SendAsync(CommonHubMethodNameConstants.NoUserWithSuchName);
             return;
         }
 
@@ -155,7 +156,7 @@ public class LobbyHub : Hub
 
     public async Task ApproveUserJoinAsync(string lobbyName, string approveUsername, bool isJoinApproved)
     {
-        var user = await GetCallerAsAppUserAsync();
+        var user = await HubExtensions.GetCallerAsAppUserAsync(Context, Clients, this.userRepository);
         if (user is null)
         {
             return;
@@ -163,28 +164,9 @@ public class LobbyHub : Hub
         await ApproveUserJoinAsync(lobbyName, user, isJoinApproved, approveUsername);
     }
 
-    private async Task<AppUser?> GetCallerAsAppUserAsync()
-    {
-        var username = Context.User?.FindFirst(ClaimTypes.Name)?.Value;
-        if (string.IsNullOrEmpty(username))
-        {
-            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoUserWasProvided);
-            return null;
-        }
-
-        var user = await this.userRepository.GetUserByUsernameAsync(username);
-        if (user is null)
-        {
-            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoUserWithSuchName);
-            return null;
-        }
-
-        return user;
-    }
-
     private async Task<(AppUser?, Lobby?)> GetCallerAsAppUserOwnerLobbyAsync()
     {
-        var user = await GetCallerAsAppUserAsync();
+        var user = await HubExtensions.GetCallerAsAppUserAsync(Context, Clients, this.userRepository);
         if (user is null)
         {
             return (null, null);
@@ -228,7 +210,7 @@ public class LobbyHub : Hub
 
         if (approveUser is null)
         {
-            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoUserWithSuchName, approveUser);
+            await Clients.Caller.SendAsync(CommonHubMethodNameConstants.NoUserWithSuchName, approveUser);
             return;
         }
 
@@ -250,7 +232,7 @@ public class LobbyHub : Hub
 
     public async Task DeleteLobbyAsync(string lobbyName)
     {
-        var user = await GetCallerAsAppUserAsync();
+        var user = await HubExtensions.GetCallerAsAppUserAsync(Context, Clients, this.userRepository);
         if (user is null)
         {
             return;
@@ -271,7 +253,7 @@ public class LobbyHub : Hub
         var userToKick = lobby!.Users.FirstOrDefault(u => string.Equals(u.UserName, usernameKick));
         if (userToKick is null)
         {
-            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.NoUserWithSuchName);
+            await Clients.Caller.SendAsync(CommonHubMethodNameConstants.NoUserWithSuchName);
             return;
         }
 
@@ -309,7 +291,7 @@ public class LobbyHub : Hub
 
     public override async Task OnDisconnectedAsync(Exception exception)
     {
-        var user = await GetCallerAsAppUserAsync();
+        var user = await HubExtensions.GetCallerAsAppUserAsync(Context, Clients, this.userRepository);
         if (user is not null)
         {
             var lobby = await this.lobbyRepository.GetLobbyWithUserAsync(user);
