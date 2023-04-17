@@ -42,6 +42,24 @@ public class RacingGameHub : Hub
         }
     }
 
+    public async Task SetReadyToCarAsync(int carId, bool isReady)
+    {
+        var userWithLobby = await GetUserWithLobbyAsync();
+        if (userWithLobby.Item1 is not null && userWithLobby.Item2 is not null)
+        {
+            var car = await this.racingCarRepository.GetRacingCarByIdAsync(carId);
+            if (car is null)
+            {
+                await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.NoSuchCar);
+                return;
+            }
+
+            await this.racingCarRepository.UpdateCarReadyStateAsync(car, isReady);
+
+            await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.CarReadyStateUpdated, car);
+        }
+    }
+
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var userWithLobby = await GetUserWithLobbyAsync();

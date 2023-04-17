@@ -8,4 +8,5 @@ public interface IRacingCarRepository
     Task<RacingCar?> GetRacingCarByIdAsync(int id);
     Task<RacingCar?> GetRacingCarByRacerNameAsync(string racerName);
     Task DeleteRacingCarByIdAsync(int id);
+    Task UpdateCarReadyStateAsync(RacingCar car, bool isReady);
 }

@@ -32,4 +32,10 @@ public class RacingCarRepository : IRacingCarRepository
     public async Task<RacingCar?> GetRacingCarByIdAsync(int id) => await this.dataContext.RacingCars.FirstOrDefaultAsync(rc => rc.Id == id);
 
     public async Task<RacingCar?> GetRacingCarByRacerNameAsync(string racerName) => await this.dataContext.RacingCars.FirstOrDefaultAsync(rc => rc.RacerName == racerName);
+
+    public async Task UpdateCarReadyStateAsync(RacingCar car, bool isReady)
+    {
+        car.IsReady = isReady;
+        await this.dataContext.SaveChangesAsync();
+    }
 }
