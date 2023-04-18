@@ -1,6 +1,7 @@
 using Application.Extensions;
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Models;
 using Domain.Models.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -54,9 +55,29 @@ public class RacingGameHub : Hub
                 return;
             }
 
-            await this.racingCarRepository.UpdateCarReadyStateAsync(car, isReady);
+            car.IsReady = isReady;
+            await this.racingCarRepository.SaveChangesAsync();
 
             await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.CarReadyStateUpdated, car);
+        }
+    }
+
+    public async Task BoostCarAsync(int carId, RacingCarBoostMode racingCarBoostMode)
+    {
+        var userWithLobby = await GetUserWithLobbyAsync();
+        if (userWithLobby.Item1 is not null && userWithLobby.Item2 is not null)
+        {
+            var car = await this.racingCarRepository.GetRacingCarByIdAsync(carId);
+            if (car is null)
+            {
+                await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.NoSuchCar);
+                return;
+            }
+
+            car.RacingCarBoostMode = racingCarBoostMode;
+            await this.racingCarRepository.SaveChangesAsync();
+
+            await Clients.GroupExcept(userWithLobby.Item2.LobbyName, Context.ConnectionId).SendAsync(RacingGameHubMethodNameConstants.CarBoosted, car);
         }
     }
 
@@ -75,8 +96,6 @@ public class RacingGameHub : Hub
                 await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.OtherCarWithIdHasBeenDeleted, car.Id);
             }
         }
-
-        await base.OnDisconnectedAsync(exception);
     }
 
     private async Task<(AppUser?, Lobby?)> GetUserWithLobbyAsync()

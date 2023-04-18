@@ -1,5 +1,6 @@
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace SqlLite.Repositories;
@@ -33,9 +34,5 @@ public class RacingCarRepository : IRacingCarRepository
 
     public async Task<RacingCar?> GetRacingCarByRacerNameAsync(string racerName) => await this.dataContext.RacingCars.FirstOrDefaultAsync(rc => rc.RacerName == racerName);
 
-    public async Task UpdateCarReadyStateAsync(RacingCar car, bool isReady)
-    {
-        car.IsReady = isReady;
-        await this.dataContext.SaveChangesAsync();
-    }
+    public async Task<int> SaveChangesAsync() => await this.dataContext.SaveChangesAsync();
 }
