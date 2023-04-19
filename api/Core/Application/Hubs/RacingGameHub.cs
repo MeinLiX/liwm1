@@ -14,12 +14,16 @@ public class RacingGameHub : Hub
     private readonly IUserRepository userRepository;
     private readonly ILobbyRepository lobbyRepository;
     private readonly IRacingCarRepository racingCarRepository;
+    private readonly IGameRepository gameRepository;
+    private readonly IGameModesRepository gameModesRepository;
 
-    public RacingGameHub(IUserRepository userRepository, ILobbyRepository lobbyRepository, IRacingCarRepository racingCarRepository)
+    public RacingGameHub(IUserRepository userRepository, ILobbyRepository lobbyRepository, IRacingCarRepository racingCarRepository, IGameRepository gameRepository, IGameModesRepository gameModesRepository)
     {
         this.userRepository = userRepository;
         this.lobbyRepository = lobbyRepository;
         this.racingCarRepository = racingCarRepository;
+        this.gameRepository = gameRepository;
+        this.gameModesRepository = gameModesRepository;
     }
 
     public override async Task OnConnectedAsync()
@@ -27,6 +31,22 @@ public class RacingGameHub : Hub
         var userWithLobby = await GetUserWithLobbyAsync();
         if (userWithLobby.Item1 is not null && userWithLobby.Item2 is not null)
         {
+            if (userWithLobby.Item2.CurrentGame is null)
+            {
+                var gameMode = await this.gameModesRepository.GetGameModeByNameAsync("Racing");
+
+                var game = new Game
+                {
+                    GameState = GameState.Created,
+                    Players = new List<AppUser>
+                    {
+                        userWithLobby.Item1
+                    },
+                    GameMode = gameMode
+                };
+                await this.lobbyRepository.CreateGameAsync(userWithLobby.Item2, game);
+            }
+
             var car = await this.racingCarRepository.GetRacingCarByRacerNameAsync(userWithLobby.Item1.UserName);
             if (car is null)
             {

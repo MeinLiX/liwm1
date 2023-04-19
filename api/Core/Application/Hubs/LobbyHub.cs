@@ -285,7 +285,7 @@ public class LobbyHub : Hub
             return;
         }
 
-        lobby = await this.lobbyRepository.ChangeGameAsync(user, gameMode);
+        lobby = await this.lobbyRepository.ChangeGameModeAsync(user, gameMode);
         await Clients.Group(lobby.LobbyName).SendAsync(LobbyHubMethodNameConstants.LobbyGameModeChanged, new LobbyDTO(lobby));
     }
 

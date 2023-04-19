@@ -169,7 +169,7 @@ public class LobbyRepository : ILobbyRepository
         return lobby;
     }
 
-    public async Task<Lobby?> ChangeGameAsync(AppUser user, GameMode gameMode)
+    public async Task<Lobby?> ChangeGameModeAsync(AppUser user, GameMode gameMode)
     {
         Lobby? lobby = null;
 
@@ -184,5 +184,16 @@ public class LobbyRepository : ILobbyRepository
         }
 
         return lobby;
+    }
+
+    public async Task CreateGameAsync(Lobby lobby, Game game)
+    {
+        lobby.CurrentGame = game;
+        await this.dataContext.SaveChangesAsync();
+    }
+
+    public Task AddPlayerToLobby(Lobby lobby, AppUser player)
+    {
+        throw new NotImplementedException();
     }
 }

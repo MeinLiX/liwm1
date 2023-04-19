@@ -11,6 +11,7 @@ public class Lobby
     public int Id { get; set; }
     public string LobbyName { get; set; }
     public AppUser LobbyCreator { get; set; }
+    public Game CurrentGame { get; set; }
     public ICollection<AppUser> Users { get; set; } = new List<AppUser>();
     public ICollection<Connection> Connections { get; set; } = new List<Connection>();
 }
