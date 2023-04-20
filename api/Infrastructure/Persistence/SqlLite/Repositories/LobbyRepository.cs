@@ -192,8 +192,12 @@ public class LobbyRepository : ILobbyRepository
         await this.dataContext.SaveChangesAsync();
     }
 
-    public Task AddPlayerToLobby(Lobby lobby, AppUser player)
+    public async Task AddPlayerToLobbyGame(Lobby lobby, AppUser player)
     {
-        throw new NotImplementedException();
+        if (lobby.CurrentGame != null)
+        {
+            lobby.CurrentGame.Players.Add(player);
+            await this.dataContext.SaveChangesAsync();
+        }
     }
 }

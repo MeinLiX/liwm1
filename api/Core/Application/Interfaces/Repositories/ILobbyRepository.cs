@@ -17,5 +17,5 @@ public interface ILobbyRepository
     Task<Lobby?> DeleteLobbyAsync(AppUser user);
     Task<Lobby?> ChangeGameModeAsync(AppUser user, GameMode gameMode);
     Task CreateGameAsync(Lobby lobby, Game game);
-    Task AddPlayerToLobby(Lobby lobby, AppUser player);
+    Task AddPlayerToLobbyGame(Lobby lobby, AppUser player);
 }

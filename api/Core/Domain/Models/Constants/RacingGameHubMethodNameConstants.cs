@@ -9,4 +9,5 @@ public static class RacingGameHubMethodNameConstants
     public const string NoSuchCar = "NoSuchCar";
     public const string CarReadyStateUpdated = "CarReadyStateUpdated";
     public const string CarBoosted = "CarBoosted";
+    public const string GameAlreadyStarted = "GameAlreadyStarted";
 }

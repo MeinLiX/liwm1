@@ -46,6 +46,19 @@ public class RacingGameHub : Hub
                 };
                 await this.lobbyRepository.CreateGameAsync(userWithLobby.Item2, game);
             }
+            else
+            {
+                if (userWithLobby.Item2.CurrentGame.GameState == GameState.Created)
+                {
+                    await this.lobbyRepository.AddPlayerToLobbyGame(userWithLobby.Item2, userWithLobby.Item1);
+                }
+                else
+                {
+                    await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.GameAlreadyStarted);
+                    await Groups.AddToGroupAsync(Context.ConnectionId, userWithLobby.Item2.LobbyName);
+                    return;
+                }
+            }
 
             var car = await this.racingCarRepository.GetRacingCarByRacerNameAsync(userWithLobby.Item1.UserName);
             if (car is null)
