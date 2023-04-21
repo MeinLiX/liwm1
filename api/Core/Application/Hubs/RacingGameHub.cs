@@ -92,6 +92,19 @@ public class RacingGameHub : Hub
             await this.racingCarRepository.SaveChangesAsync();
 
             await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.CarReadyStateUpdated, car);
+
+            var game = await this.gameRepository.GetGameWithPlayerAsync(userWithLobby.Item1);
+            if (game is not null)
+            {
+                var cars = await Task.WhenAll(game.Players.Where(p => p.UserName != userWithLobby.Item1.UserName)
+                                                          .Select(async p =>
+                                                                    await this.racingCarRepository.GetRacingCarByRacerNameAsync(p.UserName)));
+                if (cars.All(c => c?.IsReady ?? false))
+                {
+                    await gameRepository.UpdateGameStateAsync(game, GameState.Started);
+                    await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.GameStarting);
+                }
+            }
         }
     }
 
@@ -126,6 +139,7 @@ public class RacingGameHub : Hub
             {
                 await this.racingCarRepository.DeleteRacingCarByIdAsync(car.Id);
                 await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.CarHasBeenDeleted);
+                await Groups.RemoveFromGroupAsync(userWithLobby.Item2.LobbyName, Context.ConnectionId);
                 await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.OtherCarWithIdHasBeenDeleted, car.Id);
             }
         }
