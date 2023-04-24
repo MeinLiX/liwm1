@@ -88,24 +88,35 @@ public class RacingGameHub : Hub
                 return;
             }
 
-            car.IsReady = isReady;
-            await this.racingCarRepository.SaveChangesAsync();
+            await this.racingCarRepository.ChangeReadyStateAsync(car, isReady);
 
             await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.CarReadyStateUpdated, car);
 
-            var game = await this.gameRepository.GetGameWithPlayerAsync(userWithLobby.Item1);
-            if (game is not null)
+            var cars = await this.GetRacingCarsAsync(userWithLobby.Item1, userWithLobby.Item2);
+            if (cars is not null)
             {
-                var cars = await Task.WhenAll(game.Players.Where(p => p.UserName != userWithLobby.Item1.UserName)
-                                                          .Select(async p =>
-                                                                    await this.racingCarRepository.GetRacingCarByRacerNameAsync(p.UserName)));
                 if (cars.All(c => c?.IsReady ?? false))
                 {
-                    await gameRepository.UpdateGameStateAsync(game, GameState.Started);
+                    await gameRepository.UpdateGameStateAsync(userWithLobby.Item2.CurrentGame, GameState.Started);
                     await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.GameStarting);
                 }
             }
         }
+    }
+
+    private async Task<IEnumerable<RacingCar?>?> GetRacingCarsAsync(AppUser user, Lobby lobby)
+    {
+        IEnumerable<RacingCar?>? cars = null;
+
+        var game = await this.gameRepository.GetGameWithPlayerAsync(user);
+        if (game is not null)
+        {
+            cars = await Task.WhenAll(game.Players.Where(p => p.UserName != user.UserName)
+                                                  .Select(async p =>
+                                                            await this.racingCarRepository.GetRacingCarByRacerNameAsync(p.UserName)));
+        }
+
+        return cars;
     }
 
     public async Task BoostCarAsync(int carId, RacingCarBoostMode racingCarBoostMode)
@@ -120,10 +131,48 @@ public class RacingGameHub : Hub
                 return;
             }
 
-            car.RacingCarBoostMode = racingCarBoostMode;
-            await this.racingCarRepository.SaveChangesAsync();
+            await this.racingCarRepository.BoostAsync(car, racingCarBoostMode);
 
             await Clients.GroupExcept(userWithLobby.Item2.LobbyName, Context.ConnectionId).SendAsync(RacingGameHubMethodNameConstants.CarBoosted, car);
+        }
+    }
+
+    public async Task FinishRacingAsync(int carId)
+    {
+        var userWithLobby = await GetUserWithLobbyAsync();
+        if (userWithLobby.Item1 is not null && userWithLobby.Item2 is not null)
+        {
+            var car = await this.racingCarRepository.GetRacingCarByIdAsync(carId);
+            if (car is null)
+            {
+                await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.NoSuchCar);
+                return;
+            }
+
+            await this.racingCarRepository.FinishAsync(car);
+
+            await this.lobbyRepository.AddRatePlayerAsync(userWithLobby.Item2, userWithLobby.Item1);
+
+            await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.FinishedSuccessfully);
+            await Clients.GroupExcept(userWithLobby.Item2.LobbyName, Context.ConnectionId).SendAsync(RacingGameHubMethodNameConstants.CarFinishedRacing, car);
+
+            var cars = await this.GetRacingCarsAsync(userWithLobby.Item1, userWithLobby.Item2);
+            if (cars is not null)
+            {
+                if (cars.All(c => c?.IsFinished ?? false))
+                {
+                    await this.lobbyRepository.FinishGameAsync(userWithLobby.Item2);
+                    await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.GameFinished, userWithLobby.Item2.CurrentGame.RatingPlayers);
+                }
+
+                foreach (var carToDelete in cars)
+                {
+                    if (carToDelete is not null)
+                    {
+                        await this.racingCarRepository.DeleteRacingCarByIdAsync(carToDelete.Id);
+                    }
+                }
+            }
         }
     }
 

@@ -10,4 +10,5 @@ public class RacingCar
     public string RacerName { get; set; }
     public RacingCarBoostMode RacingCarBoostMode { get; set; }
     public bool IsReady { get; set; } = false;
+    public bool IsFinished { get; set; } = false;
 }

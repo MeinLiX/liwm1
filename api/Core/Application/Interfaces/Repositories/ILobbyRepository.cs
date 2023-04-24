@@ -18,4 +18,6 @@ public interface ILobbyRepository
     Task<Lobby?> ChangeGameModeAsync(AppUser user, GameMode gameMode);
     Task CreateGameAsync(Lobby lobby, Game game);
     Task AddPlayerToLobbyGame(Lobby lobby, AppUser player);
+    Task FinishGameAsync(Lobby lobby);
+    Task AddRatePlayerAsync(Lobby lobby, AppUser player);
 }

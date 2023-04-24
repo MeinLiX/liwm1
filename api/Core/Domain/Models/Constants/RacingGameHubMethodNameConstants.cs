@@ -11,4 +11,7 @@ public static class RacingGameHubMethodNameConstants
     public const string CarBoosted = "CarBoosted";
     public const string GameAlreadyStarted = "GameAlreadyStarted";
     public const string GameStarting = "GameStarting";
+    public const string CarFinishedRacing = "CarFinishedRacing";
+    public const string FinishedSuccessfully = "FinishedSuccessfully";
+    public const string GameFinished = "GameFinished";
 }

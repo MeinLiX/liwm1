@@ -5,7 +5,6 @@ namespace Application.Interfaces;
 public interface IUserRepository
 {
     Task LogoutFromAnonymousUserAsync(AppUser user);
-    Task UpdateUserAsync(AppUser user);
     Task<AppUser> AddUserAsync(string username, int photoId);
     Task<AppUser> AddUserAsync(string username, string password, int photoId);
     Task<AppUser?> GetUserByIdAsync(int id);

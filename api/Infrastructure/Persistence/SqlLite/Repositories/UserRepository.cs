@@ -57,9 +57,4 @@ public class UserRepository : IUserRepository
         this.dataContext.Users.Remove(user);
         await this.dataContext.SaveChangesAsync();
     }
-
-    public async Task UpdateUserAsync(AppUser user)
-    {
-        throw new NotImplementedException();
-    }
 }

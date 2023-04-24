@@ -200,4 +200,18 @@ public class LobbyRepository : ILobbyRepository
             await this.dataContext.SaveChangesAsync();
         }
     }
+
+    public async Task FinishGameAsync(Lobby lobby)
+    {
+        lobby.CurrentGame.GameState = GameState.Finished;
+        lobby.PreviousGames.Add(lobby.CurrentGame);
+        lobby.CurrentGame = null;
+        await this.dataContext.SaveChangesAsync();
+    }
+
+    public async Task AddRatePlayerAsync(Lobby lobby, AppUser player)
+    {
+        lobby.CurrentGame.RatingPlayers.Add(player);
+        await this.dataContext.SaveChangesAsync();
+    }
 }
