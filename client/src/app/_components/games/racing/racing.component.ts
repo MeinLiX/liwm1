@@ -265,13 +265,13 @@ export class RacingComponent implements OnInit {
           const car = this.cars.length - 3 !== -1
             ? this.cars[this.cars.length - 3]
             : this.cars[0];
-          this.cars.push(new Car(car.x + (this.carWidth * 1.5), car.y));
+          this.cars.push(new Car(car.x + (this.carWidth * 1.5), car.y, 0, ''));
         } else {
           const car = this.cars[this.cars.length - 3];
-          this.cars.push(new Car(car.x - (this.carWidth * 1.5), car.y));
+          this.cars.push(new Car(car.x - (this.carWidth * 1.5), car.y, 0, ''));
         }
       } else {
-        const cars = [new Car(this.canvas.width / 2 - this.carWidth * 0.5, this.canvas.height - 100)];
+        const cars = [new Car(this.canvas.width / 2 - this.carWidth * 0.5, this.canvas.height - 100, 0, '')];
         this.cars = cars;
       }
     }

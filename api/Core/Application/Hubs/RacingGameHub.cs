@@ -76,7 +76,7 @@ public class RacingGameHub : Hub
         }
     }
 
-    public async Task SetReadyToCarAsync(int carId, bool isReady)
+    public async Task UpdateCarReadyStateAsync(int carId, bool isReady)
     {
         var userWithLobby = await GetUserWithLobbyAsync();
         if (userWithLobby.Item1 is not null && userWithLobby.Item2 is not null)
