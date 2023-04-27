@@ -70,7 +70,8 @@ public class RacingGameHub : Hub
                 await this.racingCarRepository.AddRacingCarAsync(car);
             }
 
-            await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.CarCreated, car);
+            var cars = await this.GetRacingCarsAsync(userWithLobby.Item1, userWithLobby.Item2);
+            await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.CarCreated, cars, car);
             await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.RecievedNewRacingCar, car);
             await Groups.AddToGroupAsync(Context.ConnectionId, userWithLobby.Item2.LobbyName);
         }

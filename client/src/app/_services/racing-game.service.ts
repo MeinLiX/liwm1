@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
-import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/enviroments/environment';
 import { User } from '../_models/user';
 import { BehaviorSubject, take } from 'rxjs';
@@ -18,7 +16,10 @@ export class RacingGameService {
   private playerCarSource = new BehaviorSubject<Car | null>(null);
   playerCar$ = this.playerCarSource.asObservable();
 
-  constructor(private toastr: ToastrService, private router: Router) { }
+  private carsSource = new BehaviorSubject<Car[] | null>(null);
+  cars$ = this.carsSource.asObservable();
+
+  constructor() { }
 
   connectToGame(user: User) {
     this.hubConnection = new HubConnectionBuilder()
@@ -29,6 +30,17 @@ export class RacingGameService {
       .build();
 
     this.hubConnection.start().catch(error => console.log(error));
+
+    this.hubConnection.on('CarCreated', (cars: Car[], car: Car) => {
+      this.playerCarSource.next(car);
+
+      cars.slice(cars.indexOf(car), 1);
+      this.carsSource.next(cars);
+    });
+
+    this.hubConnection.on('RecievedNewRacingCar', (car: Car) => {
+      this.carsSource.value?.push(car);
+    });
   }
 
   updateCarReadyState(isReady: boolean) {
