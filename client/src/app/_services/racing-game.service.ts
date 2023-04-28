@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { environment } from 'src/enviroments/environment';
-import { User } from '../_models/user';
+import { LobbyUser, User } from '../_models/user';
 import { BehaviorSubject, take } from 'rxjs';
 import { Car } from '../_models/car';
 import { RacingTransmissionRange } from '../_models/racingTransmissionRange';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,7 @@ export class RacingGameService {
   private carsSource = new BehaviorSubject<Car[] | null>(null);
   cars$ = this.carsSource.asObservable();
 
-  constructor() { }
+  constructor(private toastr: ToastrService) { }
 
   connectToGame(user: User) {
     this.hubConnection = new HubConnectionBuilder()
@@ -40,6 +41,58 @@ export class RacingGameService {
 
     this.hubConnection.on('RecievedNewRacingCar', (car: Car) => {
       this.carsSource.value?.push(car);
+    });
+
+    this.hubConnection.on('CarHasBeenDeleted', () => {
+      this.toastr.warning('You have left race');
+    });
+
+    this.hubConnection.on('OtherCarWithIdHasBeenDeleted', (carId: number) => {
+      if (this.carsSource.value) {
+        this.carsSource.next(this.carsSource.value.filter(c => c.id == carId));
+      }
+    });
+
+    this.hubConnection.on('CarReadyStateUpdated', (car: Car) => {
+      this.toastr.success(car.racerName + ' is ' + (car.isReady ? 'ready' : 'is not ready'));
+      if (this.carsSource.value) {
+        const carFromArray = this.carsSource.value.find(c => c.id == car.id);
+        if (carFromArray) {
+          carFromArray.isReady = car.isReady;
+        }
+      }
+    });
+
+    this.hubConnection.on('CarFinishedRacing', (car: Car) => {
+      this.toastr.success(car.racerName + ' has finished');
+      if (this.carsSource.value) {
+        const carFromArray = this.carsSource.value.find(c => c.id == car.id);
+        if (carFromArray) {
+          carFromArray.isFinished = car.isFinished;
+        }
+      }
+    });
+
+    //TODO: Add event event emitting for boosting car
+    this.hubConnection.on('CarBoosted', (car: Car) => {
+
+    });
+
+    this.hubConnection.on('GameAlreadyStarted', () => {
+      this.toastr.warning('Race already starter\nYour only option to watch');
+    });
+
+    //TODO: Add event emitting for game starting
+    this.hubConnection.on('GameStarting', () => {
+
+    });
+
+    this.hubConnection.on('FinishedSuccessfully', () => {
+      this.toastr.success('You have finished');
+    });
+
+    //TODO: Add event emitting for game finish
+    this.hubConnection.on('GameFinished', (ratedPlayer: LobbyUser[]) => {
     });
   }
 

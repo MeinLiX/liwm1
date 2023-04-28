@@ -3,6 +3,7 @@ using Application.Interfaces;
 using Domain.Entities;
 using Domain.Models;
 using Domain.Models.Constants;
+using Domain.Responses.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -163,7 +164,7 @@ public class RacingGameHub : Hub
                 if (cars.All(c => c?.IsFinished ?? false))
                 {
                     await this.lobbyRepository.FinishGameAsync(userWithLobby.Item2);
-                    await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.GameFinished, userWithLobby.Item2.CurrentGame.RatingPlayers);
+                    await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.GameFinished, userWithLobby.Item2.CurrentGame.RatingPlayers.Select(rp => new UserDetailDTO(rp)));
                 }
 
                 foreach (var carToDelete in cars)
