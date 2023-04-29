@@ -20,6 +20,10 @@ export class RacingGameService {
   private carsSource = new BehaviorSubject<Car[] | null>(null);
   cars$ = this.carsSource.asObservable();
 
+  public onCarBoosted?: (car: Car) => void;
+  public onRaceStarting?: () => void;
+  public onRaceFinished: (ratedPlayers: LobbyUser[]) => void;
+
   constructor(private toastr: ToastrService) { }
 
   connectToGame(user: User) {
@@ -73,26 +77,30 @@ export class RacingGameService {
       }
     });
 
-    //TODO: Add event event emitting for boosting car
     this.hubConnection.on('CarBoosted', (car: Car) => {
-
+      if (this.onCarBoosted) {
+        this.onCarBoosted(car);
+      }
     });
 
     this.hubConnection.on('GameAlreadyStarted', () => {
       this.toastr.warning('Race already starter\nYour only option to watch');
     });
 
-    //TODO: Add event emitting for game starting
     this.hubConnection.on('GameStarting', () => {
-
+      if (this.onRaceStarting) {
+        this.onRaceStarting();
+      }
     });
 
     this.hubConnection.on('FinishedSuccessfully', () => {
       this.toastr.success('You have finished');
     });
 
-    //TODO: Add event emitting for game finish
-    this.hubConnection.on('GameFinished', (ratedPlayer: LobbyUser[]) => {
+    this.hubConnection.on('GameFinished', (ratedPlayers: LobbyUser[]) => {
+      if (this.onRaceFinished) {
+        this.onRaceFinished(ratedPlayers);
+      }
     });
   }
 
