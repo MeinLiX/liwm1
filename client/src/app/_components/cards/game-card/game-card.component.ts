@@ -22,7 +22,7 @@ export class GameCardComponent implements OnInit {
     });
   }
 
-  playSoloGame() {
+  playPractiseGame() {
     if (this.game) {
       this.router.navigateByUrl(this.game.name.toLowerCase());
     }

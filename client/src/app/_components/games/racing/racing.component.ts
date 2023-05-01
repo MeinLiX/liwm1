@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { timeout } from 'rxjs';
 import { Car } from 'src/app/_models/car';
 import { RacingTransmissionRange } from 'src/app/_models/racingTransmissionRange';
 import { LobbyService } from 'src/app/_services/lobby.service';
+import { RacingGameService } from 'src/app/_services/racing-game.service';
 
 @Component({
   selector: 'app-racing',
@@ -28,7 +30,9 @@ export class RacingComponent implements OnInit {
   transmission = 0;
   transmissionDelayTime = 1;
 
-  constructor(private lobbyService: LobbyService) { }
+  isPractise = true;
+
+  constructor(private lobbyService: LobbyService, private racingGameService: RacingGameService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -36,21 +40,23 @@ export class RacingComponent implements OnInit {
       this.ctx = this.canvas.getContext('2d');
 
       if (this.ctx) {
-        this.lobbyService.lobby$.subscribe({
-          next: lobby => {
-            const countOfCars = lobby ? lobby.users.length : 1;
-            for (let i = 0; i < countOfCars; i++) {
-              this.createCar();
-              if (this.cars && this.cars.length > 0) {
-                this.drawCar(this.cars[i]);
-                this.drawRoad(this.cars[i]);
-              }
-            }
-          }
-        });
+        const practiseString = this.route.snapshot.paramMap.get('isPractise');
+        if (practiseString) {
+          this.isPractise = JSON.parse(practiseString);
+        }
 
-        this.ctx.font = '72px serif';
-        this.ctx.fillText('Tap to start', this.canvas.width / 2 - 155, this.canvas.height / 2);
+        if (this.isPractise) {
+            
+        } else {
+          this.createCar();
+          if (this.cars) {
+            this.drawCar(this.cars[0]);
+            this.drawRoad(this.cars[0]);
+          }
+
+          this.ctx.font = '72px serif';
+          this.ctx.fillText('Tap to start', this.canvas.width / 2 - 155, this.canvas.height / 2);
+        }
       }
     }
   }

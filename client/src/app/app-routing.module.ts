@@ -5,6 +5,7 @@ import { RacingComponent } from './_components/games/racing/racing.component';
 import { HomeComponent } from './_components/home/home.component';
 import { NotFoundComponent } from './_components/not-found/not-found.component';
 import { AuthGuard } from './_guards/auth.guard';
+import { GameGuard } from './_guards/game.guard';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -14,7 +15,8 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: 'games', component: GamesHomeComponent },
-      { path: 'racing', component: RacingComponent }
+      { path: 'racing', component: RacingComponent },
+      { path: 'racing?isPractise=false', component: RacingComponent, canActivate: [GameGuard] }
     ]
   },
   { path: '**', component: NotFoundComponent, pathMatch: 'full' }

@@ -22,7 +22,7 @@ export class RacingGameService {
 
   public onCarBoosted?: (car: Car) => void;
   public onRaceStarting?: () => void;
-  public onRaceFinished: (ratedPlayers: LobbyUser[]) => void;
+  public onRaceFinished?: (ratedPlayers: LobbyUser[]) => void;
 
   constructor(private toastr: ToastrService) { }
 

@@ -113,7 +113,7 @@ export class LobbyService {
 
     this.hubConnection.on('LobbyGameModeChanged', (lobby: Lobby) => {
       this.setLobby(lobby);
-      this.router.navigateByUrl(lobby.gameMode.name);
+      this.router.navigateByUrl(lobby.gameMode.name.toLowerCase() + '?isPractise=false');
     });
   }
 
