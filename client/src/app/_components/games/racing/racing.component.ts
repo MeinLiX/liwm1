@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { timeout } from 'rxjs';
+import { take, timeout } from 'rxjs';
 import { Car } from 'src/app/_models/car';
 import { RacingTransmissionRange } from 'src/app/_models/racingTransmissionRange';
+import { AccountService } from 'src/app/_services/account.service';
 import { LobbyService } from 'src/app/_services/lobby.service';
 import { RacingGameService } from 'src/app/_services/racing-game.service';
 
@@ -32,7 +33,7 @@ export class RacingComponent implements OnInit {
 
   isPractise = true;
 
-  constructor(private lobbyService: LobbyService, private racingGameService: RacingGameService, private route: ActivatedRoute) { }
+  constructor(private accountService: AccountService, private racingGameService: RacingGameService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -46,13 +47,41 @@ export class RacingComponent implements OnInit {
         }
 
         if (this.isPractise) {
-            
+          this.racingGameService.cars$.subscribe({
+            next: cars => {
+              if (cars) {
+                for (let i = 0; i < cars.length; i++) {
+                  const isLastIndexEven = (cars.length - 1) % 2 === 0;
+                  if (isLastIndexEven) {
+                    const car = cars.length - 3 !== -1
+                      ? cars[cars.length - 3]
+                      : cars[0];
+                    cars[i].x = car.x + (this.carWidth * 1.5);
+                  } else {
+                    const car = cars[cars.length - 3];
+                    cars[i].x = car.x - (this.carWidth * 1.5);
+                  }
+                }
+
+                this.cars = cars;
+                this.drawCars();
+              }
+            }
+          });
+
+          this.ctx.font = '72px serif';
+          this.ctx.fillText('Tap to ready', this.canvas.width / 2 - 155, this.canvas.height / 2);
         } else {
-          this.createCar();
-          if (this.cars) {
-            this.drawCar(this.cars[0]);
-            this.drawRoad(this.cars[0]);
-          }
+
+          this.accountService.currentUser$.pipe(take(1)).subscribe({
+            next: user => {
+              if (user && this.canvas) {
+                this.cars = [new Car(this.canvas.width / 2 - this.carWidth * 0.5, this.canvas.height - 100, 0, user.username)];
+                this.drawCar(this.cars[0]);
+                this.drawRoad(this.cars[0]);
+              }
+            }
+          });
 
           this.ctx.font = '72px serif';
           this.ctx.fillText('Tap to start', this.canvas.width / 2 - 155, this.canvas.height / 2);
@@ -259,26 +288,6 @@ export class RacingComponent implements OnInit {
       for (let i = 0; i < this.cars.length; i++) {
         this.drawCar(this.cars[i]);
         this.drawRoad(this.cars[i]);
-      }
-    }
-  }
-
-  private createCar() {
-    if (this.canvas) {
-      if (this.cars && this.cars.length > 1) {
-        const isLastIndexEven = (this.cars.length - 1) % 2 === 0;
-        if (isLastIndexEven) {
-          const car = this.cars.length - 3 !== -1
-            ? this.cars[this.cars.length - 3]
-            : this.cars[0];
-          this.cars.push(new Car(car.x + (this.carWidth * 1.5), car.y, 0, ''));
-        } else {
-          const car = this.cars[this.cars.length - 3];
-          this.cars.push(new Car(car.x - (this.carWidth * 1.5), car.y, 0, ''));
-        }
-      } else {
-        const cars = [new Car(this.canvas.width / 2 - this.carWidth * 0.5, this.canvas.height - 100, 0, '')];
-        this.cars = cars;
       }
     }
   }
