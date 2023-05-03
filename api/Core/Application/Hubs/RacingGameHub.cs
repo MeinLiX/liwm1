@@ -38,18 +38,18 @@ public class RacingGameHub : Hub
 
                 var game = new Game
                 {
-                    GameState = GameState.Created,
+                    State = GameState.Created,
                     Players = new List<AppUser>
                     {
                         userWithLobby.Item1
                     },
-                    GameMode = gameMode
+                    Mode = gameMode
                 };
                 await this.lobbyRepository.CreateGameAsync(userWithLobby.Item2, game);
             }
             else
             {
-                if (userWithLobby.Item2.CurrentGame.GameState == GameState.Created)
+                if (userWithLobby.Item2.CurrentGame.State == GameState.Created)
                 {
                     await this.lobbyRepository.AddPlayerToLobbyGame(userWithLobby.Item2, userWithLobby.Item1);
                 }

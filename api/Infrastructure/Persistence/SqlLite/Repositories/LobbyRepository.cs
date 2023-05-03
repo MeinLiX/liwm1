@@ -203,7 +203,7 @@ public class LobbyRepository : ILobbyRepository
 
     public async Task FinishGameAsync(Lobby lobby)
     {
-        lobby.CurrentGame.GameState = GameState.Finished;
+        lobby.CurrentGame.State = GameState.Finished;
         lobby.PreviousGames.Add(lobby.CurrentGame);
         lobby.CurrentGame = null;
         await this.dataContext.SaveChangesAsync();
