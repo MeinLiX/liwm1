@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { take, timeout } from 'rxjs';
+import { take } from 'rxjs';
 import { Car } from 'src/app/_models/car';
 import { RacingTransmissionRange } from 'src/app/_models/racingTransmissionRange';
 import { AccountService } from 'src/app/_services/account.service';
-import { LobbyService } from 'src/app/_services/lobby.service';
 import { RacingGameService } from 'src/app/_services/racing-game.service';
 
 @Component({
@@ -92,61 +91,74 @@ export class RacingComponent implements OnInit {
 
   async onClick() {
     if (!this.isGamePlaying) {
-      this.isGamePlaying = true;
-
-      const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
-
-      if (this.ctx && this.canvas) {
-        for (let counter = 3; counter > 0; counter--) {
-          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-          this.ctx.font = '72px serif';
-          this.ctx.fillText(counter.toString(), this.canvas.width / 2 - 25, this.canvas.height / 2);
-
-          await sleep(1000);
-        }
-
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.drawCars();
-
-        this.resetPositionLineY();
-        this.drawTransmissionNumber();
-
-        setInterval(() => {
-          if (this.cars) {
-            const playerCar = this.cars[0];
-            if (playerCar.lap >= this.maxLap) {
-              this.resetPositionLineY();
-              this.drawTransmissionPosition(this.positionLineY);
-              this.transmission = 0;
-              this.drawTransmissionNumber();
-              return;
+      if (this.isPractise) {
+        this.isGamePlaying = true;
+        this.startGame();
+      } else {
+        this.racingGameService.playerCar$.pipe(take(1)).subscribe({
+          next: car => {
+            if (car) {
+              this.racingGameService.updateCarReadyState(!car.isReady);
             }
           }
-
-          this.drawSpeedText();
-          this.drawTransmissionGUI();
-          this.drawTransmissionPosition(this.positionLineY);
-          this.positionLineY -= this.transmissionGUIHeight / 20 / (this.transmission + 2) / this.transmissionDelayTime;
-          if (this.canvas && this.positionLineY < this.canvas.height / 2 - this.transmissionGUIHeight / 2.5) {
-            this.resetPositionLineY();
-            this.incrementTransmission();
-            this.drawTransmissionNumber();
-            this.turnTransmissionCar();
-          }
-        }, this.interval);
-
-        setInterval(() => {
-          this.moveCars();
-          this.drawSpeedText();
-          this.drawCars();
-        }, this.interval);
+        });
       }
     } else {
       this.incrementTransmission();
       this.drawTransmissionNumber();
       this.turnTransmissionCar();
       this.resetPositionLineY();
+    }
+  }
+
+  private async startGame() {
+    const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+
+    if (this.ctx && this.canvas) {
+      for (let counter = 3; counter > 0; counter--) {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        this.ctx.font = '72px serif';
+        this.ctx.fillText(counter.toString(), this.canvas.width / 2 - 25, this.canvas.height / 2);
+
+        await sleep(1000);
+      }
+
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.drawCars();
+
+      this.resetPositionLineY();
+      this.drawTransmissionNumber();
+
+      setInterval(() => {
+        if (this.cars) {
+          const playerCar = this.cars[0];
+          if (playerCar.lap >= this.maxLap) {
+            this.resetPositionLineY();
+            this.drawTransmissionPosition(this.positionLineY);
+            this.transmission = 0;
+            this.drawTransmissionNumber();
+            return;
+          }
+        }
+
+        this.drawSpeedText();
+        this.drawTransmissionGUI();
+        this.drawTransmissionPosition(this.positionLineY);
+        this.positionLineY -= this.transmissionGUIHeight / 20 / (this.transmission + 2) / this.transmissionDelayTime;
+        if (this.canvas && this.positionLineY < this.canvas.height / 2 - this.transmissionGUIHeight / 2.5) {
+          this.resetPositionLineY();
+          this.incrementTransmission();
+          this.drawTransmissionNumber();
+          this.turnTransmissionCar();
+        }
+      }, this.interval);
+
+      setInterval(() => {
+        this.moveCars();
+        this.drawSpeedText();
+        this.drawCars();
+      }, this.interval);
     }
   }
 
