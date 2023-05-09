@@ -172,14 +172,23 @@ export class RacingComponent implements OnInit {
     if (this.cars && this.canvas && this.ctx) {
       let addedSpeed = 0;
 
+      let racingTransmissionRange;
       if (this.isYInRange(RacingTransmissionRange.Rare)) {
         addedSpeed = 0.7;
+        racingTransmissionRange = RacingTransmissionRange.Rare;
       } else if (this.isYInRange(RacingTransmissionRange.Bad)) {
         addedSpeed = -1;
+        racingTransmissionRange = RacingTransmissionRange.Bad;
       } else if (this.isYInRange(RacingTransmissionRange.Medium)) {
         addedSpeed = 0.1;
+        racingTransmissionRange = RacingTransmissionRange.Medium;
       } else if (this.isYInRange(RacingTransmissionRange.Good)) {
         addedSpeed = 0.4;
+        racingTransmissionRange = RacingTransmissionRange.Good;
+      }
+
+      if (racingTransmissionRange) {
+        this.racingGameService.boostCar(racingTransmissionRange);
       }
 
       const currentCar = this.cars[0];
