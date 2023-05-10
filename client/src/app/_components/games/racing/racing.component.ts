@@ -87,6 +87,19 @@ export class RacingComponent implements OnInit {
         }
       }
     }
+
+    this.racingGameService.onRaceStarting = this.startGame;
+    this.racingGameService.onCarBoosted = this.carBoosted;
+  }
+
+  private carBoosted(car: Car) {
+    if (this.cars) {
+      const foundCar = this.cars.find(c => c.id == car.id);
+      if (foundCar) {
+        foundCar.transmission++;
+        //TODO: Add speed acceleration
+      }
+    }
   }
 
   async onClick() {
@@ -264,7 +277,7 @@ export class RacingComponent implements OnInit {
         for (let i = 0; i < this.cars.length; i++) {
           const car = this.cars[i];
           if (car.lap <= this.maxLap) {
-            car.dy += 0.075 * this.transmission / this.interval;
+            car.dy += 0.075 * car.transmission / this.interval;
             car.y -= car.dy;
 
             if (car.y < 0) {

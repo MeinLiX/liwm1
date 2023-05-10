@@ -8,6 +8,7 @@ export class Car {
     dx: number;
     dy: number;
     lap: number;
+    transmission: number;   
 
     constructor(x: number, y: number, id: number, racerName: string) {
         this.x = x;
@@ -19,6 +20,6 @@ export class Car {
         this.lap = 1;
         this.isFinished = false;
         this.isReady = false;
-
+        this.transmission = 0;
     }
 }
