@@ -20,6 +20,10 @@ export class RacingComponent implements OnInit {
   readonly transmissionBallRadius = 10;
   readonly interval = 15;
   readonly maxLap = 10;
+  readonly rareSpeedBost = 0.7;
+  readonly badSpeedBost = -1;
+  readonly mediumSpeedBost = 0.1;
+  readonly goodSpeedBost = 0.4;
 
   canvas?: HTMLCanvasElement;
   ctx?: CanvasRenderingContext2D | null;
@@ -45,7 +49,7 @@ export class RacingComponent implements OnInit {
           this.isPractise = JSON.parse(practiseString);
         }
 
-        if (this.isPractise) {
+        if (!this.isPractise) {
           this.racingGameService.cars$.subscribe({
             next: cars => {
               if (cars) {
@@ -68,6 +72,10 @@ export class RacingComponent implements OnInit {
             }
           });
 
+          this.racingGameService.onRaceStarting = this.onStartGame;
+          this.racingGameService.onCarBoosted = this.onCarBoosted;
+          this.racingGameService.onCarReadyStateUpdated = this.onCarReadyStateUpdated;
+
           this.ctx.font = '72px serif';
           this.ctx.fillText('Tap to ready', this.canvas.width / 2 - 155, this.canvas.height / 2);
         } else {
@@ -87,17 +95,41 @@ export class RacingComponent implements OnInit {
         }
       }
     }
-
-    this.racingGameService.onRaceStarting = this.startGame;
-    this.racingGameService.onCarBoosted = this.carBoosted;
   }
 
-  private carBoosted(car: Car) {
+  private onCarReadyStateUpdated(car: Car) {
+    //TODO: Add view to showing which players are ready
+  }
+
+  private onCarBoosted(car: Car) {
     if (this.cars) {
       const foundCar = this.cars.find(c => c.id == car.id);
       if (foundCar) {
         foundCar.transmission++;
-        //TODO: Add speed acceleration
+
+        let addedSpeed = 0;
+
+        switch (car.boostMode) {
+          case RacingTransmissionRange.Bad:
+            addedSpeed = this.badSpeedBost;
+            break;
+          case RacingTransmissionRange.Rare:
+            addedSpeed = this.rareSpeedBost;
+            break;
+          case RacingTransmissionRange.Good:
+            addedSpeed = this.goodSpeedBost;
+            break;
+          case RacingTransmissionRange.Medium:
+            addedSpeed = this.mediumSpeedBost;
+            break;
+        }
+
+        if (this.getCarSpeed(foundCar.dy + addedSpeed) > 0) {
+          addedSpeed *= foundCar.transmission;
+          foundCar.dy += addedSpeed;
+        } else {
+          foundCar.dy = 1;
+        }
       }
     }
   }
@@ -106,12 +138,13 @@ export class RacingComponent implements OnInit {
     if (!this.isGamePlaying) {
       if (this.isPractise) {
         this.isGamePlaying = true;
-        this.startGame();
+        this.onStartGame();
       } else {
         this.racingGameService.playerCar$.pipe(take(1)).subscribe({
           next: car => {
             if (car) {
-              this.racingGameService.updateCarReadyState(!car.isReady);
+              car.isReady = !car.isReady;
+              this.racingGameService.updateCarReadyState(car.isReady);
             }
           }
         });
@@ -124,7 +157,7 @@ export class RacingComponent implements OnInit {
     }
   }
 
-  private async startGame() {
+  private async onStartGame() {
     const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
     if (this.ctx && this.canvas) {
@@ -187,16 +220,16 @@ export class RacingComponent implements OnInit {
 
       let racingTransmissionRange;
       if (this.isYInRange(RacingTransmissionRange.Rare)) {
-        addedSpeed = 0.7;
+        addedSpeed = this.rareSpeedBost;
         racingTransmissionRange = RacingTransmissionRange.Rare;
       } else if (this.isYInRange(RacingTransmissionRange.Bad)) {
-        addedSpeed = -1;
+        addedSpeed = this.badSpeedBost;
         racingTransmissionRange = RacingTransmissionRange.Bad;
       } else if (this.isYInRange(RacingTransmissionRange.Medium)) {
-        addedSpeed = 0.1;
+        addedSpeed = this.mediumSpeedBost;
         racingTransmissionRange = RacingTransmissionRange.Medium;
       } else if (this.isYInRange(RacingTransmissionRange.Good)) {
-        addedSpeed = 0.4;
+        addedSpeed = this.goodSpeedBost;
         racingTransmissionRange = RacingTransmissionRange.Good;
       }
 

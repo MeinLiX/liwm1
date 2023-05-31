@@ -23,6 +23,7 @@ export class RacingGameService {
   public onCarBoosted?: (car: Car) => void;
   public onRaceStarting?: () => void;
   public onRaceFinished?: (ratedPlayers: LobbyUser[]) => void;
+  public onCarReadyStateUpdated?: (car: Car) => void;
 
   constructor(private toastr: ToastrService) { }
 
@@ -60,9 +61,13 @@ export class RacingGameService {
     this.hubConnection.on('CarReadyStateUpdated', (car: Car) => {
       this.toastr.success(car.racerName + ' is ' + (car.isReady ? 'ready' : 'is not ready'));
       if (this.carsSource.value) {
-        const carFromArray = this.carsSource.value.find(c => c.id == car.id);
-        if (carFromArray) {
-          carFromArray.isReady = car.isReady;
+        const foundCar = this.carsSource.value.find(c => c.id == car.id);
+        if (foundCar) {
+          foundCar.isReady = car.isReady;
+
+          if (this.onCarReadyStateUpdated) {
+            this.onCarReadyStateUpdated(car);
+          }
         }
       }
     });

@@ -1,3 +1,5 @@
+import { RacingTransmissionRange } from "./racingTransmissionRange";
+
 export class Car {
     id: number;
     racerName: string;
@@ -9,6 +11,7 @@ export class Car {
     dy: number;
     lap: number;
     transmission: number;   
+    boostMode: RacingTransmissionRange;
 
     constructor(x: number, y: number, id: number, racerName: string) {
         this.x = x;
@@ -21,5 +24,6 @@ export class Car {
         this.isFinished = false;
         this.isReady = false;
         this.transmission = 0;
+        this.boostMode = RacingTransmissionRange.Bad;
     }
 }
