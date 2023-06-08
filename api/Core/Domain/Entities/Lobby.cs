@@ -13,6 +13,6 @@ public class Lobby
     public AppUser LobbyCreator { get; set; }
     public Game CurrentGame { get; set; }
     public ICollection<Game> PreviousGames { get; set; }
-    public ICollection<AppUser> Users { get; set; } = new List<AppUser>();
-    public ICollection<Connection> Connections { get; set; } = new List<Connection>();
+    public ICollection<AppUser> Users { get; set; }
+    public ICollection<Connection> Connections { get; set; }
 }

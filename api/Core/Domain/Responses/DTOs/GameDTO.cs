@@ -14,8 +14,8 @@ public class GameDTO
     public GameDTO(Game game)
     {
         this.Mode = game.Mode;
-        this.Players = game.Players.Select(p => new UserDetailDTO(p)).ToList();
-        this.RatingPlayers = game.RatingPlayers.Select(rp => new UserDetailDTO(rp)).ToList();
+        // this.Players = game.Players.Select(p => new UserDetailDTO(p)).ToList();
+        // this.RatingPlayers = game.RatingPlayers.Select(rp => new UserDetailDTO(rp)).ToList();
         this.CreatedAt = game.CreatedAt;
         this.State = game.State;
     }

@@ -196,7 +196,7 @@ public class LobbyRepository : ILobbyRepository
     {
         if (lobby.CurrentGame != null)
         {
-            lobby.CurrentGame.Players.Add(player);
+            // lobby.CurrentGame.Players.Add(player);
             await this.dataContext.SaveChangesAsync();
         }
     }
@@ -211,7 +211,7 @@ public class LobbyRepository : ILobbyRepository
 
     public async Task AddRatePlayerAsync(Lobby lobby, AppUser player)
     {
-        lobby.CurrentGame.RatingPlayers.Add(player);
+        // lobby.CurrentGame.RatingPlayers.Add(player);
         await this.dataContext.SaveChangesAsync();
     }
 }

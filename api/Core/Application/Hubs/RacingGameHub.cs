@@ -39,10 +39,10 @@ public class RacingGameHub : Hub
                 var game = new Game
                 {
                     State = GameState.Created,
-                    Players = new List<AppUser>
+                    /*Players = new List<AppUser>
                     {
                         userWithLobby.Item1
-                    },
+                    },*/
                     Mode = gameMode
                 };
                 await this.lobbyRepository.CreateGameAsync(userWithLobby.Item2, game);
@@ -113,9 +113,9 @@ public class RacingGameHub : Hub
         var game = await this.gameRepository.GetGameWithPlayerAsync(user);
         if (game is not null)
         {
-            cars = await Task.WhenAll(game.Players.Where(p => p.UserName != user.UserName)
+            /*cars = await Task.WhenAll(game.Players.Where(p => p.UserName != user.UserName)
                                                   .Select(async p =>
-                                                            await this.racingCarRepository.GetRacingCarByRacerNameAsync(p.UserName)));
+                                                            await this.racingCarRepository.GetRacingCarByRacerNameAsync(p.UserName)));*/
         }
 
         return cars;
@@ -164,7 +164,7 @@ public class RacingGameHub : Hub
                 if (cars.All(c => c?.IsFinished ?? false))
                 {
                     await this.lobbyRepository.FinishGameAsync(userWithLobby.Item2);
-                    await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.GameFinished, userWithLobby.Item2.CurrentGame.RatingPlayers.Select(rp => new UserDetailDTO(rp)));
+                    // await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.GameFinished, userWithLobby.Item2.CurrentGame.RatingPlayers.Select(rp => new UserDetailDTO(rp)));
                 }
 
                 foreach (var carToDelete in cars)
