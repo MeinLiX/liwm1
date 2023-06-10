@@ -49,6 +49,8 @@ export class RacingComponent implements OnInit {
           this.isPractise = JSON.parse(practiseString);
         }
 
+        console.log(this.isPractise);
+
         if (!this.isPractise) {
           this.racingGameService.cars$.subscribe({
             next: cars => {
@@ -386,7 +388,6 @@ export class RacingComponent implements OnInit {
       this.ctx.beginPath();
       this.ctx.fillStyle = '#000';
       this.ctx.fillRect(car.x, car.y, this.carWidth, this.carHeight);
-      console.log(car.y);
       this.ctx.closePath();
     }
   }

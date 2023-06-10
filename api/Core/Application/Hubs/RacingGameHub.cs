@@ -3,7 +3,6 @@ using Application.Interfaces;
 using Domain.Entities;
 using Domain.Models;
 using Domain.Models.Constants;
-using Domain.Responses.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -39,12 +38,15 @@ public class RacingGameHub : Hub
                 var game = new Game
                 {
                     State = GameState.Created,
-                    /*Players = new List<AppUser>
-                    {
-                        userWithLobby.Item1
-                    },*/
+                    Stats = new List<GameAppUsersStats>(),
                     Mode = gameMode
                 };
+                game.Stats.Add(new GameAppUsersStats
+                {
+                    AppUser = userWithLobby.Item1,
+                    Game = game
+                });
+
                 await this.lobbyRepository.CreateGameAsync(userWithLobby.Item2, game);
             }
             else
@@ -113,9 +115,9 @@ public class RacingGameHub : Hub
         var game = await this.gameRepository.GetGameWithPlayerAsync(user);
         if (game is not null)
         {
-            /*cars = await Task.WhenAll(game.Players.Where(p => p.UserName != user.UserName)
-                                                  .Select(async p =>
-                                                            await this.racingCarRepository.GetRacingCarByRacerNameAsync(p.UserName)));*/
+            cars = await Task.WhenAll(game.Stats.Where(p => p.AppUser.UserName != user.UserName)
+                                                .Select(async p =>
+                                                await this.racingCarRepository.GetRacingCarByRacerNameAsync(p.AppUser.UserName)));
         }
 
         return cars;

@@ -1,5 +1,4 @@
 ﻿using Application;
-using PostgreSQL;
 using Shared;
 using SqlLite;
 using Microsoft.OpenApi.Models;

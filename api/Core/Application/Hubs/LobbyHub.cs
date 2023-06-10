@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Application.Extensions;
 using Application.Interfaces;
 using Domain.Entities;
@@ -285,8 +284,8 @@ public class LobbyHub : Hub
             return;
         }
 
-        lobby = await this.lobbyRepository.ChangeGameModeAsync(user, gameMode);
-        await Clients.Group(lobby.LobbyName).SendAsync(LobbyHubMethodNameConstants.LobbyGameModeChanged, new LobbyDTO(lobby));
+        await gameModesRepository.ChangeGameInLobbyAsync(lobby, gameMode);
+        await Clients.Group(lobby.LobbyName).SendAsync(LobbyHubMethodNameConstants.LobbyGameModeChanged, new LobbyDTO(lobby, gameMode));
     }
 
     public override async Task OnDisconnectedAsync(Exception exception)

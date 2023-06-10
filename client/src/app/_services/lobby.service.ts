@@ -4,7 +4,7 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { User } from '../_models/user';
 import { ToastrService } from 'ngx-toastr';
 import { LobbyConnectMode } from '../_models/lobbyConnectMode';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, map } from 'rxjs';
 import { Lobby } from '../_models/lobby';
 import { AccountService } from './account.service';
 import { Router } from '@angular/router';

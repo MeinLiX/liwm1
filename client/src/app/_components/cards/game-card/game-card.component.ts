@@ -24,7 +24,7 @@ export class GameCardComponent implements OnInit {
 
   playPractiseGame() {
     if (this.game) {
-      this.router.navigateByUrl(this.game.name.toLowerCase());
+      this.router.navigateByUrl(this.game.name.toLowerCase() + '?isPractise=true');
     }
   }
 

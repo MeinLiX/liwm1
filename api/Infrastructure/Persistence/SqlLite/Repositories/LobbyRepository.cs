@@ -169,23 +169,6 @@ public class LobbyRepository : ILobbyRepository
         return lobby;
     }
 
-    public async Task<Lobby?> ChangeGameModeAsync(AppUser user, GameMode gameMode)
-    {
-        Lobby? lobby = null;
-
-        if (await this.IsUserInLobbyAsync(user))
-        {
-            lobby = await this.GetLobbyWithUserAsync(user);
-            if (lobby.LobbyCreator == user && !gameMode.Lobbies.Contains(lobby))
-            {
-                gameMode.Lobbies.Add(lobby);
-                await this.dataContext.SaveChangesAsync();
-            }
-        }
-
-        return lobby;
-    }
-
     public async Task CreateGameAsync(Lobby lobby, Game game)
     {
         lobby.CurrentGame = game;
@@ -196,7 +179,11 @@ public class LobbyRepository : ILobbyRepository
     {
         if (lobby.CurrentGame != null)
         {
-            // lobby.CurrentGame.Players.Add(player);
+            lobby.CurrentGame.Stats.Add(new GameAppUsersStats
+            {
+                AppUser = player,
+                Game = lobby.CurrentGame
+            });
             await this.dataContext.SaveChangesAsync();
         }
     }
@@ -211,7 +198,11 @@ public class LobbyRepository : ILobbyRepository
 
     public async Task AddRatePlayerAsync(Lobby lobby, AppUser player)
     {
-        // lobby.CurrentGame.RatingPlayers.Add(player);
+        lobby.CurrentGame.Stats.Add(new GameAppUsersStats
+        {
+            AppUser = player,
+            Game = lobby.CurrentGame
+        });
         await this.dataContext.SaveChangesAsync();
     }
 }
