@@ -278,12 +278,6 @@ public class LobbyHub : Hub
             return;
         }
 
-        if (gameMode.Lobbies.Contains(lobby))
-        {
-            await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.LobbyAlreadyInThatGameMode);
-            return;
-        }
-
         await gameModesRepository.ChangeGameInLobbyAsync(lobby, gameMode);
         await Clients.Group(lobby.LobbyName).SendAsync(LobbyHubMethodNameConstants.LobbyGameModeChanged, new LobbyDTO(lobby, gameMode));
     }
