@@ -19,6 +19,7 @@ public class DataContext : IdentityDbContext<AppUser, AppRole, int,
     public DbSet<Lobby> Lobbies { get; set; }
     public DbSet<RacingCar> RacingCars { get; set; }
     public DbSet<Game> Games { get; set; }
+    public DbSet<GameAppUsersStats> GameAppUsersStats { get; set; }
 
     public DataContext(DbContextOptions options) : base(options)
     {
@@ -40,23 +41,28 @@ public class DataContext : IdentityDbContext<AppUser, AppRole, int,
                .HasForeignKey(ur => ur.RoleId)
                .IsRequired();
 
-        builder.Entity<AppUser>()
-               .HasMany(user => user.Stats)
-               .WithOne(u => u.AppUser)
-               .HasForeignKey(u => u.AppUserId)
-               .IsRequired();
-            
-        builder.Entity<Game>()
-               .HasMany(g => g.Stats)
-               .WithOne(g => g.Game)
-               .HasForeignKey(g => g.GameId)
+        builder.Entity<Lobby>()
+               .HasMany(l => l.PreviousGames)
+               .WithOne(g => g.Lobby)
+               .HasForeignKey(g => g.LobbyId)
                .IsRequired();
 
-       builder.Entity<Lobby>()
-              .HasMany(l => l.PreviousGames)
-              .WithOne(g => g.Lobby)
-              .HasForeignKey(g => g.LobbyId)
-              .IsRequired();
+        builder.Entity<GameAppUsersStats>()
+               .HasKey(s => new
+               {
+                   s.GameId,
+                   s.AppUserId
+               });
+
+        builder.Entity<GameAppUsersStats>()
+               .HasOne(s => s.Game)
+               .WithMany(g => g.Stats)
+               .HasForeignKey(s => s.GameId);
+
+        builder.Entity<GameAppUsersStats>()
+               .HasOne(s => s.AppUser)
+               .WithMany(g => g.Stats)
+               .HasForeignKey(s => s.AppUserId);
     }
 
     public async Task<int> SaveChangesAsync() => await base.SaveChangesAsync();

@@ -34,12 +34,14 @@ public class RacingGameHub : Hub
             if (userWithLobby.Item2.CurrentGame is null)
             {
                 var gameMode = await this.gameModesRepository.GetGameModeByNameAsync("Racing");
-
+                
                 var game = new Game
                 {
                     State = GameState.Created,
                     Stats = new List<GameAppUsersStats>(),
-                    Mode = gameMode
+                    Mode = gameMode,
+                    Lobby = userWithLobby.Item2,
+                    LobbyId = userWithLobby.Item2.Id
                 };
                 game.Stats.Add(new GameAppUsersStats
                 {

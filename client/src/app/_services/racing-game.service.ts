@@ -34,7 +34,7 @@ export class RacingGameService {
       })
       .withAutomaticReconnect()
       .build();
-
+      
     this.hubConnection.start().catch(error => console.log(error));
 
     this.hubConnection.on('CarCreated', (cars: Car[], car: Car) => {

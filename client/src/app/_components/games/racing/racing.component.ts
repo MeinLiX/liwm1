@@ -48,13 +48,17 @@ export class RacingComponent implements OnInit {
           if (this.ctx) {
             this.isPractise = params['isPractise'] === 'true';
 
-            console.log(this.isPractise);
-            console.log(!this.isPractise);
-
             if (!this.isPractise) {
-              console.log('not');
+              this.accountService.currentUser$.pipe(take(1)).subscribe({
+                next: user => {
+                  if (user) {
+                    this.racingGameService.connectToGame(user);
+                  }
+                }
+              });
               this.racingGameService.cars$.subscribe({
                 next: cars => {
+                  console.log(cars);
                   if (cars) {
                     for (let i = 0; i < cars.length; i++) {
                       const isLastIndexEven = (cars.length - 1) % 2 === 0;
@@ -82,7 +86,6 @@ export class RacingComponent implements OnInit {
               this.ctx.font = '72px serif';
               this.ctx.fillText('Tap to ready', this.canvas.width / 2 - 155, this.canvas.height / 2);
             } else {
-              console.log('xd');
               this.accountService.currentUser$.pipe(take(1)).subscribe({
                 next: user => {
                   if (user && this.canvas) {

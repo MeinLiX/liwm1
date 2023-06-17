@@ -10,7 +10,7 @@ public static class Routes
            .InitStatusRoutes()
            .InitPhotoRoutes()
            .InitGameRoutes()
-           .InitLobbyHub();
+           .InitHubs();
     }
 
     internal static WebApplication InitAccountRoutes(this WebApplication web)
@@ -69,10 +69,10 @@ public static class Routes
         return web;
     }
 
-    internal static WebApplication InitLobbyHub(this WebApplication web)
+    internal static WebApplication InitHubs(this WebApplication web)
     {
         web.MapHub<LobbyHub>("hubs/lobby");
-        web.MapHub<LobbyHub>("hubs/racing-game");
+        web.MapHub<RacingGameHub>("hubs/racing-game");
 
         return web;
     }

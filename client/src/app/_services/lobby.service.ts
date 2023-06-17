@@ -8,6 +8,7 @@ import { BehaviorSubject, map } from 'rxjs';
 import { Lobby } from '../_models/lobby';
 import { AccountService } from './account.service';
 import { Router } from '@angular/router';
+import { RacingGameService } from './racing-game.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,7 @@ export class LobbyService {
   private lobbySource = new BehaviorSubject<Lobby | null>(null);
   lobby$ = this.lobbySource.asObservable();
 
-  constructor(private toastr: ToastrService, private accountService: AccountService, private router: Router) { }
+  constructor(private toastr: ToastrService, private accountService: AccountService, private router: Router, private racingGame: RacingGameService) { }
 
   connectToLobby(user: User, lobbyName: string, lobbyConnectMode: LobbyConnectMode) {
     this.hubConnection = new HubConnectionBuilder()
