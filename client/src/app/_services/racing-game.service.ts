@@ -3,7 +3,7 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { environment } from 'src/enviroments/environment';
 import { LobbyUser, User } from '../_models/user';
 import { BehaviorSubject, take } from 'rxjs';
-import { Car } from '../_models/car';
+import { Car, BackendCar } from '../_models/car';
 import { RacingTransmissionRange } from '../_models/racingTransmissionRange';
 import { ToastrService } from 'ngx-toastr';
 
@@ -17,7 +17,7 @@ export class RacingGameService {
   private playerCarSource = new BehaviorSubject<Car | null>(null);
   playerCar$ = this.playerCarSource.asObservable();
 
-  private carsSource = new BehaviorSubject<Car[] | null>(null);
+  private carsSource = new BehaviorSubject<Car[]>([]);
   cars$ = this.carsSource.asObservable();
 
   public onCarBoosted?: (car: Car) => void;
@@ -34,18 +34,22 @@ export class RacingGameService {
       })
       .withAutomaticReconnect()
       .build();
-      
+
     this.hubConnection.start().catch(error => console.log(error));
 
-    this.hubConnection.on('CarCreated', (cars: Car[], car: Car) => {
+    this.hubConnection.on('CarCreated', (receivedCars: BackendCar[], receivedCar: BackendCar) => {
+      const car = new Car(0, 0, receivedCar.id, receivedCar.racerName);
       this.playerCarSource.next(car);
 
-      cars.slice(cars.indexOf(car), 1);
+      let cars = receivedCars.map(c => new Car(0, 0, c.id, c.racerName));
+      cars = cars.filter(c => c === car);
+      console.log(car);
+      cars.push(car);
       this.carsSource.next(cars);
     });
 
-    this.hubConnection.on('RecievedNewRacingCar', (car: Car) => {
-      this.carsSource.value?.push(car);
+    this.hubConnection.on('RecievedNewRacingCar', (receivedCar: BackendCar) => {
+      this.carsSource.value.push(new Car(0, 0, receivedCar.id, receivedCar.racerName));
     });
 
     this.hubConnection.on('CarHasBeenDeleted', () => {
@@ -58,7 +62,8 @@ export class RacingGameService {
       }
     });
 
-    this.hubConnection.on('CarReadyStateUpdated', (car: Car) => {
+    this.hubConnection.on('CarReadyStateUpdated', (receivedCar: BackendCar) => {
+      const car = new Car(0, 0, receivedCar.id, receivedCar.racerName);
       this.toastr.success(car.racerName + ' is ' + (car.isReady ? 'ready' : 'is not ready'));
       if (this.carsSource.value) {
         const foundCar = this.carsSource.value.find(c => c.id == car.id);
@@ -72,7 +77,8 @@ export class RacingGameService {
       }
     });
 
-    this.hubConnection.on('CarFinishedRacing', (car: Car) => {
+    this.hubConnection.on('CarFinishedRacing', (receivedCar: BackendCar) => {
+      const car = new Car(0, 0, receivedCar.id, receivedCar.racerName);
       this.toastr.success(car.racerName + ' has finished');
       if (this.carsSource.value) {
         const carFromArray = this.carsSource.value.find(c => c.id == car.id);
@@ -82,7 +88,8 @@ export class RacingGameService {
       }
     });
 
-    this.hubConnection.on('CarBoosted', (car: Car) => {
+    this.hubConnection.on('CarBoosted', (receivedCar: BackendCar) => {
+      const car = new Car(0, 0, receivedCar.id, receivedCar.racerName);
       if (this.onCarBoosted) {
         this.onCarBoosted(car);
       }

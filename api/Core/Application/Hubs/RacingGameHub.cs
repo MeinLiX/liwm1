@@ -34,7 +34,7 @@ public class RacingGameHub : Hub
             if (userWithLobby.Item2.CurrentGame is null)
             {
                 var gameMode = await this.gameModesRepository.GetGameModeByNameAsync("Racing");
-                
+
                 var game = new Game
                 {
                     State = GameState.Created,
@@ -53,11 +53,7 @@ public class RacingGameHub : Hub
             }
             else
             {
-                if (userWithLobby.Item2.CurrentGame.State == GameState.Created)
-                {
-                    await this.lobbyRepository.AddPlayerToLobbyGame(userWithLobby.Item2, userWithLobby.Item1);
-                }
-                else
+                if (userWithLobby.Item2.CurrentGame.State != GameState.Created)
                 {
                     await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.GameAlreadyStarted);
                     await Groups.AddToGroupAsync(Context.ConnectionId, userWithLobby.Item2.LobbyName);
@@ -76,7 +72,7 @@ public class RacingGameHub : Hub
             }
 
             var cars = await this.GetRacingCarsAsync(userWithLobby.Item1, userWithLobby.Item2);
-            await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.CarCreated, cars, car);
+            await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.CarCreated, cars ?? Enumerable.Empty<RacingCar>(), car);
             await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.RecievedNewRacingCar, car);
             await Groups.AddToGroupAsync(Context.ConnectionId, userWithLobby.Item2.LobbyName);
         }

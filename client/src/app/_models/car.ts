@@ -27,3 +27,11 @@ export class Car {
         this.boostMode = RacingTransmissionRange.Bad;
     }
 }
+
+export interface BackendCar {
+    id: number;
+    racerName: string;
+    racingCarBoostMode: RacingTransmissionRange;
+    isReady: boolean;
+    isFinished: boolean;
+}

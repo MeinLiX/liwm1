@@ -59,7 +59,7 @@ export class RacingComponent implements OnInit {
               this.racingGameService.cars$.subscribe({
                 next: cars => {
                   console.log(cars);
-                  if (cars) {
+                  if (cars && cars.length > 0) {
                     for (let i = 0; i < cars.length; i++) {
                       const isLastIndexEven = (cars.length - 1) % 2 === 0;
                       if (isLastIndexEven) {

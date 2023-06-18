@@ -69,6 +69,8 @@ public class LobbyRepository : ILobbyRepository
                                                                                                   .FirstOrDefaultAsync(l => l.LobbyName == lobbyName);
 
     public async Task<Lobby?> GetLobbyWithUserAsync(AppUser user) => await this.dataContext.Lobbies
+                                                                                           .Include(l => l.CurrentGame)
+                                                                                           .Include(l => l.CurrentGame.Stats)
                                                                                            .Include(l => l.Connections)
                                                                                            .Include(l => l.Users)
                                                                                            .Include(l => l.LobbyCreator)
@@ -173,19 +175,6 @@ public class LobbyRepository : ILobbyRepository
     {
         lobby.CurrentGame = game;
         await this.dataContext.SaveChangesAsync();
-    }
-
-    public async Task AddPlayerToLobbyGame(Lobby lobby, AppUser player)
-    {
-        if (lobby.CurrentGame != null)
-        {
-            lobby.CurrentGame.Stats.Add(new GameAppUsersStats
-            {
-                AppUser = player,
-                Game = lobby.CurrentGame
-            });
-            await this.dataContext.SaveChangesAsync();
-        }
     }
 
     public async Task FinishGameAsync(Lobby lobby)
