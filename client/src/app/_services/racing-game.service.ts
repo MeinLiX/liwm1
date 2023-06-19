@@ -43,7 +43,6 @@ export class RacingGameService {
 
       let cars = receivedCars.map(c => new Car(0, 0, c.id, c.racerName));
       cars = cars.filter(c => c === car);
-      console.log(car);
       cars.push(car);
       this.carsSource.next(cars);
     });

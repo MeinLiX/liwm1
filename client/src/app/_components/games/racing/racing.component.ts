@@ -58,22 +58,27 @@ export class RacingComponent implements OnInit {
               });
               this.racingGameService.cars$.subscribe({
                 next: cars => {
-                  console.log(cars);
-                  if (cars && cars.length > 0) {
+                  if (cars && cars.length > 0 && this.canvas) {
                     for (let i = 0; i < cars.length; i++) {
+                      const car = cars[i];
+                      const lastCar: Car | undefined = cars[i - 1];
                       const isLastIndexEven = (cars.length - 1) % 2 === 0;
-                      if (isLastIndexEven) {
-                        const car = cars.length - 3 !== -1
-                          ? cars[cars.length - 3]
-                          : cars[0];
-                        cars[i].x = car.x + (this.carWidth * 1.5);
+
+                      if (lastCar) {
+                        if (isLastIndexEven) {
+                          car.x = lastCar.x + (this.carWidth * 1.5);
+                        } else {
+                          car.x = lastCar.x - (this.carWidth * 1.5);
+                        }
                       } else {
-                        const car = cars[cars.length - 3];
-                        cars[i].x = car.x - (this.carWidth * 1.5);
+                        car.x = this.canvas.width / 2 - this.carWidth * 0.5;
                       }
+
+                      car.y = this.canvas.height - this.carHeight * 2;
                     }
 
                     this.cars = cars;
+                    console.log(this.cars);
                     this.drawCars();
                   }
                 }
