@@ -20,6 +20,7 @@ export class RacingGameService {
   private carsSource = new BehaviorSubject<Car[]>([]);
   cars$ = this.carsSource.asObservable();
 
+  public onCarRecieved?: (car: Car) => void;
   public onCarBoosted?: (car: Car) => void;
   public onRaceStarting?: () => void;
   public onRaceFinished?: (ratedPlayers: LobbyUser[]) => void;
@@ -48,7 +49,12 @@ export class RacingGameService {
     });
 
     this.hubConnection.on('RecievedNewRacingCar', (receivedCar: BackendCar) => {
-      this.carsSource.value.push(new Car(0, 0, receivedCar.id, receivedCar.racerName));
+      const car = new Car(0, 0, receivedCar.id, receivedCar.racerName);
+      this.carsSource.value.push(car);
+
+      if (this.onCarRecieved) {
+        this.onCarRecieved(car);
+      }
     });
 
     this.hubConnection.on('CarHasBeenDeleted', () => {
@@ -146,5 +152,10 @@ export class RacingGameService {
         }
       }
     });
+  }
+
+  addCarForSoloGame(car: Car) {
+    this.carsSource.next([car]);
+    this.playerCarSource.next(car);
   }
 }

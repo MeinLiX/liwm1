@@ -17,7 +17,7 @@ public class CloudinaryService : ICloudinaryService
         this.cloudinary = new Cloudinary(account);
     }
 
-    public async Task<string> GetGamePhotoAsync(string gameName)
+    public async Task<string?> GetGamePhotoAsync(string gameName)
     {
         var photos = await this.cloudinary.ListResourcesAsync(new ListResourcesParams
         {

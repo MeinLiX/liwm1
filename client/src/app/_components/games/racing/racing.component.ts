@@ -27,7 +27,6 @@ export class RacingComponent implements OnInit {
 
   canvas?: HTMLCanvasElement;
   ctx?: CanvasRenderingContext2D | null;
-  cars?: Car[];
 
   isGamePlaying = false;
   positionLineY = 0;
@@ -77,13 +76,13 @@ export class RacingComponent implements OnInit {
                       car.y = this.canvas.height - this.carHeight * 2;
                     }
 
-                    this.cars = cars;
-                    console.log(this.cars);
                     this.drawCars();
                   }
+                  console.log(cars);
                 }
               });
 
+              this.racingGameService.onCarRecieved = this.addRecievedCar;
               this.racingGameService.onRaceStarting = this.onStartGame;
               this.racingGameService.onCarBoosted = this.onCarBoosted;
               this.racingGameService.onCarReadyStateUpdated = this.onCarReadyStateUpdated;
@@ -94,9 +93,10 @@ export class RacingComponent implements OnInit {
               this.accountService.currentUser$.pipe(take(1)).subscribe({
                 next: user => {
                   if (user && this.canvas) {
-                    this.cars = [new Car(this.canvas.width / 2 - this.carWidth * 0.5, this.canvas.height - 100, 0, user.username)];
-                    this.drawCar(this.cars[0]);
-                    this.drawRoad(this.cars[0]);
+                    const car = new Car(this.canvas.width / 2 - this.carWidth * 0.5, this.canvas.height - 100, 0, user.username);
+                    this.racingGameService.addCarForSoloGame(car);
+                    this.drawCar(car);
+                    this.drawRoad(car);
                   }
                 }
               });
@@ -110,41 +110,70 @@ export class RacingComponent implements OnInit {
     });
   }
 
+  private addRecievedCar(car: Car) {
+    this.racingGameService.cars$.pipe(take(1)).subscribe({
+      next: cars => {
+        if (cars && cars.length > 0 && this.canvas) {
+          const lastCar: Car | undefined = cars[cars.length - 1];
+          const isLastIndexEven = (cars.length - 1) % 2 === 0;
+
+          if (lastCar) {
+            if (isLastIndexEven) {
+              car.x = lastCar.x + (this.carWidth * 0.5);
+            } else {
+              car.x = lastCar.x - (this.carWidth * 0.5);
+            }
+          } else {
+            car.x = this.canvas.width / 2 - this.carWidth * 0.5;
+          }
+
+          car.y = this.canvas.height - this.carHeight * 2;
+
+          console.log(car);
+          this.drawCar(car);
+          this.drawRoad(car);
+        }
+      }
+    });
+  }
+
   private onCarReadyStateUpdated(car: Car) {
     //TODO: Add view to showing which players are ready
   }
 
   private onCarBoosted(car: Car) {
-    if (this.cars) {
-      const foundCar = this.cars.find(c => c.id == car.id);
-      if (foundCar) {
-        foundCar.transmission++;
+    this.racingGameService.cars$.pipe(take(1)).subscribe({
+      next: cars => {
+        const foundCar = cars.find(c => c.id == car.id);
+        if (foundCar) {
+          foundCar.transmission++;
 
-        let addedSpeed = 0;
+          let addedSpeed = 0;
 
-        switch (car.boostMode) {
-          case RacingTransmissionRange.Bad:
-            addedSpeed = this.badSpeedBost;
-            break;
-          case RacingTransmissionRange.Rare:
-            addedSpeed = this.rareSpeedBost;
-            break;
-          case RacingTransmissionRange.Good:
-            addedSpeed = this.goodSpeedBost;
-            break;
-          case RacingTransmissionRange.Medium:
-            addedSpeed = this.mediumSpeedBost;
-            break;
-        }
+          switch (car.boostMode) {
+            case RacingTransmissionRange.Bad:
+              addedSpeed = this.badSpeedBost;
+              break;
+            case RacingTransmissionRange.Rare:
+              addedSpeed = this.rareSpeedBost;
+              break;
+            case RacingTransmissionRange.Good:
+              addedSpeed = this.goodSpeedBost;
+              break;
+            case RacingTransmissionRange.Medium:
+              addedSpeed = this.mediumSpeedBost;
+              break;
+          }
 
-        if (this.getCarSpeed(foundCar.dy + addedSpeed) > 0) {
-          addedSpeed *= foundCar.transmission;
-          foundCar.dy += addedSpeed;
-        } else {
-          foundCar.dy = 1;
+          if (this.getCarSpeed(foundCar.dy + addedSpeed) > 0) {
+            addedSpeed *= foundCar.transmission;
+            foundCar.dy += addedSpeed;
+          } else {
+            foundCar.dy = 1;
+          }
         }
       }
-    }
+    });
   }
 
   async onClick() {
@@ -190,16 +219,17 @@ export class RacingComponent implements OnInit {
       this.drawTransmissionNumber();
 
       setInterval(() => {
-        if (this.cars) {
-          const playerCar = this.cars[0];
-          if (playerCar.lap >= this.maxLap) {
-            this.resetPositionLineY();
-            this.drawTransmissionPosition(this.positionLineY);
-            this.transmission = 0;
-            this.drawTransmissionNumber();
-            return;
+        this.racingGameService.playerCar$.pipe(take(1)).subscribe({
+          next: car => {
+            if (car && car.lap >= this.maxLap) {
+              this.resetPositionLineY();
+              this.drawTransmissionPosition(this.positionLineY);
+              this.transmission = 0;
+              this.drawTransmissionNumber();
+              return;
+            }
           }
-        }
+        });
 
         this.drawSpeedText();
         this.drawTransmissionGUI();
@@ -228,36 +258,39 @@ export class RacingComponent implements OnInit {
   }
 
   private turnTransmissionCar() {
-    if (this.cars && this.canvas && this.ctx) {
-      let addedSpeed = 0;
+    this.racingGameService.playerCar$.pipe(take(1)).subscribe({
+      next: car => {
+        if (car && this.canvas && this.ctx) {
+          let addedSpeed = 0;
 
-      let racingTransmissionRange;
-      if (this.isYInRange(RacingTransmissionRange.Rare)) {
-        addedSpeed = this.rareSpeedBost;
-        racingTransmissionRange = RacingTransmissionRange.Rare;
-      } else if (this.isYInRange(RacingTransmissionRange.Bad)) {
-        addedSpeed = this.badSpeedBost;
-        racingTransmissionRange = RacingTransmissionRange.Bad;
-      } else if (this.isYInRange(RacingTransmissionRange.Medium)) {
-        addedSpeed = this.mediumSpeedBost;
-        racingTransmissionRange = RacingTransmissionRange.Medium;
-      } else if (this.isYInRange(RacingTransmissionRange.Good)) {
-        addedSpeed = this.goodSpeedBost;
-        racingTransmissionRange = RacingTransmissionRange.Good;
-      }
+          let racingTransmissionRange;
+          if (this.isYInRange(RacingTransmissionRange.Rare)) {
+            addedSpeed = this.rareSpeedBost;
+            racingTransmissionRange = RacingTransmissionRange.Rare;
+          } else if (this.isYInRange(RacingTransmissionRange.Bad)) {
+            addedSpeed = this.badSpeedBost;
+            racingTransmissionRange = RacingTransmissionRange.Bad;
+          } else if (this.isYInRange(RacingTransmissionRange.Medium)) {
+            addedSpeed = this.mediumSpeedBost;
+            racingTransmissionRange = RacingTransmissionRange.Medium;
+          } else if (this.isYInRange(RacingTransmissionRange.Good)) {
+            addedSpeed = this.goodSpeedBost;
+            racingTransmissionRange = RacingTransmissionRange.Good;
+          }
 
-      if (racingTransmissionRange) {
-        this.racingGameService.boostCar(racingTransmissionRange);
-      }
+          if (racingTransmissionRange) {
+            this.racingGameService.boostCar(racingTransmissionRange);
+          }
 
-      const currentCar = this.cars[0];
-      if (this.getCarSpeed(currentCar.dy + addedSpeed) > 0) {
-        addedSpeed *= this.transmission;
-        currentCar.dy += addedSpeed;
-      } else {
-        currentCar.dy = 1;
+          if (this.getCarSpeed(car.dy + addedSpeed) > 0) {
+            addedSpeed *= this.transmission;
+            car.dy += addedSpeed;
+          } else {
+            car.dy = 1;
+          }
+        }
       }
-    }
+    });
   }
 
   private incrementTransmission() {
@@ -289,26 +322,28 @@ export class RacingComponent implements OnInit {
   }
 
   private drawSpeedText() {
-    if (this.ctx && this.canvas && this.cars) {
-      this.ctx.beginPath();
+    this.racingGameService.playerCar$.pipe(take(1)).subscribe({
+      next: car => {
+        if (this.ctx && this.canvas && car) {
+          this.ctx.beginPath();
 
-      const car = this.cars[0];
+          const x = this.canvas.width - this.transmissionGUIWidth * 1.5 + 3;
+          const y = this.canvas.height / 2 + this.transmissionGUIHeight / 1.5 + 15;
 
-      const x = this.canvas.width - this.transmissionGUIWidth * 1.5 + 3;
-      const y = this.canvas.height / 2 + this.transmissionGUIHeight / 1.5 + 15;
+          this.ctx.clearRect(x - 12, y - 20, 100, 58);
 
-      this.ctx.clearRect(x - 12, y - 20, 100, 58);
+          this.ctx.fillStyle = '#000';
 
-      this.ctx.fillStyle = '#000';
+          this.ctx.font = '24px serif';
+          this.ctx.fillText((this.getCarSpeed(car.dy)).toString(), x, y);
 
-      this.ctx.font = '24px serif';
-      this.ctx.fillText((this.getCarSpeed(car.dy)).toString(), x, y);
+          this.ctx.font = '16px serif';
+          this.ctx.fillText('km/h', x - 3, y + 15);
 
-      this.ctx.font = '16px serif';
-      this.ctx.fillText('km/h', x - 3, y + 15);
-
-      this.ctx.closePath();
-    }
+          this.ctx.closePath();
+        }
+      }
+    });
   }
 
   private getCarSpeed(dy: number): number {
@@ -316,32 +351,36 @@ export class RacingComponent implements OnInit {
   }
 
   private moveCars() {
-    if (this.canvas && this.ctx) {
-      this.ctx.clearRect(0, 0, this.canvas.width - this.transmissionGUIWidth * 1.5 - this.transmissionBallRadius * 3, this.canvas.height);
+    this.racingGameService.cars$.pipe(take(1)).subscribe({
+      next: cars => {
+        if (this.canvas && this.ctx) {
+          this.ctx.clearRect(0, 0, this.canvas.width - this.transmissionGUIWidth * 1.5 - this.transmissionBallRadius * 3, this.canvas.height);
 
-      if (this.cars) {
-        for (let i = 0; i < this.cars.length; i++) {
-          const car = this.cars[i];
-          if (car.lap <= this.maxLap) {
-            car.dy += 0.075 * car.transmission / this.interval;
-            car.y -= car.dy;
+          if (cars) {
+            for (let i = 0; i < cars.length; i++) {
+              const car = cars[i];
+              if (car.lap <= this.maxLap) {
+                car.dy += 0.075 * car.transmission / this.interval;
+                car.y -= car.dy;
 
-            if (car.y < 0) {
-              car.y = this.canvas.height - 100;
-              car.lap++;
+                if (car.y < 0) {
+                  car.y = this.canvas.height - 100;
+                  car.lap++;
 
-              if (car.lap >= this.maxLap) {
-                car.y = -this.carHeight;
+                  if (car.lap >= this.maxLap) {
+                    car.y = -this.carHeight;
+                  }
+                }
+              } else {
+                car.dy = 0;
               }
             }
-          } else {
-            car.dy = 0;
+
+            this.drawLapNumber(cars[0].lap);
           }
         }
-
-        this.drawLapNumber(this.cars[0].lap);
       }
-    }
+    });
   }
 
   private drawLapNumber(lap: number) {
@@ -364,12 +403,16 @@ export class RacingComponent implements OnInit {
   }
 
   private drawCars() {
-    if (this.cars) {
-      for (let i = 0; i < this.cars.length; i++) {
-        this.drawCar(this.cars[i]);
-        this.drawRoad(this.cars[i]);
+    this.racingGameService.cars$.pipe(take(1)).subscribe({
+      next: cars => {
+        if (cars) {
+          for (let i = 0; i < cars.length; i++) {
+            this.drawCar(cars[i]);
+            this.drawRoad(cars[i]);
+          }
+        }
       }
-    }
+    });
   }
 
   private drawRoad(car: Car): void {
