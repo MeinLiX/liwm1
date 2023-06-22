@@ -59,6 +59,11 @@ public class RacingGameHub : Hub
                     await Groups.AddToGroupAsync(Context.ConnectionId, userWithLobby.Item2.LobbyName);
                     return;
                 }
+
+                if (!userWithLobby.Item2.CurrentGame.Stats.Any(s => s.AppUserId == userWithLobby.Item1.Id))
+                {
+                    await this.gameRepository.AddUserToStatsAsync(userWithLobby.Item2.CurrentGame, userWithLobby.Item1);
+                }
             }
 
             var car = await this.racingCarRepository.GetRacingCarByRacerNameAsync(userWithLobby.Item1.UserName);

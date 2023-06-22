@@ -42,9 +42,14 @@ export class RacingGameService {
       const car = new Car(0, 0, receivedCar.id, receivedCar.racerName);
       this.playerCarSource.next(car);
 
+      console.log('before car creating');
+      console.log(receivedCars);
+      console.log(receivedCars.length);
+
       let cars = receivedCars.map(c => new Car(0, 0, c.id, c.racerName));
-      cars = cars.filter(c => c === car);
+      cars = cars.filter(c => c.id !== car.id);
       cars.push(car);
+      console.log(cars);
       this.carsSource.next(cars);
     });
 

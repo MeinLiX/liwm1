@@ -63,6 +63,8 @@ export class RacingComponent implements OnInit {
                       const lastCar: Car | undefined = cars[i - 1];
                       const isLastIndexEven = (cars.length - 1) % 2 === 0;
 
+                      console.log('lastcar:' + lastCar);
+                      console.log('i: ' + i);
                       if (lastCar) {
                         if (isLastIndexEven) {
                           car.x = lastCar.x + (this.carWidth * 1.5);
@@ -73,12 +75,20 @@ export class RacingComponent implements OnInit {
                         car.x = this.canvas.width / 2 - this.carWidth * 0.5;
                       }
 
+                      console.log(car.x);
+
                       car.y = this.canvas.height - this.carHeight * 2;
                     }
 
                     this.drawCars();
+                    console.log(cars);
+                    console.log(cars.length);
+                    console.log(cars);
+                    console.log(cars[0]);
+                    console.log(cars[1]);
+                    console.log(cars[2]);
+                    console.log(JSON.stringify(cars));
                   }
-                  console.log(cars);
                 }
               });
 
@@ -111,8 +121,10 @@ export class RacingComponent implements OnInit {
   }
 
   private addRecievedCar(car: Car) {
+    console.log('recieved new car');
     this.racingGameService.cars$.pipe(take(1)).subscribe({
       next: cars => {
+        console.log(cars);
         if (cars && cars.length > 0 && this.canvas) {
           const lastCar: Car | undefined = cars[cars.length - 1];
           const isLastIndexEven = (cars.length - 1) % 2 === 0;

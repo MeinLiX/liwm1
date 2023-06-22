@@ -48,13 +48,6 @@ public class DataContext : IdentityDbContext<AppUser, AppRole, int,
                .IsRequired();
 
         builder.Entity<GameAppUsersStats>()
-               .HasKey(s => new
-               {
-                   s.GameId,
-                   s.AppUserId
-               });
-
-        builder.Entity<GameAppUsersStats>()
                .HasOne(s => s.Game)
                .WithMany(g => g.Stats)
                .HasForeignKey(s => s.GameId);
