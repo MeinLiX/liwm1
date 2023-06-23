@@ -42,14 +42,9 @@ export class RacingGameService {
       const car = new Car(0, 0, receivedCar.id, receivedCar.racerName);
       this.playerCarSource.next(car);
 
-      console.log('before car creating');
-      console.log(receivedCars);
-      console.log(receivedCars.length);
-
       let cars = receivedCars.map(c => new Car(0, 0, c.id, c.racerName));
       cars = cars.filter(c => c.id !== car.id);
       cars.push(car);
-      console.log(cars);
       this.carsSource.next(cars);
     });
 
@@ -73,15 +68,17 @@ export class RacingGameService {
     });
 
     this.hubConnection.on('CarReadyStateUpdated', (receivedCar: BackendCar) => {
-      const car = new Car(0, 0, receivedCar.id, receivedCar.racerName);
-      this.toastr.success(car.racerName + ' is ' + (car.isReady ? 'ready' : 'is not ready'));
+      if (receivedCar.id !== this.playerCarSource.value?.id) {
+        this.toastr.success(receivedCar.racerName + ' is ' + (receivedCar.isReady ? 'ready' : 'not ready'));
+      }
+
       if (this.carsSource.value) {
-        const foundCar = this.carsSource.value.find(c => c.id == car.id);
+        const foundCar = this.carsSource.value.find(c => c.id === receivedCar.id);
         if (foundCar) {
-          foundCar.isReady = car.isReady;
+          foundCar.isReady = receivedCar.isReady;
 
           if (this.onCarReadyStateUpdated) {
-            this.onCarReadyStateUpdated(car);
+            this.onCarReadyStateUpdated(foundCar);
           }
         }
       }
@@ -110,6 +107,7 @@ export class RacingGameService {
     });
 
     this.hubConnection.on('GameStarting', () => {
+      console.log('race starting');
       if (this.onRaceStarting) {
         this.onRaceStarting();
       }

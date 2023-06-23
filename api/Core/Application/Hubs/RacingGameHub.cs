@@ -76,7 +76,7 @@ public class RacingGameHub : Hub
                 await this.racingCarRepository.AddRacingCarAsync(car);
             }
 
-            var cars = await this.GetRacingCarsAsync(userWithLobby.Item1, userWithLobby.Item2);
+            var cars = await this.GetRacingCarsExceptUserAsync(userWithLobby.Item1, userWithLobby.Item2);
             await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.CarCreated, cars ?? Enumerable.Empty<RacingCar>(), car);
             await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.RecievedNewRacingCar, car);
             await Groups.AddToGroupAsync(Context.ConnectionId, userWithLobby.Item2.LobbyName);
@@ -112,6 +112,20 @@ public class RacingGameHub : Hub
     }
 
     private async Task<IEnumerable<RacingCar?>?> GetRacingCarsAsync(AppUser user, Lobby lobby)
+    {
+        IEnumerable<RacingCar?>? cars = null;
+
+        var game = await this.gameRepository.GetGameWithPlayerAsync(user);
+        if (game is not null)
+        {
+            cars = await Task.WhenAll(game.Stats.Select(async p =>
+                                                await this.racingCarRepository.GetRacingCarByRacerNameAsync(p.AppUser.UserName)));
+        }
+
+        return cars;
+    }
+
+    private async Task<IEnumerable<RacingCar?>?> GetRacingCarsExceptUserAsync(AppUser user, Lobby lobby)
     {
         IEnumerable<RacingCar?>? cars = null;
 
@@ -163,7 +177,7 @@ public class RacingGameHub : Hub
             await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.FinishedSuccessfully);
             await Clients.GroupExcept(userWithLobby.Item2.LobbyName, Context.ConnectionId).SendAsync(RacingGameHubMethodNameConstants.CarFinishedRacing, car);
 
-            var cars = await this.GetRacingCarsAsync(userWithLobby.Item1, userWithLobby.Item2);
+            var cars = await this.GetRacingCarsExceptUserAsync(userWithLobby.Item1, userWithLobby.Item2);
             if (cars is not null)
             {
                 if (cars.All(c => c?.IsFinished ?? false))
