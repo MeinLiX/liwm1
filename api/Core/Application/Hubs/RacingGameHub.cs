@@ -177,7 +177,7 @@ public class RacingGameHub : Hub
             await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.FinishedSuccessfully);
             await Clients.GroupExcept(userWithLobby.Item2.LobbyName, Context.ConnectionId).SendAsync(RacingGameHubMethodNameConstants.CarFinishedRacing, car);
 
-            var cars = await this.GetRacingCarsExceptUserAsync(userWithLobby.Item1, userWithLobby.Item2);
+            var cars = await this.GetRacingCarsAsync(userWithLobby.Item1, userWithLobby.Item2);
             if (cars is not null)
             {
                 if (cars.All(c => c?.IsFinished ?? false))

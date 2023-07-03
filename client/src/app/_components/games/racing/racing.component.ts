@@ -21,7 +21,7 @@ export class RacingComponent implements OnInit {
   readonly interval = 15;
   readonly maxLap = 10;
   readonly rareSpeedBost = 0.7;
-  readonly badSpeedBost = -1;
+  readonly badSpeedBost = -0.5;
   readonly mediumSpeedBost = 0.1;
   readonly goodSpeedBost = 0.4;
 
@@ -38,71 +38,71 @@ export class RacingComponent implements OnInit {
   constructor(private accountService: AccountService, private racingGameService: RacingGameService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
+    if (this.canvas) {
+      this.ctx = this.canvas.getContext('2d');
+    }
+
     this.route.queryParams.pipe(take(1)).subscribe({
       next: params => {
-        this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
-        if (this.canvas) {
-          this.ctx = this.canvas.getContext('2d');
+        if (this.ctx && this.canvas) {
+          this.isPractise = params['isPractise'] === 'true';
 
-          if (this.ctx) {
-            this.isPractise = params['isPractise'] === 'true';
-
-            if (!this.isPractise) {
-              this.accountService.currentUser$.pipe(take(1)).subscribe({
-                next: user => {
-                  if (user) {
-                    this.racingGameService.connectToGame(user);
-                  }
+          if (!this.isPractise) {
+            this.accountService.currentUser$.pipe(take(1)).subscribe({
+              next: user => {
+                if (user) {
+                  this.racingGameService.connectToGame(user);
                 }
-              });
-              this.racingGameService.cars$.subscribe({
-                next: cars => {
-                  if (cars && cars.length > 0 && this.canvas) {
-                    for (let i = 0; i < cars.length; i++) {
-                      const car = cars[i];
-                      const lastCar: Car | undefined = cars[i - 1];
-                      const isLastIndexEven = (cars.length - 1) % 2 === 0;
-                      
-                      if (lastCar) {
-                        if (isLastIndexEven) {
-                          car.x = lastCar.x + (this.carWidth * 2.5);
-                        } else {
-                          car.x = lastCar.x - (this.carWidth * 2.5);
-                        }
-                      } else {
-                        car.x = this.canvas.width / 2 - this.carWidth * 0.5;
-                      }
+              }
+            });
+            this.racingGameService.cars$.subscribe({
+              next: cars => {
+                if (cars && cars.length > 0 && this.canvas) {
+                  for (let i = 0; i < cars.length; i++) {
+                    const car = cars[i];
+                    const lastCar: Car | undefined = cars[i - 1];
+                    const isLastIndexEven = (cars.length - 1) % 2 === 0;
 
-                      car.y = this.canvas.height - this.carHeight * 2;
+                    if (lastCar) {
+                      if (isLastIndexEven) {
+                        car.x = lastCar.x + (this.carWidth * 2.5);
+                      } else {
+                        car.x = lastCar.x - (this.carWidth * 2.5);
+                      }
+                    } else {
+                      car.x = this.canvas.width / 2 - this.carWidth * 0.5;
                     }
 
-                    this.drawCars();
+                    car.y = this.canvas.height - this.carHeight * 2;
                   }
+
+                  this.drawCars();
                 }
-              });
+              }
+            });
 
-              this.racingGameService.onCarRecieved = this.addRecievedCar;
-              this.racingGameService.onRaceStarting = this.onStartGame;
-              this.racingGameService.onCarBoosted = this.onCarBoosted;
-              this.racingGameService.onCarReadyStateUpdated = this.onCarReadyStateUpdated;
+            this.racingGameService.onCarRecieved = this.addRecievedCar;
+            this.racingGameService.onRaceStarting = this.onStartGame.bind(this);
+            this.racingGameService.onCarBoosted = this.onCarBoosted;
+            this.racingGameService.onCarReadyStateUpdated = this.onCarReadyStateUpdated;
 
-              this.ctx.font = '72px serif';
-              this.ctx.fillText('Tap to ready', this.canvas.width / 2 - 155, this.canvas.height / 2);
-            } else {
-              this.accountService.currentUser$.pipe(take(1)).subscribe({
-                next: user => {
-                  if (user && this.canvas) {
-                    const car = new Car(this.canvas.width / 2 - this.carWidth * 0.5, this.canvas.height - 100, 0, user.username);
-                    this.racingGameService.addCarForSoloGame(car);
-                    this.drawCar(car);
-                    this.drawRoad(car);
-                  }
+            this.ctx.font = '72px serif';
+            this.ctx.fillText('Tap to ready', this.canvas.width / 2 - 155, this.canvas.height / 2);
+          } else {
+            this.accountService.currentUser$.pipe(take(1)).subscribe({
+              next: user => {
+                if (user && this.canvas) {
+                  const car = new Car(this.canvas.width / 2 - this.carWidth * 0.5, this.canvas.height - 100, 0, user.username);
+                  this.racingGameService.addCarForSoloGame(car);
+                  this.drawCar(car);
+                  this.drawRoad(car);
                 }
-              });
+              }
+            });
 
-              this.ctx.font = '72px serif';
-              this.ctx.fillText('Tap to start', this.canvas.width / 2 - 155, this.canvas.height / 2);
-            }
+            this.ctx.font = '72px serif';
+            this.ctx.fillText('Tap to start', this.canvas.width / 2 - 155, this.canvas.height / 2);
           }
         }
       }
@@ -179,7 +179,7 @@ export class RacingComponent implements OnInit {
     if (!this.isGamePlaying) {
       if (this.isPractise) {
         this.isGamePlaying = true;
-        this.onStartGame();
+        await this.onStartGame();
       } else {
         this.racingGameService.playerCar$.pipe(take(1)).subscribe({
           next: car => {
@@ -199,6 +199,7 @@ export class RacingComponent implements OnInit {
   }
 
   private async onStartGame() {
+    this.isGamePlaying = true;
     const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
     if (this.ctx && this.canvas) {
@@ -277,7 +278,7 @@ export class RacingComponent implements OnInit {
             racingTransmissionRange = RacingTransmissionRange.Good;
           }
 
-          if (racingTransmissionRange) {
+          if (racingTransmissionRange && !this.isPractise) {
             this.racingGameService.boostCar(racingTransmissionRange);
           }
 

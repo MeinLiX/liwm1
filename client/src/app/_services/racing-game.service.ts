@@ -103,11 +103,10 @@ export class RacingGameService {
     });
 
     this.hubConnection.on('GameAlreadyStarted', () => {
-      this.toastr.warning('Race already starter\nYour only option to watch');
+      this.toastr.warning('Race already starter\nYour only option is to watch');
     });
 
     this.hubConnection.on('GameStarting', () => {
-      console.log('race starting');
       if (this.onRaceStarting) {
         this.onRaceStarting();
       }
