@@ -42,18 +42,30 @@ export class RacingGameService {
       const car = new Car(0, 0, receivedCar.id, receivedCar.racerName);
       this.playerCarSource.next(car);
 
-      let cars = receivedCars.map(c => new Car(0, 0, c.id, c.racerName));
-      cars = cars.filter(c => c.id !== car.id);
-      cars.push(car);
+      console.log(car);
+      console.log(receivedCars);
+
+      let cars: Car[];
+
+      if (receivedCars) {
+        cars = receivedCars.map(c => new Car(0, 0, c.id, c.racerName));
+        cars = cars.filter(c => c.id !== car.id);
+        cars.unshift(car);
+      } else {
+        cars = [car];
+      }
       this.carsSource.next(cars);
+      console.log(cars);
     });
 
     this.hubConnection.on('RecievedNewRacingCar', (receivedCar: BackendCar) => {
-      const car = new Car(0, 0, receivedCar.id, receivedCar.racerName);
-      this.carsSource.value.push(car);
+      if (!this.carsSource.value.some(c => c.id === receivedCar.id)) {
+        const car = new Car(0, 0, receivedCar.id, receivedCar.racerName);
+        this.carsSource.value.push(car);
 
-      if (this.onCarRecieved) {
-        this.onCarRecieved(car);
+        if (this.onCarRecieved) {
+          this.onCarRecieved(car);
+        }
       }
     });
 

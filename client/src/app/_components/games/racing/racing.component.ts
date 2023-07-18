@@ -64,6 +64,7 @@ export class RacingComponent implements OnInit {
                     const lastCar: Car | undefined = cars[i - 1];
                     const isLastIndexEven = (cars.length - 1) % 2 === 0;
 
+                    console.log(car);
                     if (lastCar) {
                       if (isLastIndexEven) {
                         car.x = lastCar.x + (this.carWidth * 2.5);
@@ -82,10 +83,10 @@ export class RacingComponent implements OnInit {
               }
             });
 
-            this.racingGameService.onCarRecieved = this.addRecievedCar;
+            this.racingGameService.onCarRecieved = this.addRecievedCar.bind(this);
             this.racingGameService.onRaceStarting = this.onStartGame.bind(this);
             this.racingGameService.onCarBoosted = this.onCarBoosted;
-            this.racingGameService.onCarReadyStateUpdated = this.onCarReadyStateUpdated;
+            this.racingGameService.onCarReadyStateUpdated = this.onCarReadyStateUpdated.bind(this);
 
             this.ctx.font = '72px serif';
             this.ctx.fillText('Tap to ready', this.canvas.width / 2 - 155, this.canvas.height / 2);
@@ -358,7 +359,8 @@ export class RacingComponent implements OnInit {
 
           if (cars) {
             for (let i = 0; i < cars.length; i++) {
-              const car = cars[i];
+              const car = cars[i]; 
+              console.log(car);
               if (car.lap <= this.maxLap) {
                 car.dy += 0.075 * car.transmission / this.interval;
                 car.y -= car.dy;
