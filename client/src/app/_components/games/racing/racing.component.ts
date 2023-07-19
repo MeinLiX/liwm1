@@ -64,7 +64,6 @@ export class RacingComponent implements OnInit {
                     const lastCar: Car | undefined = cars[i - 1];
                     const isLastIndexEven = (cars.length - 1) % 2 === 0;
 
-                    console.log(car);
                     if (lastCar) {
                       if (isLastIndexEven) {
                         car.x = lastCar.x + (this.carWidth * 2.5);
@@ -113,7 +112,6 @@ export class RacingComponent implements OnInit {
   private addRecievedCar(car: Car) {
     this.racingGameService.cars$.pipe(take(1)).subscribe({
       next: cars => {
-        console.log(cars);
         if (cars && cars.length > 0 && this.canvas) {
           const lastCar: Car | undefined = cars[cars.length - 1];
           const isLastIndexEven = (cars.length - 1) % 2 === 0;
@@ -141,39 +139,36 @@ export class RacingComponent implements OnInit {
     //TODO: Add view to showing which players are ready
   }
 
-  private onCarBoosted(car: Car) {
-    this.racingGameService.cars$.pipe(take(1)).subscribe({
-      next: cars => {
-        const foundCar = cars.find(c => c.id == car.id);
-        if (foundCar) {
-          foundCar.transmission++;
+  private onCarBoosted(car: Car, cars: Car[]) {
+    const foundCar = cars.find(c => c.id == car.id);
+    console.log(foundCar);
+    if (foundCar) {
+      foundCar.transmission++;
 
-          let addedSpeed = 0;
+      let addedSpeed = 0;
 
-          switch (car.boostMode) {
-            case RacingTransmissionRange.Bad:
-              addedSpeed = this.badSpeedBost;
-              break;
-            case RacingTransmissionRange.Rare:
-              addedSpeed = this.rareSpeedBost;
-              break;
-            case RacingTransmissionRange.Good:
-              addedSpeed = this.goodSpeedBost;
-              break;
-            case RacingTransmissionRange.Medium:
-              addedSpeed = this.mediumSpeedBost;
-              break;
-          }
-
-          if (this.getCarSpeed(foundCar.dy + addedSpeed) > 0) {
-            addedSpeed *= foundCar.transmission;
-            foundCar.dy += addedSpeed;
-          } else {
-            foundCar.dy = 1;
-          }
-        }
+      switch (car.boostMode) {
+        case RacingTransmissionRange.Bad:
+          addedSpeed = this.badSpeedBost;
+          break;
+        case RacingTransmissionRange.Rare:
+          addedSpeed = this.rareSpeedBost;
+          break;
+        case RacingTransmissionRange.Good:
+          addedSpeed = this.goodSpeedBost;
+          break;
+        case RacingTransmissionRange.Medium:
+          addedSpeed = this.mediumSpeedBost;
+          break;
       }
-    });
+
+      if (this.getCarSpeed(foundCar.dy + addedSpeed) > 0) {
+        addedSpeed *= foundCar.transmission;
+        foundCar.dy += addedSpeed;
+      } else {
+        foundCar.dy = 1;
+      }
+    }
   }
 
   async onClick() {
@@ -279,8 +274,8 @@ export class RacingComponent implements OnInit {
             racingTransmissionRange = RacingTransmissionRange.Good;
           }
 
-          if (racingTransmissionRange && !this.isPractise) {
-            this.racingGameService.boostCar(racingTransmissionRange);
+          if (!this.isPractise) {
+            this.racingGameService.boostCar(racingTransmissionRange ?? 0);
           }
 
           if (this.getCarSpeed(car.dy + addedSpeed) > 0) {
@@ -359,8 +354,7 @@ export class RacingComponent implements OnInit {
 
           if (cars) {
             for (let i = 0; i < cars.length; i++) {
-              const car = cars[i]; 
-              console.log(car);
+              const car = cars[i];
               if (car.lap <= this.maxLap) {
                 car.dy += 0.075 * car.transmission / this.interval;
                 car.y -= car.dy;

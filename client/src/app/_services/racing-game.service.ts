@@ -21,7 +21,7 @@ export class RacingGameService {
   cars$ = this.carsSource.asObservable();
 
   public onCarRecieved?: (car: Car) => void;
-  public onCarBoosted?: (car: Car) => void;
+  public onCarBoosted?: (car: Car, cars: Car[]) => void;
   public onRaceStarting?: () => void;
   public onRaceFinished?: (ratedPlayers: LobbyUser[]) => void;
   public onCarReadyStateUpdated?: (car: Car) => void;
@@ -42,11 +42,7 @@ export class RacingGameService {
       const car = new Car(0, 0, receivedCar.id, receivedCar.racerName);
       this.playerCarSource.next(car);
 
-      console.log(car);
-      console.log(receivedCars);
-
       let cars: Car[];
-
       if (receivedCars) {
         cars = receivedCars.map(c => new Car(0, 0, c.id, c.racerName));
         cars = cars.filter(c => c.id !== car.id);
@@ -55,7 +51,6 @@ export class RacingGameService {
         cars = [car];
       }
       this.carsSource.next(cars);
-      console.log(cars);
     });
 
     this.hubConnection.on('RecievedNewRacingCar', (receivedCar: BackendCar) => {
@@ -109,8 +104,9 @@ export class RacingGameService {
 
     this.hubConnection.on('CarBoosted', (receivedCar: BackendCar) => {
       const car = new Car(0, 0, receivedCar.id, receivedCar.racerName);
-      if (this.onCarBoosted) {
-        this.onCarBoosted(car);
+      car.boostMode = receivedCar.racingCarBoostMode;
+      if (this.onCarBoosted && this.carsSource.value) {
+        this.onCarBoosted(car, this.carsSource.value);
       }
     });
 
