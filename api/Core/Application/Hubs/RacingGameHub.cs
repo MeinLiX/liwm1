@@ -77,7 +77,7 @@ public class RacingGameHub : Hub
             }
 
             var cars = await this.GetRacingCarsExceptUserAsync(userWithLobby.Item1, userWithLobby.Item2);
-            await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.CarCreated, cars ?? Enumerable.Empty<RacingCar>(), car);
+            await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.CarCreated, cars, car);
             await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.RecievedNewRacingCar, car);
             await Groups.AddToGroupAsync(Context.ConnectionId, userWithLobby.Item2.LobbyName);
         }

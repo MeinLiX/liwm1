@@ -75,6 +75,8 @@ export class RacingComponent implements OnInit {
                     }
 
                     car.y = this.canvas.height - this.carHeight * 2;
+                    console.log(car);
+                    console.log(cars.length);
                   }
 
                   this.drawCars();
@@ -118,9 +120,9 @@ export class RacingComponent implements OnInit {
 
           if (lastCar) {
             if (isLastIndexEven) {
-              car.x = lastCar.x + (this.carWidth * 0.5);
+              car.x = lastCar.x + (this.carWidth * 2.5);
             } else {
-              car.x = lastCar.x - (this.carWidth * 0.5);
+              car.x = lastCar.x - (this.carWidth * 2.5);
             }
           } else {
             car.x = this.canvas.width / 2 - this.carWidth * 0.5;

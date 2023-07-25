@@ -41,12 +41,14 @@ export class RacingGameService {
     this.hubConnection.on('CarCreated', (receivedCars: BackendCar[], receivedCar: BackendCar) => {
       const car = new Car(0, 0, receivedCar.id, receivedCar.racerName);
       this.playerCarSource.next(car);
+      receivedCars = receivedCars.filter(c => c !== null);
 
       let cars: Car[];
-      if (receivedCars) {
+      if (receivedCars && receivedCars.length > 0) {
         cars = receivedCars.map(c => new Car(0, 0, c.id, c.racerName));
         cars = cars.filter(c => c.id !== car.id);
         cars.unshift(car);
+        cars.filter((c: Car, i: number, array: Car[]) => i == array.indexOf(c));
       } else {
         cars = [car];
       }
@@ -54,13 +56,12 @@ export class RacingGameService {
     });
 
     this.hubConnection.on('RecievedNewRacingCar', (receivedCar: BackendCar) => {
-      if (!this.carsSource.value.some(c => c.id === receivedCar.id)) {
+      if (this.carsSource.value.some(c => c.id !== receivedCar.id)) {
         const car = new Car(0, 0, receivedCar.id, receivedCar.racerName);
-        this.carsSource.value.push(car);
-
         if (this.onCarRecieved) {
           this.onCarRecieved(car);
         }
+        this.carsSource.value.push(car);
       }
     });
 
