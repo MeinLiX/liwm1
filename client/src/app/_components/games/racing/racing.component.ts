@@ -86,7 +86,7 @@ export class RacingComponent implements OnInit {
 
             this.racingGameService.onCarRecieved = this.addRecievedCar.bind(this);
             this.racingGameService.onRaceStarting = this.onStartGame.bind(this);
-            this.racingGameService.onCarBoosted = this.onCarBoosted;
+            this.racingGameService.onCarBoosted = this.onCarBoosted.bind(this);
             this.racingGameService.onCarReadyStateUpdated = this.onCarReadyStateUpdated.bind(this);
 
             this.ctx.font = '72px serif';
@@ -143,13 +143,13 @@ export class RacingComponent implements OnInit {
 
   private onCarBoosted(car: Car, cars: Car[]) {
     const foundCar = cars.find(c => c.id == car.id);
-    console.log(foundCar);
     if (foundCar) {
       foundCar.transmission++;
+      foundCar.boostMode = car.boostMode;
 
       let addedSpeed = 0;
 
-      switch (car.boostMode) {
+      switch (foundCar.boostMode) {
         case RacingTransmissionRange.Bad:
           addedSpeed = this.badSpeedBost;
           break;
@@ -164,12 +164,14 @@ export class RacingComponent implements OnInit {
           break;
       }
 
-      if (this.getCarSpeed(foundCar.dy + addedSpeed) > 0) {
+      if (this.getCarSpeed(foundCar.dy + addedSpeed * foundCar.transmission) > 0) {
         addedSpeed *= foundCar.transmission;
         foundCar.dy += addedSpeed;
       } else {
         foundCar.dy = 1;
       }
+
+      console.log('y: ' + foundCar.y + '\ndy: ' + foundCar.dy);
     }
   }
 
@@ -280,7 +282,7 @@ export class RacingComponent implements OnInit {
             this.racingGameService.boostCar(racingTransmissionRange ?? 0);
           }
 
-          if (this.getCarSpeed(car.dy + addedSpeed) > 0) {
+          if (this.getCarSpeed(car.dy + addedSpeed * this.transmission) > 0) {
             addedSpeed *= this.transmission;
             car.dy += addedSpeed;
           } else {
@@ -300,6 +302,17 @@ export class RacingComponent implements OnInit {
     if (this.transmission >= 10) {
       this.transmission--;
     }
+
+    this.racingGameService.cars$.pipe(take(1)).subscribe({
+      next: cars => {
+        if (cars) {
+          const car = cars[0];
+          if (car) {
+            car.transmission = this.transmission;
+          }
+        }
+      }
+    })
   }
 
   private drawTransmissionNumber() {
