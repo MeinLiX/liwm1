@@ -21,6 +21,7 @@ import { LobbyConnectComponent } from './_modals/lobby-connect/lobby-connect.com
 import { LobbyUserCardComponent } from './_components/cards/user-card/lobbyUser-card.component';
 import { ApproveLobbyJoinRequestComponent } from './_modals/approve-lobby-join-request/approve-lobby-join-request.component';
 import { RacingComponent } from './_components/games/racing/racing.component';
+import { WordsBattleComponent } from './_components/games/words-battle/words-battle.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { RacingComponent } from './_components/games/racing/racing.component';
     LobbyConnectComponent,
     LobbyUserCardComponent,
     ApproveLobbyJoinRequestComponent,
-    RacingComponent
+    RacingComponent,
+    WordsBattleComponent
   ],
   imports: [
     BrowserModule,

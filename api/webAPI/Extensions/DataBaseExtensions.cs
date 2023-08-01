@@ -64,6 +64,11 @@ public static class DataBaseExtensions
             {
                 Name = "Racing",
                 PreviewUrl = await photoService.GetGamePhotoAsync("Racing")
+            },
+            new GameMode
+            {
+                Name = "Words Battle",
+                PreviewUrl =  await photoService.GetGamePhotoAsync("WordsBattle")
             }
         };
 
