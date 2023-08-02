@@ -25,15 +25,15 @@ export class RacingComponent implements OnInit {
   readonly mediumSpeedBost = 0.1;
   readonly goodSpeedBost = 0.4;
 
-  canvas?: HTMLCanvasElement;
-  ctx?: CanvasRenderingContext2D | null;
+  private canvas?: HTMLCanvasElement;
+  private ctx?: CanvasRenderingContext2D | null;
 
-  isGamePlaying = false;
-  positionLineY = 0;
-  transmission = 0;
-  transmissionDelayTime = 1;
+  private isGamePlaying = false;
+  private positionLineY = 0;
+  private transmission = 0;
+  private transmissionDelayTime = 1;
 
-  isPractise = true;
+  private isPractise = true;
 
   constructor(private accountService: AccountService, private racingGameService: RacingGameService, private route: ActivatedRoute) { }
 

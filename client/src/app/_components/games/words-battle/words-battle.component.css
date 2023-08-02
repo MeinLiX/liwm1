@@ -1,0 +1,12 @@
+canvas {
+    background-color: white;
+    border: 2px solid lightseagreen;
+    border-radius: 8px;
+    width: 1020px;
+    height: 700px;
+    position: absolute;
+    top: 50%;
+    left: 45%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+}

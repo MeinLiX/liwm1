@@ -24,7 +24,7 @@ export class GameCardComponent implements OnInit {
 
   playPractiseGame() {
     if (this.game) {
-      this.router.navigate([this.game.name.toLowerCase()], {
+      this.router.navigate([this.game.name.toLowerCase().replace(' ', '-')], {
         queryParams: {
           isPractise: true
         }
