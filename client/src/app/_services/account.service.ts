@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, take } from 'rxjs';
-import { environment } from 'src/enviroments/environment';
+import { environment } from 'src/environments/environment';
 import { Lobby } from '../_models/lobby';
 import { DataRestResponseResult, RestResponseResult } from '../_models/restResponseResult';
 import { User, UserLogin, UserLogout, UserRegister } from '../_models/user';

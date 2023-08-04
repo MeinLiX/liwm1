@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
-import { environment } from 'src/enviroments/environment';
+import { environment } from 'src/environments/environment';
 import { GameMode } from '../_models/gameMode';
 import { DataRestResponseResult } from '../_models/restResponseResult';
 

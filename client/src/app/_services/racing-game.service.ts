@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
-import { environment } from 'src/enviroments/environment';
+import { environment } from 'src/environments/environment';
 import { LobbyUser, User } from '../_models/user';
 import { BehaviorSubject, take } from 'rxjs';
 import { Car, BackendCar } from '../_models/car';
