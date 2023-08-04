@@ -129,6 +129,7 @@ export class RacingGameService {
       if (this.onRaceFinished) {
         this.onRaceFinished(ratedPlayers);
       }
+      this.toastr.warning('Game is finished');
     });
   }
 

@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { take } from 'rxjs';
 import { Car } from 'src/app/_models/car';
 import { RacingTransmissionRange } from 'src/app/_models/racingTransmissionRange';
+import { LobbyUser } from 'src/app/_models/user';
 import { AccountService } from 'src/app/_services/account.service';
 import { RacingGameService } from 'src/app/_services/racing-game.service';
 
@@ -11,19 +12,19 @@ import { RacingGameService } from 'src/app/_services/racing-game.service';
   templateUrl: './racing.component.html',
   styleUrls: ['./racing.component.css']
 })
-export class RacingComponent implements OnInit {
+export class RacingComponent implements OnInit, OnDestroy {
 
-  readonly carWidth = 40;
-  readonly carHeight = 65;
-  readonly transmissionGUIWidth = 30;
-  readonly transmissionGUIHeight = 200;
-  readonly transmissionBallRadius = 10;
-  readonly interval = 15;
-  readonly maxLap = 10;
-  readonly rareSpeedBost = 0.7;
-  readonly badSpeedBost = -0.5;
-  readonly mediumSpeedBost = 0.1;
-  readonly goodSpeedBost = 0.4;
+  private readonly carWidth = 40;
+  private readonly carHeight = 65;
+  private readonly transmissionGUIWidth = 30;
+  private readonly transmissionGUIHeight = 200;
+  private readonly transmissionBallRadius = 10;
+  private readonly interval = 15;
+  private readonly maxLap = 25;
+  private readonly rareSpeedBost = 0.7;
+  private readonly badSpeedBost = -0.5;
+  private readonly mediumSpeedBost = 0.1;
+  private readonly goodSpeedBost = 0.4;
 
   private canvas?: HTMLCanvasElement;
   private ctx?: CanvasRenderingContext2D | null;
@@ -36,6 +37,13 @@ export class RacingComponent implements OnInit {
   private isPractise = true;
 
   constructor(private accountService: AccountService, private racingGameService: RacingGameService, private route: ActivatedRoute) { }
+
+  ngOnDestroy(): void {
+    this.transmission = 0;
+    this.isGamePlaying = false;
+    this.positionLineY = 0;
+    this.transmissionDelayTime = 1;
+  }
 
   ngOnInit(): void {
     this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -88,6 +96,7 @@ export class RacingComponent implements OnInit {
             this.racingGameService.onRaceStarting = this.onStartGame.bind(this);
             this.racingGameService.onCarBoosted = this.onCarBoosted.bind(this);
             this.racingGameService.onCarReadyStateUpdated = this.onCarReadyStateUpdated.bind(this);
+            this.racingGameService.onRaceFinished = this.onRaceFinished.bind(this);
 
             this.ctx.font = '72px serif';
             this.ctx.fillText('Tap to ready', this.canvas.width / 2 - 155, this.canvas.height / 2);
@@ -380,6 +389,11 @@ export class RacingComponent implements OnInit {
 
                   if (car.lap >= this.maxLap) {
                     car.y = -this.carHeight;
+                    car.isFinished = true;
+
+                    if (i == 0) {
+                      this.racingGameService.finishRacing();
+                    }
                   }
                 }
               } else {
@@ -526,5 +540,9 @@ export class RacingComponent implements OnInit {
     }
 
     return result;
+  }
+
+  private onRaceFinished(ratedPlayer: LobbyUser[]) {
+    
   }
 }
