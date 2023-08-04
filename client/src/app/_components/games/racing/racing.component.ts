@@ -43,6 +43,7 @@ export class RacingComponent implements OnInit, OnDestroy {
     this.isGamePlaying = false;
     this.positionLineY = 0;
     this.transmissionDelayTime = 1;
+    console.log('destr');
   }
 
   ngOnInit(): void {
