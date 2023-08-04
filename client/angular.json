@@ -27,7 +27,7 @@
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/bootswatch/dist/minty/bootstrap.css",
-              "node_modules/font-awesome/css/font-awesome.min.css", 
+              "node_modules/font-awesome/css/font-awesome.min.css",
               "node_modules/ngx-spinner/animations/ball-atom.css",
               "node_modules/ngx-toastr/toastr.css",
               "src/styles.css"
@@ -48,7 +48,13 @@
                   "maximumError": "4kb"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
             },
             "development": {
               "buildOptimizer": false,
