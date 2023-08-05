@@ -47,6 +47,7 @@ export class RacingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+	console.log('init');
     this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
     if (this.canvas) {
       this.ctx = this.canvas.getContext('2d');

@@ -8,6 +8,12 @@ using webAPI.Routes;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//TODO: Move this to some extension class
+builder.Configuration
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
