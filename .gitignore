@@ -409,3 +409,4 @@ ASALocalRun/
 # Database auto generated files
 *.db-shm
 *.db-wal
+/api/webAPI/.config/dotnet-tools.json
