@@ -279,7 +279,9 @@ public class LobbyHub : Hub
         }
 
         await gameModesRepository.ChangeGameInLobbyAsync(lobby, gameMode);
-        await Clients.Group(lobby.LobbyName).SendAsync(LobbyHubMethodNameConstants.LobbyGameModeChanged, new LobbyDTO(lobby, gameMode));
+        var lobbyToSend = new LobbyDTO(lobby, gameMode);
+        await Clients.Caller.SendAsync(LobbyHubMethodNameConstants.LobbyReceivedAfterGameModeChanged, lobbyToSend);
+        await Clients.GroupExcept(lobby.LobbyName, Context.ConnectionId).SendAsync(LobbyHubMethodNameConstants.LobbyGameModeChanged, lobbyToSend);
     }
 
     public override async Task OnDisconnectedAsync(Exception exception)

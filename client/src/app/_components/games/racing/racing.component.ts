@@ -1,6 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { BsModalService } from 'ngx-bootstrap/modal';
 import { take } from 'rxjs';
+import { GameFinishedModalComponent } from 'src/app/_modals/game-finished-modal/game-finished-modal.component';
 import { Car } from 'src/app/_models/car';
 import { RacingTransmissionRange } from 'src/app/_models/racingTransmissionRange';
 import { LobbyUser } from 'src/app/_models/user';
@@ -36,7 +38,7 @@ export class RacingComponent implements OnInit, OnDestroy {
 
   private isPractise = true;
 
-  constructor(private accountService: AccountService, private racingGameService: RacingGameService, private route: ActivatedRoute) { }
+  constructor(private accountService: AccountService, private racingGameService: RacingGameService, private route: ActivatedRoute, private modalService: BsModalService) { }
 
   ngOnDestroy(): void {
     this.transmission = 0;
@@ -47,7 +49,7 @@ export class RacingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-	console.log('init');
+    console.log('init');
     this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
     if (this.canvas) {
       this.ctx = this.canvas.getContext('2d');
@@ -544,7 +546,20 @@ export class RacingComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  private onRaceFinished(ratedPlayer: LobbyUser[]) {
-    
+  private onRaceFinished(ratedPlayers: LobbyUser[]) {
+    this.accountService.currentUser$.pipe(take(1)).subscribe({
+      next: account => {
+        if (account && account.lobby) {
+          const config = {
+            class: 'modal-dialog-centered',
+            initialState: {
+              players: ratedPlayers,
+              gameMode: account.lobby.gameMode
+            }
+          };
+          this.modalService.show(GameFinishedModalComponent, config);
+        }
+      }
+    });
   }
 }

@@ -27,6 +27,8 @@ export interface UserLogout {
 
 export interface LobbyUser {
     photoId: number;
+    photoUrl?: string;
     username: string;
-    isAnonymous: boolean
+    isAnonymous: boolean;
+    lastGameResult?: number;
 }

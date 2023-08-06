@@ -32,8 +32,13 @@ export class GameCardComponent implements OnInit {
     }
   }
 
-  playGame() {
+  async playGame() {
     if (this.game) {
+      await this.router.navigate([this.game.name.toLowerCase().replace(' ', '-')], {
+        queryParams: {
+          isPractise: false
+        }
+      });
       this.lobbyService.changeGameMode(this.game.name);
     }
   }

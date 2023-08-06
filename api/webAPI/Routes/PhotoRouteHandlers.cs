@@ -1,5 +1,4 @@
 using Application.Futures.PhotoFuture.Queries;
-using Application.Futures.StatusFuture.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

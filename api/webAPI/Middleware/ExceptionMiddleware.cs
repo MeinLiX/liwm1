@@ -1,7 +1,6 @@
 ﻿using Application.Exceptions;
 using System.Net;
 using Domain.Responses;
-using System.Linq;
 
 namespace webAPI.Middleware;
 

@@ -1,0 +1,20 @@
+<div class="modal-header">
+    <img src="{{gameMode?.previewUrl}}" class="img-game" alt="{{gameMode?.name}}">
+    <h4 style="margin-left: 10px; margin-top: 10px;">{{gameMode?.name}} game is finished!</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div style="margin-bottom: 10px;">
+        <h3 style="margin-left: 80px; display: inline-block;">Player</h3>
+        <p style="float: right; margin-top: 6px; margin-right: 12px;">Result</p>
+    </div>
+    <ul>
+        <li *ngFor="let player of players" style="margin-bottom: 10px;">
+            <img src="{{player.photoUrl}}" alt="{{player.username}}">
+            <h5>{{player.username}}</h5>
+            <h4>{{player.lastGameResult}}</h4>
+        </li>
+    </ul>
+</div>

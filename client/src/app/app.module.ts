@@ -4,12 +4,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SharedModule } from './_modules/shared.module';
-import { HomeComponent } from './_components/home/home.component';
+import { LoginComponent } from './_components/login/login.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoadingInterceptor } from './_interceptors/loading.interceptor';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TextInputComponent } from './_components/forms/text-input/text-input.component';
-import { GamesHomeComponent } from './_components/games-home/games-home.component';
+import { HomeComponent } from './_components/home/home.component';
 import { NotFoundComponent } from './_components/not-found/not-found.component';
 import { JwtInterceptor } from './_interceptors/jwt.interceptor';
 import { PhotoChoosingComponent } from './_modals/photo-choosing/photo-choosing.component';
@@ -22,13 +22,14 @@ import { LobbyUserCardComponent } from './_components/cards/user-card/lobbyUser-
 import { ApproveLobbyJoinRequestComponent } from './_modals/approve-lobby-join-request/approve-lobby-join-request.component';
 import { RacingComponent } from './_components/games/racing/racing.component';
 import { WordsBattleComponent } from './_components/games/words-battle/words-battle.component';
+import { GameFinishedModalComponent } from './_modals/game-finished-modal/game-finished-modal.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
+    LoginComponent,
     TextInputComponent,
-    GamesHomeComponent,
+    HomeComponent,
     NotFoundComponent,
     PhotoChoosingComponent,
     AccountComponent,
@@ -39,7 +40,8 @@ import { WordsBattleComponent } from './_components/games/words-battle/words-bat
     LobbyUserCardComponent,
     ApproveLobbyJoinRequestComponent,
     RacingComponent,
-    WordsBattleComponent
+    WordsBattleComponent,
+    GameFinishedModalComponent
   ],
   imports: [
     BrowserModule,

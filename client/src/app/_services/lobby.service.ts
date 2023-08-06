@@ -114,12 +114,16 @@ export class LobbyService {
 
     this.hubConnection.on('LobbyGameModeChanged', (lobby: Lobby) => {
       this.setLobby(lobby);
-      this.router.navigate([lobby.gameMode.name.toLowerCase()], {
+      this.router.navigate([lobby.gameMode.name.toLowerCase().replace(' ', '-')], {
         queryParams: {
           isPractise: false
         }
       });
     });
+
+    this.hubConnection.on('LobbyReceivedAfterGameModeChanged', (lobby: Lobby) => {
+      this.setLobby(lobby);
+    }); 
   }
 
   private setLobby(lobby: Lobby) {
