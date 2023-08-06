@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Responses;
@@ -11,7 +12,8 @@ public class AccountLoginValidator : AbstractValidator<AccountLoginRequest>
 {
     public AccountLoginValidator()
     {
-        RuleFor(r => r.username).NotEmpty().WithMessage("Username must be filled");
+        RuleFor(r => r.username).NotEmpty().WithMessage("Username must be filled")
+                                .Must(DoesNotContainCyrillicAndSpecial).WithMessage("Username must not contain cyrillic and special symbols");
         When(r => r.password is not null, () =>
         {
             RuleFor(r => r.password).Matches("(.*[a-z].*)").WithMessage("Password must have at least 1 lower case letter")
@@ -19,6 +21,17 @@ public class AccountLoginValidator : AbstractValidator<AccountLoginRequest>
                                     .Matches(@"(.*\d.*)").WithMessage("Password must have at least 1 digit")
                                     .GreaterThanOrEqualTo("6").WithMessage("Password must be at least 6 symbols");
         });
+    }
+
+    private static bool DoesNotContainCyrillicAndSpecial(string input)
+    {
+        string pattern = @"[\p{IsCyrillic}]";
+        bool containsCyrillic = System.Text.RegularExpressions.Regex.IsMatch(input, pattern);
+
+        pattern = @"[\p{P}\p{S}]";
+        bool containsSpecial = System.Text.RegularExpressions.Regex.IsMatch(input, pattern);
+
+        return !(containsCyrillic || containsSpecial);
     }
 }
 

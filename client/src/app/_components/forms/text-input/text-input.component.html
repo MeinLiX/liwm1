@@ -1,6 +1,6 @@
 <div class="mb-1" style="width: 330px;">
     <input type={{type}} [class.is-invalid]="control.touched && control.invalid" class="form-control"
-        [formControl]="control" placeholder={{placeholder}}>
+        [formControl]="control" placeholder={{placeholder}} (input)="validateInput($event)">
     <div class="invalid-feedback" *ngIf="control.errors?.['required']">
         Please enter a {{label}}
     </div>
