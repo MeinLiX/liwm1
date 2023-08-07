@@ -1,5 +1,4 @@
 using Application.Interfaces;
-using Domain.Entities;
 using Domain.Responses;
 using FluentValidation;
 using MediatR;
@@ -23,12 +22,10 @@ public class UserLogoutRequest : IRequest<IRestResponseResult>
 public class UserLogoutRequestHandler : IRequestHandler<UserLogoutRequest, IRestResponseResult>
 {
     private readonly IUserRepository userRepository;
-    private readonly ITokenService tokenService;
 
-    public UserLogoutRequestHandler(IUserRepository userRepository, ITokenService tokenService)
+    public UserLogoutRequestHandler(IUserRepository userRepository)
     {
         this.userRepository = userRepository;
-        this.tokenService = tokenService;
     }
 
     public async Task<IRestResponseResult> Handle(UserLogoutRequest request, CancellationToken cancellationToken)
