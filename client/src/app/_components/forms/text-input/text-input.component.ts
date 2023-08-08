@@ -42,7 +42,6 @@ export class TextInputComponent implements ControlValueAccessor {
       inputElement.value = input.replace(regex, '');
       this.control.setValue(inputElement.value);
       this.control.updateValueAndValidity();
-      console.log(this.control.valid);
     }
   }
 

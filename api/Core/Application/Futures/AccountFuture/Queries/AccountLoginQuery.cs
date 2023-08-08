@@ -40,7 +40,7 @@ public class AccountLoginRequest : IRequest<IRestResponseResult<UserDetailWithTo
     public string username { get; set; }
     public string? password { get; set; }
     public int? photoId { get; set; }
-    public bool isAnonymous => string.IsNullOrEmpty(password);
+    public bool isAnonymous => password == null;
 }
 
 public class AccountLoginRequestHandler : IRequestHandler<AccountLoginRequest, IRestResponseResult<UserDetailWithTokenDTO>>
@@ -67,10 +67,14 @@ public class AccountLoginRequestHandler : IRequestHandler<AccountLoginRequest, I
 
             user = await this.userRepository.GetUserByUsernameAsync(request.username);
 
-            if (user is not null)
+            if (user is not null && user.Created.AddDays(1) >= DateTime.UtcNow )
             {
                 return RestResponseResult<UserDetailWithTokenDTO>.Fail("User with provided username exists");
             }
+            else
+            {
+                await this.userRepository.LogoutFromAnonymousUserAsync(user);
+            }   
 
             user = await this.userRepository.AddUserAsync(request.username, request.photoId.Value);
         }
