@@ -67,14 +67,17 @@ public class AccountLoginRequestHandler : IRequestHandler<AccountLoginRequest, I
 
             user = await this.userRepository.GetUserByUsernameAsync(request.username);
 
-            if (user is not null && user.Created.AddDays(1) >= DateTime.UtcNow )
+            if (user is not null)
             {
-                return RestResponseResult<UserDetailWithTokenDTO>.Fail("User with provided username exists");
+                if (user.Created.AddDays(1) >= DateTime.UtcNow)
+                {
+                    return RestResponseResult<UserDetailWithTokenDTO>.Fail("User with provided username exists");
+                }
+                else
+                {
+                    await this.userRepository.LogoutFromAnonymousUserAsync(user);
+                }
             }
-            else
-            {
-                await this.userRepository.LogoutFromAnonymousUserAsync(user);
-            }   
 
             user = await this.userRepository.AddUserAsync(request.username, request.photoId.Value);
         }
