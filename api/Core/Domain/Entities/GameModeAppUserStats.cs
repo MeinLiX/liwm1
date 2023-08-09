@@ -3,9 +3,12 @@ namespace Domain.Entities;
 public class GameModeAppUserStats
 {
     public int Id { get; set; }
-    public int Level { get; private set; } //TODO: Came up with logic to calculate level
+    public int Level
+    {
+        get => Convert.ToInt32(Math.Floor((double)this.Points / (double)this.TotalPointsForNewLevel));
+    }
     public int Points { get; set; }
-    public int PointsForNewLevel { get; set; }
+    public int TotalPointsForNewLevel { get; set; }
 
     public int GameModeId { get; set; }
     public GameMode GameMode { get; set; }

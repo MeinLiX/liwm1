@@ -17,6 +17,7 @@ public interface IDataContext
     DbSet<RacingCar> RacingCars { get; set; }
     DbSet<Game> Games { get; set; }
     DbSet<GameAppUsersStats> GameAppUsersStats { get; set; }
+    DbSet<GameModeAppUserStats> GameModeAppUserStats { get; set; }
 
     Task<int> SaveChangesAsync();
 }

@@ -11,4 +11,5 @@ public class GameMode
     public string PreviewUrl { get; set; }
     public string Name { get; set; }
     public ICollection<Lobby> Lobbies { get; set; }
+    public ICollection<GameModeAppUserStats> Levels { get; set; }
 }
