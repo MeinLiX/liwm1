@@ -2,7 +2,7 @@
     <div *ngIf="lobby && !isDetailedVisible">
         <button class="btn btn-info" style="height: 38px;" (click)="isDetailedVisible = !isDetailedVisible">
             <i class="fa fa-users"></i>
-            <p style="display: inline-block; margin-left: 10px">{{lobby.users.length}} ({{lobby.pendingConnections.length}})</p>
+            <p style="display: inline-block; margin-left: 10px">{{lobby.users.length}} {{lobby.pendingConnections.length > 0 ? '(' + lobby.pendingConnections.length + ')' : ''}}</p>
         </button>
     </div>
     <div *ngIf="lobby && isDetailedVisible" class="outer">

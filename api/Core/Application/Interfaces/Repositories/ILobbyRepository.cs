@@ -17,5 +17,5 @@ public interface ILobbyRepository
     Task<Lobby?> DeleteLobbyAsync(AppUser user);
     Task CreateGameAsync(Lobby lobby, Game game);
     Task FinishGameAsync(Lobby lobby);
-    Task AddRatePlayerAsync(Lobby lobby, AppUser player);
+    Task RatePlayerAsync(Lobby lobby, AppUser player);
 }

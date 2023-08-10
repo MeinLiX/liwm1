@@ -185,13 +185,13 @@ public class LobbyRepository : ILobbyRepository
         await this.dataContext.SaveChangesAsync();
     }
 
-    public async Task AddRatePlayerAsync(Lobby lobby, AppUser player)
+    public async Task RatePlayerAsync(Lobby lobby, AppUser player)
     {
-        lobby.CurrentGame.Stats.Add(new GameAppUsersStats
+        var stats = lobby.CurrentGame.Stats.LastOrDefault(s => s.AppUser == player);
+        if (stats != null)
         {
-            AppUser = player,
-            Game = lobby.CurrentGame
-        });
-        await this.dataContext.SaveChangesAsync();
+            stats.Place = lobby.CurrentGame.Stats.Max(s => s.Place) + 1;
+            await this.dataContext.SaveChangesAsync();
+        }
     }
 }

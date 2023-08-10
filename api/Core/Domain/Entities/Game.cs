@@ -8,6 +8,7 @@ public class Game
 {
     public int Id { get; set; }
     public GameMode Mode { get; set; }
+    public ICollection<AppUser> Players { get; set; }
     public ICollection<GameAppUsersStats> Stats { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public GameState State { get; set; }

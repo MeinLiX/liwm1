@@ -17,14 +17,16 @@ public class RacingGameHub : Hub
     private readonly IRacingCarRepository racingCarRepository;
     private readonly IGameRepository gameRepository;
     private readonly IGameModesRepository gameModesRepository;
+    private readonly ILevelsRepository levelsRepository;
 
-    public RacingGameHub(IUserRepository userRepository, ILobbyRepository lobbyRepository, IRacingCarRepository racingCarRepository, IGameRepository gameRepository, IGameModesRepository gameModesRepository)
+    public RacingGameHub(IUserRepository userRepository, ILobbyRepository lobbyRepository, IRacingCarRepository racingCarRepository, IGameRepository gameRepository, IGameModesRepository gameModesRepository, ILevelsRepository levelsRepository)
     {
         this.userRepository = userRepository;
         this.lobbyRepository = lobbyRepository;
         this.racingCarRepository = racingCarRepository;
         this.gameRepository = gameRepository;
         this.gameModesRepository = gameModesRepository;
+        this.levelsRepository = levelsRepository;
     }
 
     public override async Task OnConnectedAsync()
@@ -39,6 +41,10 @@ public class RacingGameHub : Hub
                 var game = new Game
                 {
                     State = GameState.Created,
+                    Players = new List<AppUser>()
+                    {
+                        userWithLobby.Item1
+                    },
                     Stats = new List<GameAppUsersStats>(),
                     Mode = gameMode,
                     Lobby = userWithLobby.Item2,
@@ -63,6 +69,7 @@ public class RacingGameHub : Hub
 
                 if (!userWithLobby.Item2.CurrentGame.Stats.Any(s => s.AppUserId == userWithLobby.Item1.Id))
                 {
+                    userWithLobby.Item2.CurrentGame.Players.Add(userWithLobby.Item1);
                     await this.gameRepository.AddUserToStatsAsync(userWithLobby.Item2.CurrentGame, userWithLobby.Item1);
                 }
             }
@@ -100,7 +107,7 @@ public class RacingGameHub : Hub
 
             await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.CarReadyStateUpdated, car);
 
-            var cars = await this.GetRacingCarsAsync(userWithLobby.Item1, userWithLobby.Item2);
+            var cars = await this.GetRacingCarsAsync(userWithLobby.Item1);
             if (cars is not null)
             {
                 if (cars.All(c => c?.IsReady ?? false))
@@ -112,7 +119,7 @@ public class RacingGameHub : Hub
         }
     }
 
-    private async Task<IEnumerable<RacingCar?>?> GetRacingCarsAsync(AppUser user, Lobby lobby)
+    private async Task<IEnumerable<RacingCar?>?> GetRacingCarsAsync(AppUser user)
     {
         IEnumerable<RacingCar?>? cars = null;
 
@@ -173,12 +180,12 @@ public class RacingGameHub : Hub
 
             await this.racingCarRepository.FinishAsync(car);
 
-            await this.lobbyRepository.AddRatePlayerAsync(userWithLobby.Item2, userWithLobby.Item1);
+            await this.lobbyRepository.RatePlayerAsync(userWithLobby.Item2, userWithLobby.Item1);
 
             await Clients.Caller.SendAsync(RacingGameHubMethodNameConstants.FinishedSuccessfully);
             await Clients.GroupExcept(userWithLobby.Item2.LobbyName, Context.ConnectionId).SendAsync(RacingGameHubMethodNameConstants.CarFinishedRacing, car);
 
-            var cars = await this.GetRacingCarsAsync(userWithLobby.Item1, userWithLobby.Item2);
+            var cars = await this.GetRacingCarsAsync(userWithLobby.Item1);
             if (cars is not null)
             {
                 if (cars.All(c => c?.IsFinished ?? false))
@@ -193,6 +200,12 @@ public class RacingGameHub : Hub
                     {
                         await this.racingCarRepository.DeleteRacingCarByIdAsync(carToDelete.Id);
                     }
+                }
+
+                foreach (var stats in userWithLobby.Item2.CurrentGame.Stats)
+                {
+                    var points = stats.Place / stats.Game.Players.Count * 10;
+                    await this.levelsRepository.AddPointsAsync(stats.AppUser, stats.Game.Mode, points);
                 }
             }
         }
