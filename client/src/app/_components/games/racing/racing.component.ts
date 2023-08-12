@@ -24,7 +24,7 @@ export class RacingComponent implements OnInit, OnDestroy {
   private readonly interval = 15;
   private readonly maxLap = 25;
   private readonly rareSpeedBost = 0.7;
-  private readonly badSpeedBost = -0.5;
+  private readonly badSpeedBost = -0.9;
   private readonly mediumSpeedBost = 0.1;
   private readonly goodSpeedBost = 0.4;
 
@@ -45,11 +45,9 @@ export class RacingComponent implements OnInit, OnDestroy {
     this.isGamePlaying = false;
     this.positionLineY = 0;
     this.transmissionDelayTime = 1;
-    console.log('destr');
   }
 
   ngOnInit(): void {
-    console.log('init');
     this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
     if (this.canvas) {
       this.ctx = this.canvas.getContext('2d');
@@ -87,8 +85,6 @@ export class RacingComponent implements OnInit, OnDestroy {
                     }
 
                     car.y = this.canvas.height - this.carHeight * 2;
-                    console.log(car);
-                    console.log(cars.length);
                   }
 
                   this.drawCars();
@@ -160,32 +156,35 @@ export class RacingComponent implements OnInit, OnDestroy {
       foundCar.transmission++;
       foundCar.boostMode = car.boostMode;
 
-      let addedSpeed = 0;
+      let addedSpeed = this.getCarCooridnatesSpeed(foundCar.boostMode);
 
-      switch (foundCar.boostMode) {
-        case RacingTransmissionRange.Bad:
-          addedSpeed = this.badSpeedBost;
-          break;
-        case RacingTransmissionRange.Rare:
-          addedSpeed = this.rareSpeedBost;
-          break;
-        case RacingTransmissionRange.Good:
-          addedSpeed = this.goodSpeedBost;
-          break;
-        case RacingTransmissionRange.Medium:
-          addedSpeed = this.mediumSpeedBost;
-          break;
+      addedSpeed *= this.transmission / (foundCar.boostMode === RacingTransmissionRange.Bad ? 1 : 4);
+      car.dy += addedSpeed;
+      if (this.getCarSpeed(car.dy) < 0) {
+        car.dy = 0.1;
       }
-
-      if (this.getCarSpeed(foundCar.dy + addedSpeed * foundCar.transmission) > 0) {
-        addedSpeed *= foundCar.transmission;
-        foundCar.dy += addedSpeed;
-      } else {
-        foundCar.dy = 1;
-      }
-
-      console.log('y: ' + foundCar.y + '\ndy: ' + foundCar.dy);
     }
+  }
+
+  private getCarCooridnatesSpeed(boostMode: RacingTransmissionRange) {
+    let addedSpeed;
+
+    switch (boostMode) {
+      case RacingTransmissionRange.Bad:
+        addedSpeed = this.badSpeedBost;
+        break;
+      case RacingTransmissionRange.Rare:
+        addedSpeed = this.rareSpeedBost;
+        break;
+      case RacingTransmissionRange.Good:
+        addedSpeed = this.goodSpeedBost;
+        break;
+      case RacingTransmissionRange.Medium:
+        addedSpeed = this.mediumSpeedBost;
+        break;
+    }
+
+    return addedSpeed;
   }
 
   async onClick() {
@@ -295,12 +294,13 @@ export class RacingComponent implements OnInit, OnDestroy {
             this.racingGameService.boostCar(racingTransmissionRange ?? 0);
           }
 
-          if (this.getCarSpeed(car.dy + addedSpeed * this.transmission) > 0) {
-            addedSpeed *= this.transmission;
-            car.dy += addedSpeed;
-          } else {
-            car.dy = 1;
+          addedSpeed *= this.transmission / (racingTransmissionRange === RacingTransmissionRange.Bad ? 1 : 4);
+          car.dy += addedSpeed;
+          if (this.getCarSpeed(car.dy) < 0) {
+            car.dy = 0.1;
           }
+
+          car.boostMode = racingTransmissionRange ?? 0;
         }
       }
     });
@@ -384,7 +384,7 @@ export class RacingComponent implements OnInit, OnDestroy {
             for (let i = 0; i < cars.length; i++) {
               const car = cars[i];
               if (car.lap <= this.maxLap) {
-                car.dy += 0.075 * car.transmission / this.interval;
+                car.dy += this.getCarCooridnatesSpeed(car.boostMode === 0 ? 1 : car.boostMode) / 8 * car.transmission / this.interval;
                 car.y -= car.dy;
 
                 if (car.y < 0) {
