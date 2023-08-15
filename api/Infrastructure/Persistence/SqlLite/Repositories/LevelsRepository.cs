@@ -21,9 +21,7 @@ public class LevelsRepository : ILevelsRepository
             stats = new GameModeAppUserStats
             {
                 AppUser = user,
-                AppUserId = user.Id,
                 GameMode = gameMode,
-                GameModeId = gameMode.Id,
                 Points = 0,
                 TotalPointsForNewLevel = 1000
             };

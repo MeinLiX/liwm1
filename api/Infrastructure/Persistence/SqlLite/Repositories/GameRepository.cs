@@ -25,9 +25,7 @@ public class GameRepository : IGameRepository
         game.Stats.Add(new GameAppUsersStats
         {
             AppUser = player,
-            AppUserId = player.Id,
-            Game = game,
-            GameId = game.Id
+            Game = game
         });
 
         await this.dataContext.SaveChangesAsync();

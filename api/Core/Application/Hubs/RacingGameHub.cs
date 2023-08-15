@@ -67,7 +67,7 @@ public class RacingGameHub : Hub
                     return;
                 }
 
-                if (!userWithLobby.Item2.CurrentGame.Stats.Any(s => s.AppUserId == userWithLobby.Item1.Id))
+                if (!userWithLobby.Item2.CurrentGame.Stats.Any(s => s.AppUser.Id == userWithLobby.Item1.Id))
                 {
                     userWithLobby.Item2.CurrentGame.Players.Add(userWithLobby.Item1);
                     await this.gameRepository.AddUserToStatsAsync(userWithLobby.Item2.CurrentGame, userWithLobby.Item1);

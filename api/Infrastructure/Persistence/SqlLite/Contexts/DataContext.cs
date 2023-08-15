@@ -47,26 +47,6 @@ public class DataContext : IdentityDbContext<AppUser, AppRole, int,
                      .WithOne(g => g.Lobby)
                      .HasForeignKey(g => g.LobbyId)
                      .IsRequired();
-
-              builder.Entity<GameAppUsersStats>()
-                     .HasOne(s => s.Game)
-                     .WithMany(g => g.Stats)
-                     .HasForeignKey(s => s.GameId);
-
-              builder.Entity<GameAppUsersStats>()
-                     .HasOne(s => s.AppUser)
-                     .WithMany(g => g.Stats)
-                     .HasForeignKey(s => s.AppUserId);
-
-              builder.Entity<GameModeAppUserStats>()
-                     .HasOne(s => s.AppUser)
-                     .WithMany(u => u.Levels)
-                     .HasForeignKey(s => s.AppUserId);
-
-              builder.Entity<GameModeAppUserStats>()
-                     .HasOne(s => s.GameMode)
-                     .WithMany(g => g.Levels)
-                     .HasForeignKey(s => s.GameModeId);
        }
 
        public async Task<int> SaveChangesAsync() => await base.SaveChangesAsync();

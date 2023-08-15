@@ -10,8 +10,6 @@ public class GameModeAppUserStats
     public int Points { get; set; }
     public int TotalPointsForNewLevel { get; set; }
 
-    public int GameModeId { get; set; }
     public GameMode GameMode { get; set; }
-    public int AppUserId { get; set; }
     public AppUser AppUser { get; set; }
 }

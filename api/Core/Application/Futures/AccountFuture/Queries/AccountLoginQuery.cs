@@ -26,10 +26,10 @@ public class AccountLoginValidator : AbstractValidator<AccountLoginRequest>
     private static bool DoesNotContainCyrillicAndSpecial(string input)
     {
         string pattern = @"[\p{IsCyrillic}]";
-        bool containsCyrillic = System.Text.RegularExpressions.Regex.IsMatch(input, pattern);
+        bool containsCyrillic = Regex.IsMatch(input, pattern);
 
         pattern = @"[\p{P}\p{S}]";
-        bool containsSpecial = System.Text.RegularExpressions.Regex.IsMatch(input, pattern);
+        bool containsSpecial = Regex.IsMatch(input, pattern);
 
         return !(containsCyrillic || containsSpecial);
     }
