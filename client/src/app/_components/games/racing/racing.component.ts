@@ -4,9 +4,12 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { take } from 'rxjs';
 import { GameFinishedModalComponent } from 'src/app/_modals/game-finished-modal/game-finished-modal.component';
 import { Car } from 'src/app/_models/car';
+import { GameMode } from 'src/app/_models/gameMode';
+import { Lobby } from 'src/app/_models/lobby';
 import { RacingTransmissionRange } from 'src/app/_models/racingTransmissionRange';
 import { LobbyUser } from 'src/app/_models/user';
 import { AccountService } from 'src/app/_services/account.service';
+import { GameModesService } from 'src/app/_services/game-modes.service';
 import { RacingGameService } from 'src/app/_services/racing-game.service';
 
 @Component({
@@ -38,13 +41,17 @@ export class RacingComponent implements OnInit, OnDestroy {
 
   private isPractise = true;
 
-  constructor(private accountService: AccountService, private racingGameService: RacingGameService, private route: ActivatedRoute, private modalService: BsModalService) { }
+  constructor(private accountService: AccountService, private racingGameService: RacingGameService, private route: ActivatedRoute, private modalService: BsModalService, private gameModesService: GameModesService) { }
 
   ngOnDestroy(): void {
     this.transmission = 0;
     this.isGamePlaying = false;
     this.positionLineY = 0;
     this.transmissionDelayTime = 1;
+
+    if (this.isPractise) {
+      localStorage.removeItem('gameMode');
+    }
   }
 
   ngOnInit(): void {
@@ -111,6 +118,14 @@ export class RacingComponent implements OnInit, OnDestroy {
                 }
               }
             });
+            this.gameModesService.getGameModeByName('racing').pipe(take(1)).subscribe({
+              next: gameMode => {
+                if (gameMode) {
+                  localStorage.removeItem('gameMode');
+                  localStorage.setItem('gameMode', JSON.stringify(gameMode));
+                }
+              }
+            })
 
             this.ctx.font = '72px serif';
             this.ctx.fillText('Tap to start', this.canvas.width / 2 - 155, this.canvas.height / 2);
@@ -395,8 +410,19 @@ export class RacingComponent implements OnInit, OnDestroy {
                     car.y = -this.carHeight;
                     car.isFinished = true;
 
-                    if (i == 0) {
+                    if (i === 0) {
                       this.racingGameService.finishRacing();
+                    }
+
+                    if (this.isPractise) {
+                      this.accountService.currentUser$.pipe(take(1)).subscribe({
+                        next: user => {
+                          if (user) {
+                            const lobbyUser: LobbyUser = { photoId: user.photoId, username: user.username, isAnonymous: user.isAnonymous, lastGameResult: 1 };
+                            this.onRaceFinished([lobbyUser]);
+                          }
+                        }
+                      });
                     }
                   }
                 }
@@ -549,14 +575,26 @@ export class RacingComponent implements OnInit, OnDestroy {
   private onRaceFinished(ratedPlayers: LobbyUser[]) {
     this.accountService.currentUser$.pipe(take(1)).subscribe({
       next: account => {
-        if (account && account.lobby) {
+        if (account) {
           const config = {
             class: 'modal-dialog-centered',
             initialState: {
               players: ratedPlayers,
-              gameMode: account.lobby.gameMode
+              gameMode: {} as GameMode
             }
           };
+
+          if (this.isPractise) {
+            const gameModeStringified = localStorage.getItem('gameMode');
+            if (gameModeStringified) {
+              config.initialState.gameMode = JSON.parse(gameModeStringified);
+            }
+          } else {
+            if (account.lobby) {
+              config.initialState.gameMode = account.lobby.gameMode;
+            }
+          }
+
           this.modalService.show(GameFinishedModalComponent, config);
         }
       }

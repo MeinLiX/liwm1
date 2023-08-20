@@ -8,12 +8,12 @@ import { DataRestResponseResult } from '../_models/restResponseResult';
 @Injectable({
   providedIn: 'root'
 })
-export class GamesService {
+export class GameModesService {
   private baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 
-  getGames() {
+  getGameModes() {
     return this.http.post<DataRestResponseResult<GameMode[]>>(this.baseUrl + 'games', {}).pipe(
       map(response => {
         return response.data;
@@ -21,7 +21,15 @@ export class GamesService {
     );
   }
 
-  getGameById(id: number) {
+  getGameModeByName(name: string) {
+    return this.http.post<DataRestResponseResult<GameMode[]>>(this.baseUrl + 'games?name=' + name, {}).pipe(
+      map(response => {
+        return response.data?.at(0);
+      })
+    );
+  }
+
+  getGameModeById(id: number) {
     return this.http.post<DataRestResponseResult<GameMode>>(this.baseUrl + 'games?id=' + id, {}).pipe(
       map(response => {
         return response.data;
@@ -29,7 +37,7 @@ export class GamesService {
     );
   }
 
-  getGameRange(start: number, count: number) {
+  getGameModesRange(start: number, count: number) {
     return this.http.post<DataRestResponseResult<GameMode[]>>(this.baseUrl + 'games?start=' + start + '&count=' + count, {}).pipe(
       map(response => {
         return response.data;

@@ -27,6 +27,7 @@ export class GameFinishedModalComponent implements OnInit {
           }
         });
       }
+      console.log(this.gameMode?.previewUrl);
     }
   }
 }

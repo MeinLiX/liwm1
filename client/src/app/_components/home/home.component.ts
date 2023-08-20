@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { take } from 'rxjs';
 import { GameMode } from 'src/app/_models/gameMode';
-import { GamesService } from 'src/app/_services/games.service';
+import { GameModesService } from 'src/app/_services/game-modes.service';
 
 @Component({
   selector: 'app-home',
@@ -9,15 +9,15 @@ import { GamesService } from 'src/app/_services/games.service';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  games?: GameMode[];
+  gameModes?: GameMode[];
 
-  constructor(private gamesService: GamesService) { }
+  constructor(private gameModesService: GameModesService) { }
 
   ngOnInit(): void {
-    this.gamesService.getGames().pipe(take(1)).subscribe({
+    this.gameModesService.getGameModes().pipe(take(1)).subscribe({
       next: games => {
         if (games) {
-          this.games = games;
+          this.gameModes = games;
         }
       }
     });

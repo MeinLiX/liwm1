@@ -11,7 +11,7 @@ import { LobbyService } from 'src/app/_services/lobby.service';
   styleUrls: ['./game-card.component.css']
 })
 export class GameCardComponent implements OnInit {
-  @Input() game?: GameMode;
+  @Input() gameMode?: GameMode;
   lobby: Lobby | null = null;
 
   constructor(public accountService: AccountService, private router: Router, private lobbyService: LobbyService) { }
@@ -23,8 +23,8 @@ export class GameCardComponent implements OnInit {
   }
 
   playPractiseGame() {
-    if (this.game) {
-      this.router.navigate([this.game.name.toLowerCase().replace(' ', '-')], {
+    if (this.gameMode) {
+      this.router.navigate([this.gameMode.name.toLowerCase().replace(' ', '-')], {
         queryParams: {
           isPractise: true
         }
@@ -33,13 +33,13 @@ export class GameCardComponent implements OnInit {
   }
 
   async playGame() {
-    if (this.game) {
-      await this.router.navigate([this.game.name.toLowerCase().replace(' ', '-')], {
+    if (this.gameMode) {
+      await this.router.navigate([this.gameMode.name.toLowerCase().replace(' ', '-')], {
         queryParams: {
           isPractise: false
         }
       });
-      this.lobbyService.changeGameMode(this.game.name);
+      this.lobbyService.changeGameMode(this.gameMode.name);
     }
   }
 }

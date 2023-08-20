@@ -9,7 +9,7 @@ public static class GameRouteHandlers
     internal static Delegate GamesGettingRouteHandler =>
         async (IMediator mediator, [FromQuery] int? id, int? start, int? count) =>
         {
-            var request = new GamesGettingRequest
+            var request = new GameModesGettingRequest
             {
                 id = id,
                 start = start,
