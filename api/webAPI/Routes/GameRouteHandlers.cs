@@ -1,18 +1,19 @@
-using Application.Futures.GamesFuture;
+using Application.Futures.GameModesFuture;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace webAPI.Routes;
 
-public static class GameRouteHandlers
+public static class GameModeRouteHandlers
 {
-    internal static Delegate GamesGettingRouteHandler =>
-        async (IMediator mediator, [FromQuery] int? id, int? start, int? count) =>
+    internal static Delegate GameModesGettingRouteHandler =>
+        async (IMediator mediator, [FromQuery] int? id, string? name, int? start, int? count) =>
         {
             var request = new GameModesGettingRequest
             {
                 id = id,
                 start = start,
+                name = name,
                 count = count
             };
             var data = await mediator.Send(request);

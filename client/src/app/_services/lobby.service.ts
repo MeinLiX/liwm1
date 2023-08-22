@@ -19,7 +19,7 @@ export class LobbyService {
   private lobbySource = new BehaviorSubject<Lobby | null>(null);
   lobby$ = this.lobbySource.asObservable();
 
-  constructor(private toastr: ToastrService, private accountService: AccountService, private router: Router, private racingGame: RacingGameService) { }
+  constructor(private toastr: ToastrService, private accountService: AccountService, private router: Router) { }
 
   connectToLobby(user: User, lobbyName: string, lobbyConnectMode: LobbyConnectMode) {
     this.hubConnection = new HubConnectionBuilder()
@@ -124,6 +124,10 @@ export class LobbyService {
     this.hubConnection.on('LobbyReceivedAfterGameModeChanged', (lobby: Lobby) => {
       this.setLobby(lobby);
     }); 
+
+    this.hubConnection.on('LobbyGameWasCancelled', () => {
+      this.router.navigateByUrl('home');
+    });
   }
 
   private setLobby(lobby: Lobby) {

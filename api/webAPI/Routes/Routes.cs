@@ -60,9 +60,9 @@ public static class Routes
 
     internal static WebApplication InitGameRoutes(this WebApplication web)
     {
-        web.MapPost("/games", GameRouteHandlers.GamesGettingRouteHandler)
-           .SetName(nameof(GameRouteHandlers.GamesGettingRouteHandler))
-           .SetTag(nameof(GameRouteHandlers))
+        web.MapPost("/games", GameModeRouteHandlers.GameModesGettingRouteHandler)
+           .SetName(nameof(GameModeRouteHandlers.GameModesGettingRouteHandler))
+           .SetTag(nameof(GameModeRouteHandlers))
            .WithDescription("For getting all games from the database")
            .WithOpenApi();
 

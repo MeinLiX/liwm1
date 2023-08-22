@@ -29,4 +29,5 @@ public static class LobbyHubMethodNameConstants
     public const string LobbyAlreadyInThatGameMode = "LobbyAlreadyInThatGameMode";
     public const string LobbyGameModeChanged = "LobbyGameModeChanged";
     public const string LobbyReceivedAfterGameModeChanged = "LobbyReceivedAfterGameModeChanged";
+    public const string LobbyGameWasCancelled = "LobbyGameWasCancelled";
 }
