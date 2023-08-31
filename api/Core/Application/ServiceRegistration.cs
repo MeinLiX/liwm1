@@ -11,7 +11,7 @@ public static class ServiceRegistration
 	private static Assembly GetAssembly => typeof(ServiceRegistration).GetTypeInfo().Assembly;
 
     public static IServiceCollection AddAplicationLayer(this IServiceCollection services)
-	=> services.AddMediatR(GetAssembly)
+	=> services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(GetAssembly))
                .AddFluentValidation(new[] { GetAssembly })
                .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 }

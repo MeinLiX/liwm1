@@ -23,6 +23,7 @@ import { ApproveLobbyJoinRequestComponent } from './_modals/approve-lobby-join-r
 import { RacingComponent } from './_components/games/racing/racing.component';
 import { WordsBattleComponent } from './_components/games/words-battle/words-battle.component';
 import { GameFinishedModalComponent } from './_modals/game-finished-modal/game-finished-modal.component';
+import { LobbySettingsComponent } from './_modals/lobby-settings/lobby-settings.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { GameFinishedModalComponent } from './_modals/game-finished-modal/game-f
     ApproveLobbyJoinRequestComponent,
     RacingComponent,
     WordsBattleComponent,
-    GameFinishedModalComponent
+    GameFinishedModalComponent,
+    LobbySettingsComponent
   ],
   imports: [
     BrowserModule,

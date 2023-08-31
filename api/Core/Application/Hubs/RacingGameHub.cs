@@ -41,20 +41,21 @@ public class RacingGameHub : Hub
                 var game = new Game
                 {
                     State = GameState.Created,
-                    Players = new List<AppUser>()
-                    {
-                        userWithLobby.Item1
-                    },
+                    Players = new List<AppUser>(userWithLobby.Item2.Users),
                     Stats = new List<GameAppUsersStats>(),
                     Mode = gameMode,
                     Lobby = userWithLobby.Item2,
                     LobbyId = userWithLobby.Item2.Id
                 };
-                game.Stats.Add(new GameAppUsersStats
+
+                foreach (var player in game.Players)
                 {
-                    AppUser = userWithLobby.Item1,
-                    Game = game
-                });
+                    game.Stats.Add(new GameAppUsersStats
+                    {
+                        AppUser = player,
+                        Game = game
+                    });
+                }
 
                 await this.lobbyRepository.CreateGameAsync(userWithLobby.Item2, game);
             }
@@ -70,6 +71,11 @@ public class RacingGameHub : Hub
                 if (!userWithLobby.Item2.CurrentGame.Stats.Any(s => s.AppUser.Id == userWithLobby.Item1.Id))
                 {
                     userWithLobby.Item2.CurrentGame.Players.Add(userWithLobby.Item1);
+                    userWithLobby.Item2.CurrentGame.Stats.Add(new GameAppUsersStats
+                    {
+                        AppUser = userWithLobby.Item1,
+                        Game = userWithLobby.Item2.CurrentGame
+                    });
                     await this.gameRepository.AddUserToStatsAsync(userWithLobby.Item2.CurrentGame, userWithLobby.Item1);
                 }
             }
@@ -119,30 +125,31 @@ public class RacingGameHub : Hub
         }
     }
 
-    private async Task<IEnumerable<RacingCar?>?> GetRacingCarsAsync(AppUser user)
+    private async Task<IEnumerable<RacingCar>?> GetRacingCarsAsync(AppUser user)
     {
-        IEnumerable<RacingCar?>? cars = null;
+        IEnumerable<RacingCar> cars = Enumerable.Empty<RacingCar>();
 
         var game = await this.gameRepository.GetGameWithPlayerAsync(user);
         if (game is not null)
         {
-            cars = await Task.WhenAll(game.Stats.Select(async p =>
-                                                await this.racingCarRepository.GetRacingCarByRacerNameAsync(p.AppUser.UserName)));
+            cars = await Task.WhenAll(game.Players.Select(async p =>
+                                                await this.racingCarRepository.GetRacingCarByRacerNameAsync(p.UserName))
+                                                  .Where(c => c != null));
         }
 
         return cars;
     }
 
-    private async Task<IEnumerable<RacingCar?>?> GetRacingCarsExceptUserAsync(AppUser user, Lobby lobby)
+    private async Task<IEnumerable<RacingCar>?> GetRacingCarsExceptUserAsync(AppUser user, Lobby lobby)
     {
-        IEnumerable<RacingCar?>? cars = null;
+        IEnumerable<RacingCar> cars = Enumerable.Empty<RacingCar>();
 
-        var game = await this.gameRepository.GetGameWithPlayerAsync(user);
-        if (game is not null)
+        if (lobby.CurrentGame is not null)
         {
-            cars = await Task.WhenAll(game.Stats.Where(p => p.AppUser.UserName != user.UserName)
-                                                .Select(async p =>
-                                                await this.racingCarRepository.GetRacingCarByRacerNameAsync(p.AppUser.UserName)));
+            cars = await Task.WhenAll(lobby.CurrentGame.Players.Where(p => p.UserName != user.UserName)
+                                                               .Select(async p =>
+                                                                await this.racingCarRepository.GetRacingCarByRacerNameAsync(p.UserName))
+                                                               .Where(c => c != null));
         }
 
         return cars;
@@ -168,6 +175,7 @@ public class RacingGameHub : Hub
 
     public async Task FinishRacingAsync(int carId)
     {
+        //UPDATE Games SET State = 0 WHERE Id = 10
         var userWithLobby = await GetUserWithLobbyAsync();
         if (userWithLobby.Item1 is not null && userWithLobby.Item2 is not null)
         {
@@ -188,24 +196,22 @@ public class RacingGameHub : Hub
             var cars = await this.GetRacingCarsAsync(userWithLobby.Item1);
             if (cars is not null)
             {
-                if (cars.All(c => c?.IsFinished ?? false))
+                var stats = userWithLobby.Item2.CurrentGame.Stats.FirstOrDefault(s => s.AppUser.UserName == car.RacerName);
+                if (stats is not null)
                 {
-                    await this.lobbyRepository.FinishGameAsync(userWithLobby.Item2);
-                    await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.GameFinished, userWithLobby.Item2.CurrentGame.Stats.Select(rp => new UserDetailDTO(rp.AppUser)));
+                    var points = stats.Place / stats.Game.Players.Count * 10;
+                    await this.levelsRepository.AddPointsAsync(userWithLobby.Item1, userWithLobby.Item2.CurrentGame.Mode, points);
                 }
 
-                foreach (var carToDelete in cars)
+                if (cars.All(c => c.IsFinished))
                 {
-                    if (carToDelete is not null)
+                    await this.lobbyRepository.FinishGameAsync(userWithLobby.Item2);
+                    await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.GameFinished, userWithLobby.Item2.PreviousGames.LastOrDefault().Stats.Select(rp => new UserDetailDTO(rp.AppUser)));
+
+                    foreach (var carToDelete in cars)
                     {
                         await this.racingCarRepository.DeleteRacingCarByIdAsync(carToDelete.Id);
                     }
-                }
-
-                foreach (var stats in userWithLobby.Item2.CurrentGame.Stats)
-                {
-                    var points = stats.Place / stats.Game.Players.Count * 10;
-                    await this.levelsRepository.AddPointsAsync(stats.AppUser, stats.Game.Mode, points);
                 }
             }
         }

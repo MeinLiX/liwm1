@@ -22,5 +22,6 @@ public static class ServiceRegistration
                    .AddTransient<IGameModesRepository, GameModesRepository>()
                    .AddTransient<ILobbyRepository, LobbyRepository>()
                    .AddTransient<IRacingCarRepository, RacingCarRepository>()
-                   .AddTransient<IGameRepository, GameRepository>();
+                   .AddTransient<IGameRepository, GameRepository>()
+                   .AddTransient<ILevelsRepository, LevelsRepository>();
 }

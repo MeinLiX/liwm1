@@ -69,6 +69,7 @@ public class LobbyRepository : ILobbyRepository
     public async Task<Lobby?> GetLobbyWithUserAsync(AppUser user) => await this.dataContext.Lobbies
                                                                                            .Include(l => l.CurrentGame)
                                                                                            .Include(l => l.CurrentGame.Stats)
+                                                                                           .Include(l => l.CurrentGame.Mode)
                                                                                            .Include(l => l.Connections)
                                                                                            .Include(l => l.Users)
                                                                                            .Include(l => l.LobbyCreator)

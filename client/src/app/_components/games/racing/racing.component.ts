@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { take } from 'rxjs';
 import { GameFinishedModalComponent } from 'src/app/_modals/game-finished-modal/game-finished-modal.component';
@@ -25,7 +25,7 @@ export class RacingComponent implements OnInit, OnDestroy {
   private readonly transmissionGUIHeight = 200;
   private readonly transmissionBallRadius = 10;
   private readonly interval = 15;
-  private readonly maxLap = 25;
+  private readonly maxLap = 10;
   private readonly rareSpeedBost = 0.7;
   private readonly badSpeedBost = -0.9;
   private readonly mediumSpeedBost = 0.1;
@@ -41,7 +41,7 @@ export class RacingComponent implements OnInit, OnDestroy {
 
   private isPractise = true;
 
-  constructor(private accountService: AccountService, private racingGameService: RacingGameService, private route: ActivatedRoute, private modalService: BsModalService, private gameModesService: GameModesService) { }
+  constructor(private accountService: AccountService, private racingGameService: RacingGameService, private route: ActivatedRoute, private modalService: BsModalService, private gameModesService: GameModesService, private router: Router) { }
 
   ngOnDestroy(): void {
     this.transmission = 0;
@@ -398,7 +398,7 @@ export class RacingComponent implements OnInit, OnDestroy {
           if (cars) {
             for (let i = 0; i < cars.length; i++) {
               const car = cars[i];
-              if (car.lap <= this.maxLap) {
+              if (car.lap < this.maxLap) {
                 car.dy += this.getCarCooridnatesSpeed(car.boostMode === 0 ? 1 : car.boostMode) / 8 * car.transmission / this.interval;
                 car.y -= car.dy;
 
@@ -410,7 +410,7 @@ export class RacingComponent implements OnInit, OnDestroy {
                     car.y = -this.carHeight;
                     car.isFinished = true;
 
-                    if (i === 0) {
+                    if (i === 0 && !this.isPractise) {
                       this.racingGameService.finishRacing();
                     }
 
@@ -596,6 +596,12 @@ export class RacingComponent implements OnInit, OnDestroy {
           }
 
           this.modalService.show(GameFinishedModalComponent, config);
+          this.modalService.onHidden.subscribe({
+            next: () => {
+              this.router.navigateByUrl('/games');
+              this.modalService.onHidden.unsubscribe();
+            }
+          });
         }
       }
     });

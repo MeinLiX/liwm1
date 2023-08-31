@@ -8,7 +8,6 @@ import { BehaviorSubject, map } from 'rxjs';
 import { Lobby } from '../_models/lobby';
 import { AccountService } from './account.service';
 import { Router } from '@angular/router';
-import { RacingGameService } from './racing-game.service';
 
 @Injectable({
   providedIn: 'root'
@@ -123,7 +122,7 @@ export class LobbyService {
 
     this.hubConnection.on('LobbyReceivedAfterGameModeChanged', (lobby: Lobby) => {
       this.setLobby(lobby);
-    }); 
+    });
 
     this.hubConnection.on('LobbyGameWasCancelled', () => {
       this.router.navigateByUrl('home');

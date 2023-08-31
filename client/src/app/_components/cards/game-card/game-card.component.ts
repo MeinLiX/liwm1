@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameMode } from 'src/app/_models/gameMode';
 import { Lobby } from 'src/app/_models/lobby';
+import { User } from 'src/app/_models/user';
 import { AccountService } from 'src/app/_services/account.service';
 import { LobbyService } from 'src/app/_services/lobby.service';
 
@@ -13,12 +14,17 @@ import { LobbyService } from 'src/app/_services/lobby.service';
 export class GameCardComponent implements OnInit {
   @Input() gameMode?: GameMode;
   lobby: Lobby | null = null;
+  user: User | null = null;
 
   constructor(public accountService: AccountService, private router: Router, private lobbyService: LobbyService) { }
 
   ngOnInit(): void {
     this.lobbyService.lobby$.subscribe({
       next: lobby => this.lobby = lobby
+    });
+
+    this.accountService.currentUser$.subscribe({
+      next: user => this.user = user
     });
   }
 

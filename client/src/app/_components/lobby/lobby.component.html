@@ -2,10 +2,12 @@
     <div *ngIf="lobby && !isDetailedVisible">
         <button class="btn btn-info" style="height: 38px;" (click)="isDetailedVisible = !isDetailedVisible">
             <i class="fa fa-users"></i>
-            <p style="display: inline-block; margin-left: 10px">{{lobby.users.length}} {{lobby.pendingConnections.length > 0 ? '(' + lobby.pendingConnections.length + ')' : ''}}</p>
+            <p style="display: inline-block; margin-left: 10px">{{lobby.users.length}} {{lobby.pendingConnections.length
+                > 0 ? '(' + lobby.pendingConnections.length + ')' : ''}}</p>
         </button>
     </div>
     <div *ngIf="lobby && isDetailedVisible" class="outer">
+        <button *ngIf="user?.username === lobby?.lobbyCreator?.username" (click)="openLobbySettingsModal()" class="btn btn-info" style="margin-top: 5px; margin-left: 5px; position: absolute;"><i class="fa fa-cog"></i></button>
         <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="isDetailedVisible = false">
             <span aria-hidden="true" class="visually-hidden">&times;</span>
         </button>
@@ -17,12 +19,13 @@
                 <app-lobbyUser-card [lobbyUser]="lobbyUser" [lobbyCreatorName]="lobby.lobbyCreator.username" />
             </li>
         </ul>
-        <button class="btn btn-danger" style="position: relative; left: 42%; bottom: 5px;"
+        <button class="btn btn-danger" style="position: relative; left: 32%; bottom: 5px;"
             (click)="leaveLobby()">{{(accountService.currentUser$ | async)?.username ===
             lobby.lobbyCreator.username ? 'Delete' : 'Leave'}}</button>
         <button class="btn btn-info" *ngIf="lobby.pendingConnections.length > 0"
-            style="position: relative; height: 37px; float: right; margin-right: 10px; top: -4px;" (click)="openRequestsModal()">
-            <i class="fa fa-user-plus" style="display: inline-block;"></i>  
+            style="position: relative; height: 37px; float: right; margin-right: 10px; top: -4px;"
+            (click)="openRequestsModal()">
+            <i class="fa fa-user-plus" style="display: inline-block;"></i>
             <p style="display: inline-block; margin-left: 4px;">{{lobby.pendingConnections.length}}</p>
         </button>
     </div>
