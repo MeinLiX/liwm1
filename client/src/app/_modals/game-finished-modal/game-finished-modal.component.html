@@ -14,7 +14,7 @@
         <li *ngFor="let player of players" style="margin-bottom: 10px;">
             <img src="{{player.photoUrl}}" alt="{{player.username}}">
             <h5>{{player.username}}</h5>
-            <h4>{{player.lastGameResult}}</h4>
+            <h4>{{player.stats?.place}}</h4>
         </li>
     </ul>
 </div>

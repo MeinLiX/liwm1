@@ -116,7 +116,7 @@ public class RacingGameHub : Hub
             var cars = await this.GetRacingCarsAsync(userWithLobby.Item1);
             if (cars is not null)
             {
-                if (cars.All(c => c?.IsReady ?? false))
+                if (cars.All(c => c.IsReady))
                 {
                     await gameRepository.UpdateGameStateAsync(userWithLobby.Item2.CurrentGame, GameState.Started);
                     await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.GameStarting);
@@ -206,7 +206,7 @@ public class RacingGameHub : Hub
                 if (cars.All(c => c.IsFinished))
                 {
                     await this.lobbyRepository.FinishGameAsync(userWithLobby.Item2);
-                    await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.GameFinished, userWithLobby.Item2.PreviousGames.LastOrDefault().Stats.Select(rp => new UserDetailDTO(rp.AppUser)));
+                    await Clients.Group(userWithLobby.Item2.LobbyName).SendAsync(RacingGameHubMethodNameConstants.GameFinished, userWithLobby.Item2.PreviousGames.LastOrDefault().Stats.Select(rp => new UserDetailDTO(rp)));
 
                     foreach (var carToDelete in cars)
                     {

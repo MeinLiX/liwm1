@@ -1,3 +1,4 @@
+import { GameStats } from "./gameStats";
 import { Lobby } from "./lobby";
 
 export interface User {
@@ -30,5 +31,5 @@ export interface LobbyUser {
     photoUrl?: string;
     username: string;
     isAnonymous: boolean;
-    lastGameResult?: number;
+    stats?: GameStats;
 }

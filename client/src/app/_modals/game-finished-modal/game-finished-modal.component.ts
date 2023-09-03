@@ -16,7 +16,7 @@ export class GameFinishedModalComponent implements OnInit {
   constructor(public modalRef: BsModalRef, private photosService: PhotosService) { }
 
   ngOnInit(): void {
-    console.log(this.gameMode);
+    console.log(this.players);
     if (this.players) {
       for (let i = 0; i < this.players.length; i++) {
         this.photosService.getPhotoById(this.players[i].photoId).subscribe({

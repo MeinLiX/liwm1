@@ -418,7 +418,7 @@ export class RacingComponent implements OnInit, OnDestroy {
                       this.accountService.currentUser$.pipe(take(1)).subscribe({
                         next: user => {
                           if (user) {
-                            const lobbyUser: LobbyUser = { photoId: user.photoId, username: user.username, isAnonymous: user.isAnonymous, lastGameResult: 1 };
+                            const lobbyUser: LobbyUser = { photoId: user.photoId, username: user.username, isAnonymous: user.isAnonymous, stats: { place: 1 } };
                             this.onRaceFinished([lobbyUser]);
                           }
                         }
