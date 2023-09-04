@@ -170,4 +170,8 @@ export class RacingGameService {
     this.carsSource.next([car]);
     this.playerCarSource.next(car);
   }
+
+  disconnectFromGame() {
+    this.hubConnection?.stop().catch(error => console.log(error));
+  }
 }

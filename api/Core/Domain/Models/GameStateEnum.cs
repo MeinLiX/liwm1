@@ -4,5 +4,6 @@ public enum GameState
 {
     Created,
     Started,
-    Finished
+    Finished,
+    Cancelled
 }

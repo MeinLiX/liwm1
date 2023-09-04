@@ -175,4 +175,13 @@ export class LobbyService {
     await this.hubConnection?.invoke('ChangeGameModeAsync', gameModeName)
       .catch(error => console.log(error));
   }
+
+  async cancelCurrentGame() {
+    if (this.hubConnection) {
+      const updatedLobby = await this.hubConnection.invoke<Lobby>('CancelGameAsync').catch(error => console.log(error));
+      if (updatedLobby) {
+        this.setLobby(updatedLobby);
+      }
+    }
+  }
 }

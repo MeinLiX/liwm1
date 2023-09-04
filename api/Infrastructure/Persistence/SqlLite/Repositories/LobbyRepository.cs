@@ -198,7 +198,7 @@ public class LobbyRepository : ILobbyRepository
     {
         if (lobby.CurrentGame != null)
         {
-            lobby.CurrentGame.State = GameState.Finished;
+            lobby.CurrentGame.State = GameState.Cancelled;
             lobby.CurrentGame = null;
             await this.dataContext.SaveChangesAsync();
         }

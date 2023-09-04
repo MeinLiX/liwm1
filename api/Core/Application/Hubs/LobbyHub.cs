@@ -284,21 +284,22 @@ public class LobbyHub : Hub
         await Clients.GroupExcept(lobby.LobbyName, Context.ConnectionId).SendAsync(LobbyHubMethodNameConstants.LobbyGameModeChanged, lobbyToSend);
     }
 
-    public async Task CancelGameAsync()
+    public async Task<LobbyDTO?> CancelGameAsync()
     {
         var (user, lobby) = await GetCallerAsAppUserOwnerLobbyAsync();
         if (user is null || lobby is null)
         {
-            return;
+            return null;
         }
 
         if (lobby.LobbyCreator != user)
         {
-            return;
+            return null;
         }
 
         await this.lobbyRepository.RemoveCurrentGameAsync(lobby);
         await Clients.Group(lobby.LobbyName).SendAsync(LobbyHubMethodNameConstants.LobbyGameWasCancelled);
+        return new LobbyDTO(lobby);
     }
 
     public override async Task OnDisconnectedAsync(Exception exception)
