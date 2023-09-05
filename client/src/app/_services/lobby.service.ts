@@ -126,6 +126,7 @@ export class LobbyService {
 
     this.hubConnection.on('LobbyGameWasCancelled', () => {
       this.router.navigateByUrl('home');
+      this.toastr.warning('The game was cancelled by lobby leader');
     });
   }
 

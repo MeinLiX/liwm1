@@ -1,1 +1,9 @@
-<p>lobby-settings works!</p>
+<div class="modal-header">
+    <h4>Lobby settings</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <button class="btn btn-primary" (click)="cancelGame()">Cancel game</button>
+</div>
