@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { User } from './_models/user';
 import { AccountService } from './_services/account.service';
 import { LobbyService } from './_services/lobby.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,7 @@ import { LobbyService } from './_services/lobby.service';
 })
 export class AppComponent implements OnInit {
 
-  constructor(public accountService: AccountService, public lobbyService: LobbyService, private router: Router) { }
+  constructor(public accountService: AccountService, public lobbyService: LobbyService, private router: Router, private toastr: ToastrService) { }
 
   ngOnInit(): void {
     this.setCurrentUser();
@@ -19,9 +20,18 @@ export class AppComponent implements OnInit {
 
   setCurrentUser() {
     const userString = localStorage.getItem('user');
-    if (!userString) return;
-    const user: User = JSON.parse(userString);
-    this.accountService.setCurrentUser(user);
-    this.router.navigateByUrl('/games');
+    if (userString) {
+      const user: User = JSON.parse(userString);
+      const decodedToken = JSON.parse(atob(user.token.split('.')[1]));
+      if (Date.now() <= decodedToken.exp * 1000) {
+        this.accountService.setCurrentUser(user);
+        this.router.navigateByUrl('/games');
+      }
+      else {
+        this.router.navigateByUrl('/');
+        localStorage.removeItem('user');
+        this.toastr.warning('Your session has expired. Regain access')
+      }
+    }
   }
 }

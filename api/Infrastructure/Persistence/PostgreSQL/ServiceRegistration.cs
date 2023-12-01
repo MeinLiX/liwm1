@@ -7,4 +7,3 @@ public static class ServiceRegistration
     public static IServiceCollection AddPersistencePostgreSQLInfrastructureLayer(this IServiceCollection services)
     => services; // TODO
 }
-

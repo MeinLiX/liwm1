@@ -2,6 +2,8 @@ import { RacingTransmissionRange } from "./racingTransmissionRange";
 
 export class Car {
     id: number;
+    type: CarType;
+    image?: HTMLImageElement;
     racerName: string;
     isReady: boolean;
     isFinished: boolean;
@@ -9,8 +11,10 @@ export class Car {
     y: number;
     dx: number;
     dy: number;
+    width: number;
+    height: number;
     lap: number;
-    transmission: number;   
+    transmission: number;
     boostMode: RacingTransmissionRange;
 
     constructor(x: number, y: number, id: number, racerName: string) {
@@ -25,6 +29,9 @@ export class Car {
         this.isReady = false;
         this.transmission = 0;
         this.boostMode = RacingTransmissionRange.Bad;
+        this.width = 0;
+        this.height = 0;
+        this.type = CarType.Red;
     }
 }
 
@@ -34,4 +41,15 @@ export interface BackendCar {
     racingCarBoostMode: RacingTransmissionRange;
     isReady: boolean;
     isFinished: boolean;
+}
+
+export enum CarType {
+    Red,
+    Black,
+    Blue,
+    Cyan,
+    Gray,
+    Green,
+    Orange,
+    Yellow
 }

@@ -2,15 +2,17 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { take } from 'rxjs';
+import { EnumHelper } from 'src/app/_helpers/enum-helper';
 import { GameFinishedModalComponent } from 'src/app/_modals/game-finished-modal/game-finished-modal.component';
-import { Car } from 'src/app/_models/car';
+import { Car, CarType } from 'src/app/_models/car';
 import { GameMode } from 'src/app/_models/gameMode';
-import { Lobby } from 'src/app/_models/lobby';
 import { RacingTransmissionRange } from 'src/app/_models/racingTransmissionRange';
 import { LobbyUser } from 'src/app/_models/user';
 import { AccountService } from 'src/app/_services/account.service';
 import { GameModesService } from 'src/app/_services/game-modes.service';
 import { RacingGameService } from 'src/app/_services/racing-game.service';
+
+//TODO: Add cars reference https://www.freepik.com/free-vector/flat-car-collection-top-view_1349616.htm#query=cars%20top%20view&position=30&from_view=search&track=ais
 
 @Component({
   selector: 'app-racing',
@@ -19,8 +21,6 @@ import { RacingGameService } from 'src/app/_services/racing-game.service';
 })
 export class RacingComponent implements OnInit, OnDestroy {
 
-  private readonly carWidth = 40;
-  private readonly carHeight = 65;
   private readonly transmissionGUIWidth = 30;
   private readonly transmissionGUIHeight = 200;
   private readonly transmissionBallRadius = 10;
@@ -66,6 +66,7 @@ export class RacingComponent implements OnInit, OnDestroy {
           this.isPractise = params['isPractise'] === 'true';
 
           if (!this.isPractise) {
+            this.addGradientBackground();
             this.accountService.currentUser$.pipe(take(1)).subscribe({
               next: user => {
                 if (user) {
@@ -83,15 +84,15 @@ export class RacingComponent implements OnInit, OnDestroy {
 
                     if (lastCar) {
                       if (isLastIndexEven) {
-                        car.x = lastCar.x + (this.carWidth * 2.5);
+                        car.x = lastCar.x + (car.width * 2.5);
                       } else {
-                        car.x = lastCar.x - (this.carWidth * 2.5);
+                        car.x = lastCar.x - (car.width * 2.5);
                       }
                     } else {
-                      car.x = this.canvas.width / 2 - this.carWidth * 0.5;
+                      car.x = this.canvas.width / 2 - car.width * 0.5;
                     }
 
-                    car.y = this.canvas.height - this.carHeight * 2;
+                    car.y = this.canvas.height - car.height * 2;
                   }
 
                   this.drawCars();
@@ -108,10 +109,17 @@ export class RacingComponent implements OnInit, OnDestroy {
             this.ctx.font = '72px serif';
             this.ctx.fillText('Tap to ready', this.canvas.width / 2 - 155, this.canvas.height / 2);
           } else {
+            this.addGradientBackground();
             this.accountService.currentUser$.pipe(take(1)).subscribe({
               next: user => {
                 if (user && this.canvas) {
-                  const car = new Car(this.canvas.width / 2 - this.carWidth * 0.5, this.canvas.height - 100, 0, user.username);
+                  const car = new Car(0, 0, 0, user.username);
+                  this.generateCarImageAndAssignSize(car);
+                  console.log(car.width);
+                  console.log(car.height);
+                  console.log(car.image);
+                  car.x = this.canvas.width / 2 - car.width * 0.5;
+                  car.y = this.canvas.height - 100;
                   this.racingGameService.addCarForSoloGame(car);
                   this.drawCar(car);
                   this.drawRoad(car);
@@ -135,6 +143,28 @@ export class RacingComponent implements OnInit, OnDestroy {
     });
   }
 
+  private generateCarImageAndAssignSize(car: Car) {
+    car.type = Math.floor(Math.random() * 7);
+    const image = new Image();
+    image.src = `assets/cars/${EnumHelper.enumToString(CarType, car.type)?.toLocaleLowerCase()}-car.svg`;
+    image.onload = () => {
+      car.width = image.width;
+      car.height = image.height;
+    };
+    car.image = image;
+  }
+
+  private addGradientBackground() {
+    if (this.ctx && this.canvas) {
+      const gradient = this.ctx.createLinearGradient(0, 0, this.canvas.width, this.canvas.height);
+      gradient.addColorStop(0, '#b2d469');
+      gradient.addColorStop(1, '#5b844d');
+
+      this.ctx.fillStyle = gradient;
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+  }
+
   private addRecievedCar(car: Car) {
     this.racingGameService.cars$.pipe(take(1)).subscribe({
       next: cars => {
@@ -144,15 +174,15 @@ export class RacingComponent implements OnInit, OnDestroy {
 
           if (lastCar) {
             if (isLastIndexEven) {
-              car.x = lastCar.x + (this.carWidth * 2.5);
+              car.x = lastCar.x + (car.width * 2.5);
             } else {
-              car.x = lastCar.x - (this.carWidth * 2.5);
+              car.x = lastCar.x - (car.width * 2.5);
             }
           } else {
-            car.x = this.canvas.width / 2 - this.carWidth * 0.5;
+            car.x = this.canvas.width / 2 - car.width * 0.5;
           }
 
-          car.y = this.canvas.height - this.carHeight * 2;
+          car.y = this.canvas.height - car.height * 2;
 
           this.drawCar(car);
           this.drawRoad(car);
@@ -407,7 +437,7 @@ export class RacingComponent implements OnInit, OnDestroy {
                   car.lap++;
 
                   if (car.lap >= this.maxLap) {
-                    car.y = -this.carHeight;
+                    car.y = -car.height;
                     car.isFinished = true;
 
                     if (i === 0 && !this.isPractise) {
@@ -474,17 +504,25 @@ export class RacingComponent implements OnInit, OnDestroy {
     if (this.ctx && this.canvas) {
       this.ctx.beginPath();
 
-      this.ctx.moveTo(car.x - this.carWidth * 0.5, 0);
-      this.ctx.lineTo(car.x - this.carWidth * 0.5, 700);
+      const gradient = this.ctx.createLinearGradient(0, 0, this.canvas.width, this.canvas.height);
+      gradient.addColorStop(0, '#837b5b');
+      gradient.addColorStop(1, '#46474b');
+
+      this.ctx.fillStyle = gradient;
+      this.ctx.fillRect(car.x - car.width * 0.5, 0, car.width * 2, this.canvas.height);
+
+      this.ctx.fillStyle = 'black';
+      this.ctx.moveTo(car.x - car.width * 0.5, 0);
+      this.ctx.lineTo(car.x - car.width * 0.5, 700);
       this.ctx.stroke();
 
-      this.ctx.moveTo(car.x + this.carWidth * 1.5, 0);
-      this.ctx.lineTo(car.x + this.carWidth * 1.5, 700);
+      this.ctx.moveTo(car.x + car.width * 1.5, 0);
+      this.ctx.lineTo(car.x + car.width * 1.5, 700);
       this.ctx.stroke();
 
       for (let i = 0; i <= this.canvas.height; i += 40) {
-        this.ctx.moveTo(car.x + this.carWidth * 0.5, i + this.carWidth * 0.5);
-        this.ctx.lineTo(car.x + this.carWidth * 0.5, i + this.carWidth);
+        this.ctx.moveTo(car.x + car.width * 0.5, i + car.width * 0.5);
+        this.ctx.lineTo(car.x + car.width * 0.5, i + car.width);
         this.ctx.stroke();
       }
 
@@ -493,10 +531,9 @@ export class RacingComponent implements OnInit, OnDestroy {
   }
 
   private drawCar(car: Car): void {
-    if (this.ctx) {
+    if (this.ctx && car.image) {
       this.ctx.beginPath();
-      this.ctx.fillStyle = '#000';
-      this.ctx.fillRect(car.x, car.y, this.carWidth, this.carHeight);
+      this.ctx.drawImage(car.image, car.x - car.width / 2, car.y - car.height / 2);
       this.ctx.closePath();
     }
   }
