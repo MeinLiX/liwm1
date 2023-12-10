@@ -1,0 +1,11 @@
+version: "3"
+services:
+  backend:
+    image: "m1adow/liwm1:${LIWM1_VERSION}"
+    build:
+      context: ../../
+      dockerfile: ./webAPI/Dockerfile
+    ports:
+      - 5240:80
+    env_file:
+      - .env

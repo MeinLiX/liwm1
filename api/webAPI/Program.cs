@@ -1,6 +1,6 @@
 ﻿using Application;
 using Shared;
-using SqlLite;
+using PostgreSQL;
 using Microsoft.OpenApi.Models;
 using webAPI.Middleware;
 using webAPI.Extensions;
@@ -40,8 +40,7 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddSignalR();
 builder.Services.AddAplicationLayer();
-// builder.Services.AddPersistencePostgreSQLInfrastructureLayer();
-builder.Services.AddPersistenceSqlLiteInfrastructureLayer(builder.Configuration);
+builder.Services.AddPersistencePostgreSQLInfrastructureLayer(builder.Configuration);
 builder.Services.AddSharedInfrastructureLayer(builder.Configuration);
 
 builder.Services.AddTransient<ExceptionMiddleware>();

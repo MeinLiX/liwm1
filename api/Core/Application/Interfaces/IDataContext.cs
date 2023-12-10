@@ -8,6 +8,7 @@ public interface IDataContext
 {
     DatabaseFacade Database { get; }
 
+    //TODO: Consider about public setters, are they really necessary?
     DbSet<AppUser> Users { get; set; }
     DbSet<AppRole> Roles { get; set; }
     DbSet<AppUserRole> UserRoles { get; set; }

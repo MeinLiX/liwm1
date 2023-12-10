@@ -1,0 +1,1 @@
+dotnet ef migrations add ***MIGRATION NAME*** -n Migrations -c DataContext -p api/Infrastructure/Persistence/PostgreSQL -s api/webApi/webApi.csproj -o Migrations/

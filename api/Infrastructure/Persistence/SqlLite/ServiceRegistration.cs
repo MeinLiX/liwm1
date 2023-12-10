@@ -10,6 +10,7 @@ namespace SqlLite;
 
 public static class ServiceRegistration
 {
+    [Obsolete("Use PostgreSQL")]
     public static IServiceCollection AddPersistenceSqlLiteInfrastructureLayer(this IServiceCollection services, IConfiguration configuration)
         => services.AddDbContext<DataContext>(options => options.UseSqlite(configuration.GetConnectionString("SqlConnection")))
                    .AddScoped<IDataContext>(provider => provider.GetRequiredService<DataContext>())
