@@ -1,23 +1,28 @@
-version: "3"
+version: "3.8"
 services:
-  backend:
+  liwm1_backend:
     container_name: liwm1_backend
     image: "m1adow/liwm1:${LIWM1_VERSION}"
+    build:
+      context: ../../
+      dockerfile: ./webAPI/Dockerfile
     ports:
       - 5240:80
     env_file:
-      - backend.env
+      - .env
     depends_on:
-      - postgres
+      - liwm1_postgres
     restart: always
 
-  postgres:
+  liwm1_postgres:
     container_name: liwm1_postgres
-    image: 'postgres:16.1'
+    image: postgres:16.1-alpine3.19
     ports:
-      - '5432:5432'
+      - 5432:5432
     env_file:
       - postgres.env
     volumes:
-      - 'liwm1_postgres_db:/var/lib/postgresql/data'
+      - liwm1_postgres_db:/var/lib/postgresql/data
     restart: always
+volumes:
+  liwm1_postgres_db:

@@ -12,6 +12,7 @@ public static class DataBaseExtensions
         using var scope = serviceProvider.CreateScope();
         var services = scope.ServiceProvider;
         var context = services.GetRequiredService<IDataContext>();
+
         await context.Database.MigrateAsync();
 
         var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
@@ -25,14 +26,14 @@ public static class DataBaseExtensions
     {
         var roles = new AppRole[]
         {
-            new AppRole { Name = "Gamer" },
-            new AppRole { Name = "Anonymous" },
-            new AppRole { Name = "Admin" }
+            new() { Name = "Gamer" },
+            new() { Name = "Anonymous" },
+            new() { Name = "Admin" }
         };
 
         foreach (var role in context.Roles)
         {
-            if (role != null && !roles.Contains(role))
+            if (role != null && !roles.Any(x => x.Name == role.Name))
             {
                 await roleManager.DeleteAsync(role);
             }

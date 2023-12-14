@@ -11,7 +11,7 @@ class DataContext : IdentityDbContext<AppUser, AppRole, int,
                                       AppUserRole,
                                       IdentityUserLogin<int>,
                                       IdentityRoleClaim<int>,
-                                     IdentityUserToken<int>>,
+                                      IdentityUserToken<int>>,
                     IDataContext
 {
     public DbSet<Photo> Photos { get; set; }
